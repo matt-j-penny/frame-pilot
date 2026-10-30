@@ -1,0 +1,13 @@
+config.local.json
+app/editor-connections.json
+node_modules/
+.DS_Store
+
+app/uploads/
+app/transcripts/
+app/style-runs/
+app/server.log
+jobs/
+styles/
+sfx/*.mp3
+__pycache__/

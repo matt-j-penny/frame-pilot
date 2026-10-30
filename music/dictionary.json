@@ -1,0 +1,31 @@
+[
+ {
+  "file": "lofi_dusty_keys_80bpm.wav",
+  "duration": 42.0,
+  "tags": [
+   "lofi",
+   "chill",
+   "keys",
+   "instrumental"
+  ],
+  "mood": "chill, warm, dusty lofi",
+  "energy": "low",
+  "use": "relaxed background under talking-head explainers; self-generated, royalty-free",
+  "tempo": 80
+ },
+ {
+  "file": "lofi_bright_keys_86bpm.wav",
+  "duration": 44.65,
+  "tags": [
+   "lofi",
+   "chill",
+   "keys",
+   "instrumental",
+   "bright"
+  ],
+  "mood": "warm, bright lofi with electric piano melody",
+  "energy": "medium",
+  "use": "background under talking-head explainers; cuts through on phone speakers; self-generated, royalty-free",
+  "tempo": 86
+ }
+]

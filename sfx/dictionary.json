@@ -1,0 +1,302 @@
+[
+ {
+  "file": "soft_pop.wav",
+  "duration": 0.18,
+  "tags": [
+   "pop",
+   "soft",
+   "blip"
+  ],
+  "mood": "gentle UI pop",
+  "energy": "low",
+  "use": "graphic entrances; self-generated"
+ },
+ {
+  "file": "soft_tick.wav",
+  "duration": 0.06,
+  "tags": [
+   "tick",
+   "click",
+   "soft"
+  ],
+  "mood": "crisp quiet tick",
+  "energy": "low",
+  "use": "checklist rows, list items; self-generated"
+ },
+ {
+  "file": "soft_typing.wav",
+  "duration": 1.4,
+  "tags": [
+   "typing",
+   "tick",
+   "soft",
+   "digital"
+  ],
+  "mood": "quiet key taps",
+  "energy": "low",
+  "use": "chat/prompt typing; self-generated"
+ },
+ {
+  "file": "soft_whoosh.wav",
+  "duration": 0.6,
+  "tags": [
+   "whoosh",
+   "swish",
+   "soft"
+  ],
+  "mood": "airy short whoosh",
+  "energy": "low",
+  "use": "fullscreen entrances and transitions; self-generated"
+ },
+ {
+  "file": "Money Cha-Ching.mp3",
+  "duration": 2.51,
+  "tags": [
+   "cash",
+   "ding"
+  ],
+  "mood": "Money cha-ching / cash-register sound",
+  "energy": "high",
+  "use": "Money cha-ching / cash-register sound \u2014 sale, payment, profit, revenue, earnings, price, or financial-success reveal. Sync the initial register hit to the amount or confirmation appearing on screen; let the coin shimmer ring out. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "chime.mp3",
+  "duration": 2.5,
+  "tags": [
+   "ding",
+   "soft"
+  ],
+  "mood": "Soft melodic chime",
+  "energy": "low",
+  "use": "Soft melodic chime \u2014 gentle positive beat: success/confirmation or a lighthearted transition. Sync to the visual moment. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "click-soft.mp3",
+  "duration": 0.37,
+  "tags": [
+   "click",
+   "tick",
+   "soft"
+  ],
+  "mood": "Quiet short click",
+  "energy": "low",
+  "use": "Quiet short click \u2014 low-key UI tap / soft selection. Short accent, sync exactly to the on-screen action. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "click.mp3",
+  "duration": 0.37,
+  "tags": [
+   "click",
+   "tick"
+  ],
+  "mood": "Crisp UI click",
+  "energy": "medium",
+  "use": "Crisp UI click \u2014 button press, toggle, selection. Short accent, sync exactly to the on-screen action. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "error.mp3",
+  "duration": 1.62,
+  "tags": [
+   "blip",
+   "digital"
+  ],
+  "mood": "Negative / error tone",
+  "energy": "medium",
+  "use": "Negative / error tone \u2014 failure state, a 'wrong' beat, or a glitchy interruption. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "glitch-1.mp3",
+  "duration": 2.64,
+  "tags": [
+   "digital",
+   "impact"
+  ],
+  "mood": "Punchy digital glitch",
+  "energy": "high",
+  "use": "Punchy digital glitch \u2014 hard-cut accent or sudden reveal. Trigger on the hit; let the decay bleed into the next shot (J-cut). (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "glitch-2.mp3",
+  "duration": 3.5,
+  "tags": [
+   "digital"
+  ],
+  "mood": "Harsh, longer glitch",
+  "energy": "high",
+  "use": "Harsh, longer glitch \u2014 chaotic / jarring transition or a distorted reveal. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "glitch-3.mp3",
+  "duration": 3.1,
+  "tags": [
+   "digital",
+   "soft"
+  ],
+  "mood": "Low-key glitch texture",
+  "energy": "low",
+  "use": "Low-key glitch texture \u2014 subtle digital shift, minimal transition that sits under other audio. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "impact-bass-1.mp3",
+  "duration": 2.12,
+  "tags": [
+   "impact"
+  ],
+  "mood": "Bass impact hit",
+  "energy": "high",
+  "use": "Bass impact hit \u2014 logo/hero snap, headline slam. Trigger on the visual landing; decay carries into the next shot (J-cut). (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "impact-bass-2.mp3",
+  "duration": 2.59,
+  "tags": [
+   "impact",
+   "riser"
+  ],
+  "mood": "Bass impact with a short swell",
+  "energy": "high",
+  "use": "Bass impact with a short swell \u2014 brief anticipation then a deep hit. Place so the peak lands on the reveal. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "key-press.mp3",
+  "duration": 0.4,
+  "tags": [
+   "click",
+   "tick",
+   "typing"
+  ],
+  "mood": "Single key press",
+  "energy": "low",
+  "use": "Single key press \u2014 one keystroke / terminal-input beat. Short accent, sync to the typed character. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "notification.mp3",
+  "duration": 2.46,
+  "tags": [
+   "ding",
+   "blip"
+  ],
+  "mood": "Notification chime",
+  "energy": "medium",
+  "use": "Notification chime \u2014 alert, message-in, toast/badge appears. Sync to the element entering. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "ping.mp3",
+  "duration": 1.32,
+  "tags": [
+   "ding",
+   "blip"
+  ],
+  "mood": "Sharp electronic ping",
+  "energy": "medium",
+  "use": "Sharp electronic ping \u2014 punchy accent on a key reveal or data point. Sync to the beat. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "pop.mp3",
+  "duration": 0.72,
+  "tags": [
+   "pop",
+   "blip"
+  ],
+  "mood": "Quick pop",
+  "energy": "medium",
+  "use": "Quick pop \u2014 element appear/spawn, chip/tag/badge in. Small precise accent, sync to the pop-in. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "riser-high-pitch.mp3",
+  "duration": 1.88,
+  "tags": [
+   "riser"
+  ],
+  "mood": "Short high-pitched riser (~1.9s)",
+  "energy": "high",
+  "use": "Short high-pitched riser (~1.9s) \u2014 sharper, more urgent hook for the very start of a short-form video. Trigger at 0s; pairs well with a fast title card or bold opening statement. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "riser-hook-alt.mp3",
+  "duration": 3.23,
+  "tags": [
+   "riser"
+  ],
+  "mood": "Alternate short rising riser (~3.2s, normal pitch)",
+  "energy": "medium",
+  "use": "Alternate short rising riser (~3.2s, normal pitch) \u2014 hook for the start of a short-form video when 'riser-hook' has already been used elsewhere in the same series/reel and a variation is wanted. Trigger at 0s. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "riser-hook.mp3",
+  "duration": 2.53,
+  "tags": [
+   "riser"
+  ],
+  "mood": "DEFAULT hook riser (~2.5s)",
+  "energy": "medium",
+  "use": "DEFAULT hook riser (~2.5s) \u2014 the go-to sound effect for the very start of any short-form video. Trigger at 0s under the opening line/title to grab attention before the first cut. Prefer this over 'riser-hook-alt' and 'riser-high-pitch' unless the piece specifically calls for a different character. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "riser.mp3",
+  "duration": 10.03,
+  "tags": [
+   "riser"
+  ],
+  "mood": "Long cinematic riser (~10s build, peak at the end). Trigger at (climax_time \u2212 10.03s) so it crests exactly on the reveal.",
+  "energy": "high",
+  "use": "Long cinematic riser (~10s build, peak at the end). Trigger at (climax_time \u2212 10.03s) so it crests exactly on the reveal. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "sparkle.mp3",
+  "duration": 1.8,
+  "tags": [
+   "ding",
+   "soft"
+  ],
+  "mood": "Bright sparkle / shimmer",
+  "energy": "medium",
+  "use": "Bright sparkle / shimmer \u2014 magical reveal or 'shine' highlight on a hero element. Sync to the highlight. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "typing.mp3",
+  "duration": 1.5,
+  "tags": [
+   "typing",
+   "tick"
+  ],
+  "mood": "Typing burst (~1.5s of keys)",
+  "energy": "medium",
+  "use": "Typing burst (~1.5s of keys) \u2014 keyboard / code typing reveal, text-being-typed beat. Start as the text begins typing. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "whoosh-cinematic.mp3",
+  "duration": 5.54,
+  "tags": [
+   "whoosh",
+   "swish"
+  ],
+  "mood": "Cinematic whoosh build (~5.5s)",
+  "energy": "high",
+  "use": "Cinematic whoosh build (~5.5s) \u2014 sweeping scene transition. Align so the swell peaks on the cut. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "whoosh-short.mp3",
+  "duration": 0.57,
+  "tags": [
+   "whoosh",
+   "swish",
+   "fast"
+  ],
+  "mood": "Short whoosh",
+  "energy": "high",
+  "use": "Short whoosh \u2014 quick swipe/slide accent, fast element move, snappy transition. Sync to the motion. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ },
+ {
+  "file": "whoosh.mp3",
+  "duration": 0.57,
+  "tags": [
+   "whoosh",
+   "swish",
+   "impact"
+  ],
+  "mood": "Punchy whoosh/impact",
+  "energy": "high",
+  "use": "Punchy whoosh/impact \u2014 fast reveal or hard transition accent. Sync to the motion. (Hyperframes Assets/Sound Effects, Pixabay licence or user-supplied)"
+ }
+]

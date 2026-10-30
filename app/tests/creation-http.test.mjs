@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
+import {fileURLToPath} from 'node:url';
+
+test('source transcription, reference upload, validated selections and job creation', {timeout:15000}, async t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(),'editor-http-'));
+  let child;
+  t.after(async () => { if(child) { child.kill(); await once(child,'exit').catch(()=>{}); } fs.rmSync(root,{recursive:true,force:true}); });
+  const app = path.join(root,'app'), bin = path.join(root,'bin');
+  fs.mkdirSync(app); fs.mkdirSync(bin);
+  const original = path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  for (const file of fs.readdirSync(original).filter(f=>f.endsWith('.mjs'))) fs.copyFileSync(path.join(original,file),path.join(app,file));
+  fs.mkdirSync(path.join(root,'presets/plain'),{recursive:true});
+  fs.writeFileSync(path.join(root,'presets/plain/style-guide.md'),'```json reel-style\n{}\n```');
+  const executable = (name, code) => fs.writeFileSync(path.join(bin,name),`#!${process.execPath}\n${code}`,{mode:0o755});
+  executable('python3', `const fs=require('fs'),p=require('path'),d=process.argv.at(-1);fs.writeFileSync(p.join(d,'transcript.json'),JSON.stringify({duration:4,words:[{i:0,word:'Hello',start:0,end:1},{i:1,word:'world.',start:1,end:2}]}));`);
+  executable('claude', `if(process.argv.includes('--version'))console.log('mock');else if(process.argv.includes('auth'))console.log('{"loggedIn":true}');else {process.stdin.resume();process.stdin.on('end',()=>console.log('{"type":"result","result":"Mock edit completed","is_error":false}'));}`);
+  child = spawn(process.execPath,[path.join(app,'server.mjs')],{env:{...process.env,PORT:'0',PATH:`${bin}:${process.env.PATH}`},stdio:['ignore','pipe','pipe']});
+  const base = await new Promise((resolve,reject)=>{child.stdout.on('data', b=>{const m=String(b).match(/http:\/\/localhost:\d+/);if(m)resolve(m[0]);});child.on('error',reject);child.stderr.on('data',b=>reject(new Error(String(b))));});
+  const post = async (route, body) => {const r=await fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return {status:r.status,data:await r.json()};};
+  const upload = async name => {const r=await fetch(base+'/api/upload?name='+name,{method:'POST',body:'fixture'});assert.equal(r.status,200);return r.json();};
+  const source = await upload('source.mp4'), image = await upload('reference.png');
+  const inspiration = await upload('inspiration.mp4');
+  assert.equal((await post('/api/transcriptions',{source:image.path})).status,400);
+  assert.equal((await post('/api/transcriptions',{source:'/etc/passwd'})).status,400);
+  const tr = await post('/api/transcriptions',{source:source.path}); assert.equal(tr.status,200);
+  let result;
+  for(let i=0;i<60;i++){result=await (await fetch(base+'/api/transcriptions/'+tr.data.id)).json();if(result.status!=='running')break;await new Promise(r=>setTimeout(r,30));}
+  assert.equal(result.status,'done'); assert.equal(result.transcript.words.length,2);
+  const body={source:source.path,name:source.name,style:'plain',model:'opus',aspectRatio:'16:9',features:{roughCut:false,music:false},inspiration:inspiration.path,references:[image.path],transcriptionId:tr.data.id,transcriptEdits:[{from:0,to:1,instruction:'Show a diagram'}]};
+  assert.equal((await post('/api/jobs',{...body,transcriptEdits:[{from:0,to:99,instruction:'oops'}]})).status,400);
+  assert.equal((await post('/api/jobs',{...body,source:inspiration.path})).status,400);
+  const created=await post('/api/jobs',body);assert.equal(created.status,200);
+  const job=JSON.parse(fs.readFileSync(path.join(root,'jobs',created.data.id,'ui.json')));
+  assert.equal(job.aspectRatio,'16:9'); assert.equal(job.features.roughCut,false);assert.deepEqual(job.references,[image.path]);
+  const edits=JSON.parse(fs.readFileSync(path.join(root,'jobs',created.data.id,'transcript-edits.json')));
+  assert.deepEqual(edits,[{from:0,to:1,instruction:'Show a diagram',start:0,end:2,text:'Hello world.'}]);
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'jobs',created.data.id,'transcript.json'))),result.transcript);
+});
