@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: 'Cabinet Grotesk'; src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2'); font-weight: 800; font-style: normal; }
+    @font-face { font-family: 'Satoshi'; src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2'); font-weight: 400 700; font-style: normal; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+
+    /* Transparent overlay — layer over source video in parent composition */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+    .preview-video-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .blur-backdrop { position: absolute; inset: 0; z-index: 1; backdrop-filter: blur(0px); background: rgba(26,26,46,0); will-change: backdrop-filter, background; }
+
+    .comparison-card {
+      position: relative;
+      z-index: 2;
+      background: rgba(8,6,20,0.92);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      border-top: 4px solid #7c3aed;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      min-width: 1100px;
+      will-change: transform, opacity;
+    }
+
+    .col {
+      padding: 40px 56px;
+      flex: 1;
+      will-change: transform, opacity;
+    }
+
+    .col-a { border-right: 1px solid rgba(255,255,255,0.08); }
+
+    .col-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.40);
+      margin-bottom: 12px;
+    }
+
+    .col-val {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .col-sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 26px;
+      color: rgba(255,255,255,0.50);
+      margin-top: 10px;
+    }
+
+    /* REPLACE: apply these to .col-val for colour coding */
+    .c-red    { color: #f87171; }
+    .c-green  { color: #6ee7b7; }
+    .c-purple { color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-cost-comparison" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+
+    <img class="preview-video-bg" data-preview-only src="assets/talking-head-placeholder.png" alt="">
+    <div class="blur-backdrop" id="blur-backdrop"></div>
+
+    <div class="comparison-card" id="card">
+      <div class="col col-a" id="col-a">
+        <!-- REPLACE: column A label, value colour, value, sub-label -->
+        <div class="col-label">Custom build</div>
+        <div class="col-val c-red">$3,000+</div>
+        <div class="col-sub">one-time + ongoing maintenance</div>
+      </div>
+      <div class="col col-b" id="col-b">
+        <!-- REPLACE: column B label, value colour, value, sub-label -->
+        <div class="col-label">SaaS tool</div>
+        <div class="col-val c-green">$49 / mo</div>
+        <div class="col-sub">polished, maintained for you</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.set('#col-a', { opacity: 0, x: -32 }, 0);
+    tl.set('#col-b', { opacity: 0, x:  32 }, 0);
+    tl.to('#blur-backdrop', { backdropFilter: 'blur(16px)', backgroundColor: 'rgba(26,26,46,0.12)', duration: 0.55, ease: 'power2.out' }, 0.15);
+    tl.from('#card', { opacity: 0, scale: 0.96, duration: 0.4, ease: 'power2.out', transformOrigin: 'center center' }, 0.2);
+    // REPLACE: timestamps to match voiceover
+    tl.to('#col-a', { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out' }, 1.0);
+    tl.to('#col-b', { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out' }, 3.0);
+    tl.to('#card',  { opacity: 0, y: -20, scale: 0.97, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 7.1);
+    tl.to('#blur-backdrop', { backdropFilter: 'blur(0px)', backgroundColor: 'rgba(26,26,46,0)', duration: 0.5, ease: 'power2.in' }, 7.08);
+
+    window.__timelines['mg-cost-comparison'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Dalime";
+        src: url("assets/fonts/Dalime.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #center {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #pill-wrapper {
+        will-change: transform, opacity;
+        transform-origin: center center;
+      }
+      #pill {
+        display: inline-block;
+        background: #f5f5f3;
+        padding: 14px 38px 18px;
+        border-radius: 14px;
+        box-shadow:
+          0 14px 36px rgba(15, 23, 42, 0.14),
+          0 6px 14px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+      }
+      #pill span {
+        /* REPLACE: change font-family if your woff2 registers under a different name */
+        font-family: "Dalime", Georgia, serif;
+        font-weight: 400;
+        font-size: 46px;
+        color: #2c2c2c;
+        letter-spacing: 0.02em;
+        line-height: 1.15;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="center">
+        <div id="pill-wrapper">
+          <div id="pill">
+            <!-- REPLACE: swap the word -->
+            <span>example</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Entrance — spring { damping:14, mass:0.65, stiffness:200 } → back.out(1.2) with scale
+      gsap.set("#pill-wrapper", { opacity: 0, scale: 0.82 });
+
+      tl.to(
+        "#pill-wrapper",
+        { opacity: 1, scale: 1, duration: 0.65, ease: "back.out(1.2)" },
+        0
+      );
+
+      // Gentle float — approximate Remotion sin/cos oscillation as timeline keyframes
+      // rot period ~4.02s, x period ~4.65s, y period ~4.36s, amplitudes: ±1.15deg, ±2.2px, ±1.8px
+      tl.to("#pill-wrapper", { rotation: 1.15, x: 2.2, y: -1.8, duration: 2.01, ease: "sine.inOut" }, 0.8);
+      tl.to("#pill-wrapper", { rotation: -1.15, x: -2.2, y: 1.8, duration: 2.01, ease: "sine.inOut" }, 2.81);
+      tl.to("#pill-wrapper", { rotation: 1.15, x: 2.2, y: -1.8, duration: 2.01, ease: "sine.inOut" }, 4.82);
+      tl.to("#pill-wrapper", { rotation: 0, x: 0, y: 0, duration: 0.17, ease: "sine.inOut" }, 6.83);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

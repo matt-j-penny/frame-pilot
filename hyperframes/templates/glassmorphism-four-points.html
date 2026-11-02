@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      .preview-talking-head {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+      #layout {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 72px;
+        z-index: 1;
+      }
+      #glass-panel {
+        width: 100%;
+        max-width: 520px;
+        background: rgba(124, 58, 237, 0.14);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        box-shadow:
+          0 0 22px rgba(167, 139, 250, 0.35),
+          0 0 44px rgba(124, 58, 237, 0.22),
+          0 12px 36px rgba(76, 29, 149, 0.14),
+          inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        padding: 40px 44px;
+        will-change: opacity;
+      }
+      #points-list {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .point {
+        width: 100%;
+        will-change: transform, opacity;
+      }
+      .point-title {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        font-size: 24px;
+        margin-bottom: 11px;
+        color: #ffffff;
+        line-height: 1.25;
+      }
+      .point-body {
+        font-weight: 400;
+        font-size: 21px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.88);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <img class="preview-talking-head" data-preview-only src="assets/talking-head-placeholder.png" alt="" />
+      <div id="layout">
+        <div id="glass-panel">
+          <div id="points-list">
+            <!--
+              REPLACE: update .point-title and .point-body for each of the four points.
+              Add or remove .point blocks as needed (update POINT_STAGGER count in script too).
+            -->
+            <div class="point" id="point-0">
+              <div class="point-title">CLARITY</div>
+              <div class="point-body">Start with the outcome you want so every step pulls in the same direction.</div>
+            </div>
+            <div class="point" id="point-1">
+              <div class="point-title">BUILD</div>
+              <div class="point-body">Ship small slices, get feedback, and tighten the loop instead of big-bang drops.</div>
+            </div>
+            <div class="point" id="point-2">
+              <div class="point-title">MEASURE</div>
+              <div class="point-body">Pick one or two signals that prove progress—not vanity dashboard noise.</div>
+            </div>
+            <div class="point" id="point-3">
+              <div class="point-title">SCALE</div>
+              <div class="point-body">Automate and template only what you have done manually more than twice.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Panel fade — spring { damping:18, mass:0.72 } → power3.out ~0.7s
+      gsap.set("#glass-panel", { opacity: 0 });
+      tl.to("#glass-panel", { opacity: 1, duration: 0.7, ease: "power3.out" }, 0);
+
+      // Points stagger:
+      // FIRST_POINT_FRAME=22 → 0.73s, POINT_STAGGER=26 frames → 0.87s between each
+      // spring { damping:16, mass:0.65 } → power3.out ~0.55s, translateY 18→0
+      const points = ["#point-0", "#point-1", "#point-2", "#point-3"];
+      gsap.set(points, { opacity: 0, y: 18 });
+
+      points.forEach((sel, i) => {
+        tl.to(
+          sel,
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          0.73 + i * 0.87
+        );
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

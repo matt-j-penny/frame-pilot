@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-composition-variables="[
+    {&quot;id&quot;:&quot;leftIcon&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Left icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-person.svg&quot;},
+    {&quot;id&quot;:&quot;rightIcon&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Right icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-bill.svg&quot;},
+    {&quot;id&quot;:&quot;flowIcon&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Flowing icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-banknote.svg&quot;},
+    {&quot;id&quot;:&quot;tileColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Tile color&quot;,&quot;default&quot;:&quot;#ffffff&quot;}
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script>
+      window.__timelines = window.__timelines || {};
+      if (!window.__hyperframes) {
+        const decl = JSON.parse(document.documentElement.getAttribute("data-composition-variables") || "[]");
+        const vals = Object.fromEntries(decl.map((d) => [d.id, d.default]));
+        decl.forEach((d) => document.documentElement.style.setProperty("--" + d.id, d.default));
+        window.__hyperframes = { getVariables: () => vals };
+      }
+    </script>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 100%; height: 100%; }
+      .tile {
+        position: absolute; width: 270px; height: 270px; border-radius: 64px; background: var(--tileColor);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18); display: grid; place-items: center; opacity: 0;
+      }
+      .tile img { width: 150px; height: 150px; }
+      #left { left: 247px; top: 273px; }
+      #right { left: 1330px; top: 262px; }
+      .note { position: absolute; width: 96px; height: 54px; left: 500px; top: 380px; opacity: 0; }
+      .preview-talking-head { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="3.1" data-width="1920" data-height="1080">
+      <img class="preview-talking-head" data-preview-only src="assets/talking-head-placeholder.png" alt="" />
+      <img class="note" id="n1" data-var-src="flowIcon" src="assets/snatched/icon-banknote.svg" alt="">
+      <img class="note" id="n2" data-var-src="flowIcon" src="assets/snatched/icon-banknote.svg" alt="">
+      <img class="note" id="n3" data-var-src="flowIcon" src="assets/snatched/icon-banknote.svg" alt="">
+      <div class="tile" id="left"><img data-var-src="leftIcon" src="assets/snatched/icon-person.svg" alt=""></div>
+      <div class="tile" id="right"><img data-var-src="rightIcon" src="assets/snatched/icon-bill.svg" alt=""></div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#left", { scale: 0.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.8)" }, 0);
+      tl.fromTo("#right", { scale: 0.2, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.8)" }, 0.8);
+      ["#n1", "#n2", "#n3"].forEach((n, i) => {
+        const t = 0.85 + i * 0.22;
+        tl.fromTo(n, { x: 0, opacity: 0 }, { opacity: 1, duration: 0.1 }, t);
+        tl.to(n, { x: 760, duration: 0.6, ease: "none" }, t);
+        tl.to(n, { opacity: 0, duration: 0.12 }, t + 0.5);
+      });
+      tl.to("#left", { scale: 0.3, opacity: 0, duration: 0.2, ease: "power2.in" }, 2.8);
+      tl.to("#right", { scale: 0.3, opacity: 0, duration: 0.2, ease: "power2.in" }, 2.95);
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

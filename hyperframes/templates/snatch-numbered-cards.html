@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-composition-variables="[
+    {&quot;id&quot;:&quot;title1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 1 title&quot;,&quot;default&quot;:&quot;Why Isn't your Job Already Optional?&quot;},
+    {&quot;id&quot;:&quot;title2&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 2 title&quot;,&quot;default&quot;:&quot;Freedom Profile Matrix&quot;},
+    {&quot;id&quot;:&quot;title3&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 3 title&quot;,&quot;default&quot;:&quot;Your Exit Plan&quot;},
+    {&quot;id&quot;:&quot;num1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 1 number&quot;,&quot;default&quot;:&quot;01&quot;},
+    {&quot;id&quot;:&quot;num2&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 2 number&quot;,&quot;default&quot;:&quot;02&quot;},
+    {&quot;id&quot;:&quot;num3&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 3 number&quot;,&quot;default&quot;:&quot;03&quot;},
+    {&quot;id&quot;:&quot;icon1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 1 icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-question.svg&quot;},
+    {&quot;id&quot;:&quot;icon2&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 2 icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-calc.svg&quot;},
+    {&quot;id&quot;:&quot;icon3&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Card 3 icon&quot;,&quot;default&quot;:&quot;assets/snatched/icon-pie.svg&quot;},
+    {&quot;id&quot;:&quot;cardTop&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Card gradient top&quot;,&quot;default&quot;:&quot;#fff4dc&quot;},
+    {&quot;id&quot;:&quot;cardBottom&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Card gradient bottom&quot;,&quot;default&quot;:&quot;#fddb86&quot;},
+    {&quot;id&quot;:&quot;numberColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Number color&quot;,&quot;default&quot;:&quot;#ee7a3c&quot;},
+    {&quot;id&quot;:&quot;bgColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Background&quot;,&quot;default&quot;:&quot;#f8f6f3&quot;},
+    {&quot;id&quot;:&quot;swooshColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Swoosh&quot;,&quot;default&quot;:&quot;#ece6e2&quot;}
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script>
+      window.__timelines = window.__timelines || {};
+      if (!window.__hyperframes) {
+        const decl = JSON.parse(document.documentElement.getAttribute("data-composition-variables") || "[]");
+        const vals = Object.fromEntries(decl.map((d) => [d.id, d.default]));
+        decl.forEach((d) => document.documentElement.style.setProperty("--" + d.id, d.default));
+        window.__hyperframes = { getVariables: () => vals };
+      }
+    </script>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Fraunces"; src: url("assets/fonts/Fraunces.ttf") format("truetype"); font-weight: 100 900; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bgColor); }
+      #root { position: relative; width: 100%; height: 100%; background: var(--bgColor); font-family: "Fraunces", serif; }
+      #swoosh { position: absolute; inset: 0; }
+      #swoosh path { fill: var(--swooshColor); }
+      #cards { position: absolute; left: 156px; top: 298px; display: flex; gap: 30px; }
+      .card {
+        position: relative; width: 362px; height: 494px; border-radius: 30px;
+        background: linear-gradient(180deg, var(--cardTop), var(--cardBottom));
+        box-shadow: 0 6px 24px rgba(160, 120, 40, 0.12);
+      }
+      .badge {
+        position: absolute; left: 28px; top: 30px; width: 126px; height: 118px; border-radius: 24px;
+        background: linear-gradient(180deg, #f8c2a8, #f2a184); box-shadow: 0 6px 14px rgba(200, 100, 60, 0.2);
+        display: grid; place-items: center;
+      }
+      .badge img { width: 76px; height: 76px; }
+      .title { position: absolute; left: 30px; right: 12px; top: 190px; font-weight: 700; font-size: 41px; line-height: 1.04; letter-spacing: -0.015em; color: #1a1a1a; }
+      .num { position: absolute; left: 24px; bottom: 30px; font-weight: 600; font-size: 118px; line-height: 1; color: var(--numberColor); }
+      .w { display: inline-block; margin-right: 0.18em; }
+      #pip {
+        position: absolute; left: 1478px; top: 250px; width: 410px; height: 578px; border-radius: 32px;
+        border: 3px solid #b9b6f2; overflow: hidden; background: #ddd;
+      }
+      #pip video { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="6.4" data-width="1920" data-height="1080">
+      <svg id="swoosh" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+        <path d="M0 160 C 500 200, 820 600, 1000 900 C 1080 1020, 1200 1080, 1360 1080 L 520 1080 C 420 860, 200 680, 0 620 Z" />
+      </svg>
+      <div id="cards">
+        <div class="card" id="k1"><div class="badge"><img data-var-src="icon1" src="assets/snatched/icon-question.svg" alt=""></div><div class="title" id="t1"></div><div class="num" data-var-text="num1">01</div></div>
+        <div class="card" id="k2"><div class="badge"><img data-var-src="icon2" src="assets/snatched/icon-calc.svg" alt=""></div><div class="title" id="t2"></div><div class="num" data-var-text="num2">02</div></div>
+        <div class="card" id="k3"><div class="badge"><img data-var-src="icon3" src="assets/snatched/icon-pie.svg" alt=""></div><div class="title" id="t3"></div><div class="num" data-var-text="num3">03</div></div>
+      </div>
+      <div id="pip">
+        <video id="source-video" class="clip" src="assets/placeholder-video.mp4" poster="assets/talking-head-placeholder.png"
+          muted playsinline preload="auto" data-start="0" data-duration="6.4" data-track-index="0"></video>
+      </div>
+    </div>
+    <script>
+      const v = window.__hyperframes.getVariables();
+      const words = (id, text) =>
+        text.split(/\s+/).map((t) => {
+          const s = document.createElement("span");
+          s.className = "w";
+          s.textContent = t;
+          s.style.opacity = 0;
+          document.getElementById(id).appendChild(s);
+          return s;
+        });
+      const titles = [words("t1", v.title1), words("t2", v.title2), words("t3", v.title3)];
+
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#swoosh", { x: -50 }, { x: 0, duration: 6.4, ease: "none" }, 0);
+      tl.fromTo(["#k1", "#k2", "#k3"], { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", stagger: 0.1 }, 0);
+      [1.3, 4.5, 5.6].forEach((t, i) =>
+        tl.fromTo(titles[i], { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.15, ease: "power1.out", stagger: 0.25 }, t)
+      );
+      // speaker slot is real footage, not preview scaffolding: referencing #pip keeps the Edit Pipeline from hiding it
+      tl.fromTo("#pip", { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

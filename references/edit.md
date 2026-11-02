@@ -77,6 +77,31 @@ For every `logo`, `image` and `screenshot` beat:
 
 Look at every fetched image (Read it) before it goes in the plan.
 
+## HyperFrames templates
+
+Pre-built HTML motion graphics in `hyperframes/` (index: `hyperframes/templates/templates.json`, plus `captured-templates.json` and the user's own in `custom-templates.json`). Use one when a transcript instruction names a `template` id (required), or when one clearly fits a beat better than a built-in graphic.
+
+1. Map the passage onto the cut timeline (source words -> `edl.json`), then `reel.py template <job> <template-id> <name> <start> <end>` (cut seconds, `name` lowercase-dashes). It copies the template to `hf/<name>/`, bakes that moment of `cut.mp4` in as its footage and writes `TEMPLATE.md`.
+2. Edit only the slots `TEMPLATE.md` lists in `hf/<name>/index.html`: the copy (from the instruction, or the spoken words when it's empty), and entrance/exit timing so everything is out by the end. Keep its structure, CSS and GSAP.
+3. `reel.py template-render <job> <name>` renders `public/assets/tpl-<name>.mov` (alpha kept, includes the template's own SFX).
+4. In `beat-plan.json`, make a beat spanning exactly `<start>`-`<end>` with `"graphic": {"type": "template", "src": "assets/tpl-<name>.mov"}`. Layout `overlay` when the template sits over the speaker (lower thirds, hooks, captions), `fullscreen` when it fills the frame. Set `captions: false` when the template already shows the spoken words, and add no extra SFX on it.
+
+Check the beat in the verify sheets like any other: wrong copy or clipped text means editing `index.html` and re-rendering.
+
+## Preview mode (only when the job asks for it)
+
+The user reviews static stills of every beat before anything is rendered. Run Stages 1-5 as normal, then:
+
+1. **Ideas.** With N ideas per beat, give every beat that has a graphic N-1 `alternatives`: genuinely different treatments of the same moment (a different graphic type, layout or angle on the content, not the same card reworded). Each alternative overrides only the fields it changes (`layout`, `graphic`, `zoom`, `transition`, `captions`, `emphasis`, `sfx`), never `id`/`start`/`end`/`text`, and follows the same rules as the beat itself (allowed layouts, real assets fetched in Stage 5, SFX in the library). Give the beat and each alternative a short `label` (2-4 words, e.g. "Stat count-up", "Logo card"). Talking-head beats get none. With N = 1, skip alternatives and just label the graphic beats.
+   ```json
+   {"id": 2, "start": 1.7, "end": 3.3, "layout": "split", "label": "Bold headline", "graphic": {"type": "text", "title": "..."},
+    "alternatives": [{"label": "Stat card", "graphic": {"type": "stat", "value": "100+", "label": "..."}}]}
+   ```
+2. `reel.py storyboard <job>` validates every idea and renders one still per beat and per idea to `preview/`, plus `preview/preview.json`. Fix any validation error and re-run.
+3. Read a few stills to check they look right, then stop with a short summary. Do not render or verify: Frame Pilot shows the storyboard, merges the user's picks into `beat-plan.json` (removing `alternatives`) and then asks you to continue from Stage 6.
+
+`reel.py render` refuses a plan that still has `alternatives`.
+
 ## Stage 6-8: Build, audio, render
 
 The Remotion project already has all the components (captions, split, fullscreen, overlay card, logo/screenshot cards, stat, list, icon, quote, compare, punch-ins, transitions, background, music ducking, SFX). They read fonts, colours and timings from `style.json`, and content from the beat plan.

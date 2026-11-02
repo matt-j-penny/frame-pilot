@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <svg id="dot-grid" width="1920" height="1080"></svg>
+    </div>
+
+    <script>
+      // Generate dot grid matching Remotion OffWhiteDotGridTemplate
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1920 / DOT_SPACING) + 1;
+      const rows = Math.ceil(1080 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      // Static background — timeline is a no-op placeholder
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

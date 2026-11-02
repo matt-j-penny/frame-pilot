@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <title>Big Stat Number — 9:16</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@600&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #fafafa; }
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+
+    /* ── TOP HALF: big stat number ── */
+    #graphic-zone {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 864px;
+      overflow: hidden;
+      z-index: 2;
+      will-change: transform, opacity;
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-block {
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    .stat-number {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 320px;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    .stat-lbl {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.45);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 18px;
+    }
+
+    /* ── BOTTOM HALF: talking head ── */
+    #talking-head {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0a0a0f;
+      z-index: 1;
+    }
+    #talking-head video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-big-stat-number-9x16" data-start="0" data-duration="4" data-fps="30" data-width="1080" data-height="1920">
+    <div id="graphic-zone" data-layout-allow-overflow>
+      <div class="stat-block" id="stat-block">
+        <!-- REPLACE: the number -->
+        <div class="stat-number">30</div>
+        <!-- REPLACE: label text -->
+        <div class="stat-lbl">kept on file</div>
+      </div>
+    </div>
+
+    <!-- REPLACE: swap src/poster for your own talking-head footage -->
+    <div id="talking-head">
+      <video
+        id="source-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="4"
+        data-track-index="0"
+      ></video>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    gsap.set('#graphic-zone', { autoAlpha: 1, y: -864 });
+    tl.to('#graphic-zone', { autoAlpha: 1, y: 0, duration: 0.78, ease: 'expo.out' }, 0.14);
+    /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+       This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+       through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+       down so the speaker's face lands inside that window.
+
+       SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+       inside its 1080px frame and exposes bars down both sides.
+       SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+       the window fully covered — outside it the footage pulls off an edge.
+
+       For real footage, read both values off the actual face position:
+         python3 scripts/face-frame.py <video> --window 864:1920
+       ────────────────────────────────────────────────────────────────── */
+    const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+    const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+    tl.fromTo('#talking-head video', { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.78, ease: 'expo.out' }, 0.14);
+
+    tl.fromTo('.stat-number', { autoAlpha: 0, y: 30, scale: 0.92 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.55, ease: 'expo.out' }, 0.75);
+    tl.fromTo('.stat-lbl', { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.95);
+
+    tl.to('#stat-block', { opacity: 0, y: -18, scale: 0.92, duration: 0.4, ease: 'power2.in', transformOrigin: 'center center' }, 3.2);
+    tl.to('#graphic-zone', { autoAlpha: 1, y: -864, duration: 0.62, ease: 'power3.in' }, 3.2);
+    tl.to('#talking-head video', { y: 0, scale: 1, duration: 0.62, ease: 'power3.in' }, 3.2);
+
+    window.__timelines['mg-big-stat-number-9x16'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

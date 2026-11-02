@@ -1,0 +1,168 @@
+{
+  "dictionaryVersion": 1,
+  "libraryFolder": "News Scenes",
+  "scenes": [
+    {
+      "id": "newspaper-chronicle-scene",
+      "compositionFile": "newspaper-chronicle-scene.html",
+      "title": "The Daily Chronicle — vintage broadsheet",
+      "durationSeconds": 12,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A single HyperFrames composition that presents an aged broadsheet newspaper on a dark vignette desk. The page uses Victorian-inspired typography, textured cream stock, stacked backing sheets, and GSAP-driven entrances, a slow camera-style zoom, and animated yellow highlighter sweeps on the lead headline and subhead.",
+      "visualDesign": {
+        "backdrop": "Radial gradient from warm charcoal (#2a2622) to near-black (#15110d), suggesting a tabletop under focused light.",
+        "paper": "A4-style column width (~1000px) with yellowed cream base (#f1e9d2), coffee-stain ellipses, center aging vignette, yellowed corner wash, SVG fractal noise grain, and crossed fiber line textures. Fold creases (horizontal + vertical) are drawn with multiply blend on a pseudo-element. Three darker paper sheets sit behind the front page with stepped translateY and decreasing width for a thick-edition look.",
+        "typography": "Google Fonts: UnifrakturMaguntia for the blackletter masthead title; Playfair Display for kickers, headline (900), italic subhead, pull quote, and sub-headlines; Old Standard TT for rules, meta bar, body columns, and byline; Special Elite for the circular 'Late City Edition' stamp.",
+        "colorTokens": "Ink #1a1612, softened ink #3a322a, rule brown #2a221c, burgundy accent #7a1f1f for kicker and stamp.",
+        "mastheadStructure": "Top rule row (Established 1847 — motto — issue number), blackletter newspaper name, italic tagline, then meta bar with volume, date Saturday May 2 2026, and price Three Cents.",
+        "leadBlock": "Red small-caps kicker 'Extraordinary Dispatch', oversized Playfair headline about AI and work, italic deck, small-caps byline to Chronicle Desk.",
+        "figure": "Halftone-style engraving strip with sepia treatment; centered file-icon asset as faux illustration with italic Victorian caption.",
+        "bodyColumns": "Three justified columns with Old Standard TT at 24px, optional blur on column container for depth; first paragraph uses Playfair drop cap and small-caps first line; pull quote with decorative quotes; secondary headline band with deck."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers gsap.timeline on window.__timelines['newspaper-chronicle-scene']. When embedded in a HyperFrames project, the clip data-composition-id should match this id.",
+        "entrance": "Whole newspaper (#newspaper) fades and rises with slight scale and rotation settling to about -2.5deg.",
+        "backingSheets": "Three .sheet-under layers fade in with stagger.",
+        "stamp": "Circular stamp scales in with slight overshoot; final opacity 0.65 with multiply blend.",
+        "reveals": "Sequential fade-up for masthead header, lead section, engraving figure, and blurred columns.",
+        "slowZoom": "#newspaper-zoom scales from 1 to ~1.056 over ~10.75s linear ease starting ~1.05s (subtle push-in). Transform origin ~top-center.",
+        "highlighters": "Headline and subhead spans use gradient backgrounds with GSAP animating backgroundSize from 0% to 100% width; headline uses a taller yellow band than the subhead."
+      },
+      "assets": ["assets/file-icon.svg"],
+      "notes": "Template lives in this library as newspaper-chronicle-scene.html with assets/file-icon.svg. Copy both into a HyperFrames project (e.g. under compositions/) and point data-composition-src at the HTML file; keep the assets folder path relative to that file."
+    },
+    {
+      "id": "newspaper-chronicle-scene-9x16",
+      "compositionFile": "newspaper-chronicle-scene-9x16.html",
+      "title": "The Daily Chronicle — vintage broadsheet split (9:16 vertical)",
+      "durationSeconds": 12,
+      "canvas": "1080×1920 @ 30fps",
+      "summary": "45/55 split port of newspaper-chronicle-scene: a compact aged front-page card (masthead, kicker, headline with highlighter sweep, subhead, byline) occupies the top 864px, and a talking-head video fills the window in the bottom 1056px, matching the other split templates (aurora-insight-list-9x16, hollywood-history-grid-9x16). The card drops in from off-screen top, holds with a slow zoom and highlighter sweeps on headline/subhead, then lifts away near the end while the footage returns to fullscreen.",
+      "visualDesign": {
+        "graphicZone": "#graphic-zone, 1080×864, dark vignette backdrop matching the 16:9 scene, containing a self-contained ~980px-wide aged paper card (cream texture, double-rule masthead, blackletter title, circular Late City Edition stamp, kicker/headline/subhead/byline). Figure engraving and body columns from the 16:9 version are dropped — there's no room and the brief only cares about the headline.",
+        "talkingHead": "#talking-head fills the full 1080×1920 canvas behind the graphic zone; video is object-fit cover and gets shifted down via SPLIT_SHIFT/SPLIT_SCALE constants so the speaker's face lands in the exposed 1080×1056 window below the card."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "gsap.timeline on window.__timelines['newspaper-chronicle-scene-9x16'].",
+        "splitFraming": "#graphic-zone slides from y:-864 to y:0 (expo.out) at 0.14s; #talking-head video shifts down by SPLIT_SHIFT over the same tween so the face lands in the window. At 11.05s both reverse (power3.in) so the card lifts away and footage returns to fullscreen just before the 12s clip ends.",
+        "hold": "Card fades/rises in (0.4s–1.45s), slow zoom on #card-zoom from scale 1 to 1.04 over ~9.5s, headline and subhead marker-highlight sweeps at 1.5s and 1.95s."
+      },
+      "assets": ["assets/placeholder-video.mp4", "assets/talking-head-placeholder.png"],
+      "notes": "Library file: News Scenes/newspaper-chronicle-scene-9x16.html. Requires talking-head footage — replace assets/placeholder-video.mp4 (and poster) and tune SPLIT_SHIFT/SPLIT_SCALE per scripts/face-frame.py --window 864:1920. Does not reuse assets/file-icon.svg from the 16:9 version (no figure block in this crop). See newspaper-chronicle-scene for the full-page 16:9 design."
+    },
+    {
+      "id": "terminal-news-scene",
+      "compositionFile": "terminal-news-scene.html",
+      "title": "News terminal — macOS window with typewriter feed",
+      "durationSeconds": 14,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A HyperFrames composition that shows a full-bleed white canvas with a large macOS-style terminal (traffic lights, gray title bar, black console). Green monospace text is top-left aligned. GSAP animates the window and chrome in, then types a fake shell command, a bold headline line, a softer subhead line, and ends on an idle prompt with a blinking caret—useful as a news-breaking or tech-news bumper.",
+      "visualDesign": {
+        "backdrop": "Solid white (#ffffff) full frame.",
+        "terminalChrome": "Rounded rectangle with light gray gradient title bar (#e8e8e8–#d0d0d0), standard red/yellow/green window controls, centered title 'newsdesk — zsh — 80×24' in Satoshi-weight system UI stack.",
+        "console": "Black (#000000) body with thin light border; subtle drop shadow. Content area uses zero left inset so copy hugs the inner left edge.",
+        "typography": "Monospace stack SF Mono, Menlo, Monaco, Consolas at ~48px; primary green #00ff41 with light glow; headline row heavier (800) and brighter green; subhead #6cff8a at slightly lower emphasis.",
+        "layout": "Scene flex column: terminal stretches to fill most of the canvas with modest outer padding; transform-origin top-left on scale-in so the window does not appear centered off-axis."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers gsap.timeline on window.__timelines['terminal-news-scene']. Root #root uses data-composition-id='terminal-news-scene'.",
+        "windowEntrance": "#terminal-el fades in and scales from 0.97 to 1 with transformOrigin top left and expo.out over ~0.65s.",
+        "chrome": "Title bar, buttons, title text, and terminal body fade in with staggered offsets from ~0.12s–0.45s.",
+        "typewriter": "Constants CMD, HEADLINE, LEDE drive character-at-a-time reveals via a proxy object tweened with ease 'none'; carets show on the active line then hide before the next block.",
+        "idle": "Final prompt row fades in; blinking caret on #cursor-idle uses finite repeat yoyo for the remainder of the 14s clip."
+      },
+      "assets": [],
+      "notes": "Self-contained HTML (no external images). Library copy: News Scenes/terminal-news-scene.html. When embedding in a HyperFrames project, copy this file into compositions/ (or keep the name) and set the clip data-composition-src and data-composition-id to terminal-news-scene. Edit CMD, HEADLINE, and LEDE in the script block for different copy."
+    },
+    {
+      "id": "split-editorial-headline-scene",
+      "compositionFile": "split-editorial-headline-scene.html",
+      "title": "Split editorial — inverted headline block",
+      "durationSeconds": 8,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A minimal HyperFrames composition that divides the frame horizontally into two equal bands: a black upper half with white display headline (Cabinet Grotesk) and a white lower half with a large black Satoshi subhead. GSAP reveals the headline first with an upward fade, then the subhead on a slight delay; the timeline runs the full clip duration so the split bands and final text hold steady for the entire shot (no reset mid-clip)—suited for breaking-news bumpers, chapter titles, or stark editorial cards.",
+      "visualDesign": {
+        "backdrop": "Letterboxed outer margin uses near-black (#111) only when viewed outside the 1920×1080 canvas; the scene itself is full-bleed split black (#000) top and white (#ffffff) bottom.",
+        "layout": "Flex column with two .half regions each flex:1, centered content and horizontal padding ~8%. No decorative chrome—pure typographic poster layout.",
+        "typography": "HyperFrames-embedded Cabinet Grotesk for the headline at 96px / weight 700 / tight negative tracking; Satoshi for the subheadline at 52px / weight 400 / line-height ~1.3, solid black (#000) on white for maximum readability.",
+        "colorTokens": "Top band text white on black; bottom band subhead black on white; body fallback textPrimary #1a1a2e inherited on .half.bottom container."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers gsap.timeline on window.__timelines['split-editorial-headline-scene']. Root #root uses data-composition-id='split-editorial-headline-scene' and data-duration='8'. When embedded, parent index uses data-composition-src pointing at compositions/split-editorial-headline-scene.html and clip data-composition-id matching this id.",
+        "timelineDuration": "Total timeline length matches CLIP_DURATION (8s): a no-op proxy tween extends playback after the entrance tweens finish so HyperFrames maps scrub/render time 0–8s without the composition snapping back when the animation segment alone would end ~1.3s.",
+        "headlineReveal": "#headline starts opacity 0 and y 48px; tweens to full opacity and y 0 over ~0.95s with power3.out from timeline position 0.",
+        "subheadReveal": "#subheadline starts opacity 0 and y 36px; tweens in ~0.8s with power3.out from ~0.5s so it follows the headline with a short stagger.",
+        "hold": "After the last entrance completes (~1.3s), an ease-none tween pads the timeline to 8s so black/white bands and visible text persist for the full clip."
+      },
+      "assets": [],
+      "notes": "Library canonical copy: News Scenes/split-editorial-headline-scene.html. Live project: Hyperframes/split-headline-scene/ with index.html loading compositions/split-editorial-headline-scene.html. Replace the placeholder strings in the H1 and P for production copy. See also dictionary id `angled-diagonal-split-headline-scene` for a diagonal coral/sky wipe with rotated staggered type."
+    },
+    {
+      "id": "angled-diagonal-split-headline-scene",
+      "compositionFile": "angled-diagonal-split-headline-scene.html",
+      "title": "Angled diagonal split — coral & sky headline card",
+      "durationSeconds": 5,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A HyperFrames composition that opens on a white frame, then slides in two complementary angled halves (coral #ff8a5c above a diagonal seam, sky blue #3da9e0 below) using clip-path polygons matching a ~20° tilt. The headline lives only in the coral polygon and the sub-headline only in the blue polygon via matching `.text-zone` clip-paths; inner wrappers rotate −20°. Copy uses per-word spans with GSAP stagger after the color wipe. Register `window.__timelines['angled-diagonal-split-headline-scene']` for scrub/render. Contrast with `split-editorial-headline-scene` (flat horizontal black/white bands, no diagonal geometry).",
+      "visualDesign": {
+        "backdrop": "Initial full-frame white (#ffffff); after entrance the seam divides coral top wedge from blue lower wedge.",
+        "geometry": "Two full-bleed `.half` color layers plus separate `.text-zone--top` / `.text-zone--bottom` overlays using the identical polygons so type cannot bleed across the seam—the H1 is clipped to coral only and the sub-headline to sky only. `.text-zone-inner` applies `rotate(-20deg)` for alignment with the tilt.",
+        "typography": "System Helvetica Neue stack; headline clamp ~5.2rem max weight 600; sub-headline clamp ~4.25rem max weight 300; words wrapped in `.word` spans for stagger.",
+        "colorTokens": "Coral #ff8a5c, sky #3da9e0; text white with sub-headline finishing at opacity 0.9."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers `gsap.timeline` on `window.__timelines['angled-diagonal-split-headline-scene']`. Root `#root` uses `data-composition-id='angled-diagonal-split-headline-scene'` and `data-duration='5'`.",
+        "colorSlide": "`.half.top` and `.half.bottom` start offset with `yPercent` ±105 and tween to 0 over ~1.1s in parallel (`power3.out`).",
+        "wordReveal": "`.headline .word` then `.subheadline .word` fade/slide up with stagger ~0.09s and duration ~0.42s (`power2.out`); pause ~0.15s after halves, ~0.2s between headline and sub blocks.",
+        "hold": "Dummy ease-none tween pads timeline to CLIP_DURATION (5s) so preview/render does not snap before clip end."
+      },
+      "assets": [],
+      "notes": "Canonical library file: `News Scenes/angled-diagonal-split-headline-scene.html`. Local preview project: `Hyperframes/angled-diagonal-split-headline-scene/` with `index.html` loading `compositions/angled-diagonal-split-headline-scene.html`. Edit the `.word` span text for production copy. Cross-ref dictionary entries: `split-editorial-headline-scene` (horizontal split), `terminal-news-scene` (terminal chrome)."
+    },
+    {
+      "id": "whatsapp-chat-headline-scene",
+      "compositionFile": "whatsapp-chat-headline-scene.html",
+      "title": "WhatsApp chat — headline & subhead reveal",
+      "durationSeconds": 12,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A HyperFrames composition that shows an iPhone-style WhatsApp mock on a white canvas. Four chat bubbles animate in sequence (two outbound greens, two inbound greys, final outbound subhead) with placeholder copy for a main headline and subheadline. On the first send, the camera zooms into the upper half of the phone so the conversation fills the frame—suited for news-style social proof or breaking-story teasers.",
+      "visualDesign": {
+        "backdrop": "Full-frame white (#ffffff); outer phone bezel uses light gray rings and soft shadow.",
+        "device": "Rounded smartphone frame with notch, status bar, WhatsApp header (avatar, contact name Sarah, action icons), dark chat canvas with subtle dot texture, and composer bar.",
+        "typography": "System iOS / WhatsApp stack (SF Pro–style); outbound bubbles #005c4b with read ticks; inbound #1f2c33; timestamps bottom-right inside bubbles with reserved inline padding on message text.",
+        "layout": "Clip viewport 1920×1080 centers the device; after zoom, scale ~2.92 with transform origin biased toward the upper third so the thread dominates the shot."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers `gsap.timeline` on `window.__timelines['whatsapp-chat-headline-scene']`. Root `#root` uses `data-composition-id='whatsapp-chat-headline-scene'` and `data-duration='12'`.",
+        "bubbleEntrance": "Each `#msg-1`–`#msg-4` uses opacity/y/scale from a prepared state with `back.out` easing; staggered gaps after an initial first bubble.",
+        "phoneZoom": "Starting with the first bubble (same timestamp ~0.35s), `.phone-wrap` tweens scale ~2.92, vertical offset, and `transformOrigin` `50% 29%` over ~1.35s (`power3.inOut`) so only the upper portion of the handset remains in frame—messages read larger on screen.",
+        "followOnMessages": "Remaining bubbles enter after the zoom segment completes."
+      },
+      "assets": [],
+      "notes": "Canonical library copy: `News Scenes/whatsapp-chat-headline-scene.html`. Editable HyperFrames project (preview/render): `Hyperframes/whatsapp-chat-headline-scene/index.html` — run `npm run dev` from that folder for HyperFrames Studio. External avatar: `i.pravatar.cc` image in the header. Replace copy in the four `.msg` blocks for production headlines."
+    },
+    {
+      "id": "macos-notification-scene",
+      "compositionFile": "macos-notification-scene.html",
+      "title": "macOS notification — full-frame zoom toast",
+      "durationSeconds": 5,
+      "canvas": "1920×1080 @ 30fps",
+      "summary": "A HyperFrames composition that mimics a macOS banner notification on a white desktop, then scales the entire scene so the frosted 380px toast reads nearly full-width and centered. GSAP scales `#camera` from a wide shot toward the toast center while `#camera-pan` applies a fixed translate so the card stays visually centered (no animated pan). The toast slides in from the right with opacity, holds, then exits right—suited for breaking-news alerts, app-style headlines, or OS metaphor bumpers.",
+      "visualDesign": {
+        "backdrop": "Full-frame white (#ffffff) on `#root` and `#camera` layer.",
+        "toastChrome": "Dark frosted panel rgba(30,30,30,0.82), backdrop blur 40px, 16px radius, 380px logical width at scale 1; inset highlight border and soft shadow.",
+        "typography": "Inter (Google Fonts): uppercase muted app name, white title ~15px semibold, softer body ~13px with two-line clamp.",
+        "icon": "Inline SVG sparkle derived from `Icons/apple intelligence logo.svg`, filled with purple→indigo gradient (#c084fc → #6366f1) inside a 36×36 rounded square.",
+        "placeholderCopy": "Default strings: sender ‘Matt Penny’, title ‘Headline goes here’, body ‘The sub headline goes here, etc., etc., etc.’ — replace in HTML for production."
+      },
+      "motionAndTiming": {
+        "timelineRegistration": "Composition registers `gsap.timeline` on `window.__timelines['macos-notification-scene']`. Root `#root` uses `data-composition-id='macos-notification-scene'` and `data-duration='5'`.",
+        "zoom": "`#camera` tweens `scale` from ~0.36 to `(1920 - margin) / 380` over ~0.45s (`power4.in`) with `transformOrigin` at the measured center of `#notification`.",
+        "centering": "`#camera-pan` is set once via `gsap.set` to `(960 - cx, 540 - cy)` so framing does not drift during zoom.",
+        "toast": "`#notification` starts offset `x` (scaled slide distance) and `opacity: 0`; tweens in ~0.5s from ~0.4s (`power3.out`); exits right ~4.2s (`power3.in`)."
+      },
+      "assets": [],
+      "notes": "Canonical library file: `News Scenes/macos-notification-scene.html`. A sibling working copy also exists under `Remotion/compositions/macos-notification.html` (composition id `macos-notification`) for projects rooted in the Remotion folder—keep behavior in sync when iterating. Embed via `data-composition-src` pointing at this file and `data-composition-id='macos-notification-scene'`. Edit `.app-name`, `.notification-title`, and `.notification-body` text nodes for delivery copy."
+    }
+  ]
+}

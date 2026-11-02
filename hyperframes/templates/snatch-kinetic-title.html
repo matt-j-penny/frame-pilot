@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-composition-variables="[
+    {&quot;id&quot;:&quot;line1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Title line&quot;,&quot;default&quot;:&quot;How to make your&quot;},
+    {&quot;id&quot;:&quot;line2&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Script line&quot;,&quot;default&quot;:&quot;full-time job optional&quot;},
+    {&quot;id&quot;:&quot;textColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Text color&quot;,&quot;default&quot;:&quot;#ffffff&quot;}
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script>
+      window.__timelines = window.__timelines || {};
+      if (!window.__hyperframes) {
+        const decl = JSON.parse(document.documentElement.getAttribute("data-composition-variables") || "[]");
+        const vals = Object.fromEntries(decl.map((d) => [d.id, d.default]));
+        decl.forEach((d) => document.documentElement.style.setProperty("--" + d.id, d.default));
+        window.__hyperframes = { getVariables: () => vals };
+      }
+    </script>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Fraunces"; src: url("assets/fonts/Fraunces.ttf") format("truetype"); font-weight: 100 900; }
+      @font-face { font-family: "Dancing Script"; src: url("assets/fonts/DancingScript.ttf") format("truetype"); font-weight: 400 700; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 100%; height: 100%; color: var(--textColor); }
+      .line { position: absolute; left: 40px; white-space: nowrap; text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); }
+      #l1 { top: 0px; font-family: "Fraunces", serif; font-weight: 700; font-size: 215px; letter-spacing: -0.01em; }
+      #l2 { top: 740px; left: 70px; font-family: "Dancing Script", cursive; font-weight: 600; font-size: 200px; }
+      .w { display: inline-block; margin-right: 0.24em; }
+      .preview-talking-head { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="3.4" data-width="1920" data-height="1080">
+      <img class="preview-talking-head" data-preview-only src="assets/talking-head-placeholder.png" alt="" />
+      <div id="title">
+        <div id="l1" class="line"></div>
+        <div id="l2" class="line"></div>
+      </div>
+    </div>
+    <script>
+      const { line1, line2 } = window.__hyperframes.getVariables();
+      const words = (el, text) =>
+        text.split(/\s+/).map((t) => {
+          const s = document.createElement("span");
+          s.className = "w";
+          s.textContent = t;
+          s.style.opacity = 0;
+          el.appendChild(s);
+          return s;
+        });
+      const w1 = words(document.getElementById("l1"), line1);
+      const w2 = words(document.getElementById("l2"), line2);
+
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(w1, { opacity: 0, y: 30, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.2 }, 0);
+      tl.fromTo(w2, { opacity: 0, x: -20, filter: "blur(4px)" },
+        { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.25, ease: "power2.out", stagger: 0.25 }, 1.3);
+      const out = [...w1, ...w2].reverse();
+      tl.to(out, { opacity: 0, y: -10, duration: 0.12, ease: "power1.in", stagger: 0.08 }, 2.6);
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

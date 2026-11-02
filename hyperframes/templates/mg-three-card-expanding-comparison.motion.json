@@ -1,0 +1,43 @@
+{
+  "duration": 7.4,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#tce-card-1",
+      "bySec": 0.7
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#tce-card-2",
+      "bySec": 2.8
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#tce-card-3",
+      "bySec": 4.9
+    },
+    {
+      "kind": "before",
+      "a": "#tce-card-1",
+      "b": "#tce-card-2"
+    },
+    {
+      "kind": "before",
+      "a": "#tce-card-2",
+      "b": "#tce-card-3"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#tce-card-1"
+    },
+    {
+      "kind": "staysInFrame",
+      "selector": "#tce-card-2"
+    },
+    {
+      "kind": "keepsMoving",
+      "withinSelector": "#tce-shell",
+      "maxStaticSec": 2
+    }
+  ]
+}

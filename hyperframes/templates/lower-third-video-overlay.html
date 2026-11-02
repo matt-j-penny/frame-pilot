@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+        font-family: "Satoshi", Arial, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .clip {
+        position: absolute;
+      }
+
+      #source-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .lower-third {
+        pointer-events: none;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 300px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0 160px 54px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(6, 5, 12, 0.5) 32%,
+            rgba(3, 3, 8, 0.94) 100%
+          );
+        z-index: 3;
+      }
+
+      .lower-third-text {
+        position: relative;
+        max-width: 1280px;
+        color: #f8f4ec;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 88px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: 0;
+        text-align: center;
+        text-shadow:
+          0 2px 3px rgba(0, 0, 0, 0.46),
+          0 12px 32px rgba(0, 0, 0, 0.78),
+          0 0 22px rgba(248, 244, 236, 0.14);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <video
+        id="source-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="5"
+        data-track-index="0"
+      ></video>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="5"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <div
+        id="lower-third"
+        class="clip lower-third"
+        data-start="0"
+        data-duration="4.25"
+        data-track-index="1"
+      >
+        <div id="lower-third-text" class="lower-third-text">This is placeholder text</div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#lower-third", { autoAlpha: 0, y: 44 });
+      gsap.set("#lower-third-text", { opacity: 0, y: 38, filter: "blur(8px)" });
+
+      tl.to("#lower-third", { autoAlpha: 1, y: 0, duration: 0.58, ease: "power2.out" }, 0.24);
+      tl.to(
+        "#lower-third-text",
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.68, ease: "power3.out" },
+        0.52,
+      );
+      tl.to(
+        "#lower-third-text",
+        { opacity: 0, y: 28, filter: "blur(6px)", duration: 0.42, ease: "power2.in" },
+        3.42,
+      );
+      tl.to("#lower-third", { autoAlpha: 0, y: 32, duration: 0.5, ease: "power2.in" }, 3.58);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

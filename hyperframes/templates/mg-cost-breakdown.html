@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .cost-fs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 48px 100px;
+      max-width: 1200px;
+      will-change: transform, opacity;
+    }
+
+    /* REPLACE: rate line — e.g. "$100 / hour", "£85 / hour" */
+    .cost-rate {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      color: #111111;
+      margin-bottom: 56px;
+      letter-spacing: -0.02em;
+      will-change: transform, opacity;
+    }
+    .cost-rate .c-purple { color: #7c3aed; }
+
+    .cost-rows {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+    }
+
+    /* Each row: description label + result value */
+    .cost-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      will-change: transform, opacity;
+    }
+
+    .cost-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 44px;
+      font-weight: 500;
+      color: rgba(0,0,0,0.72);
+    }
+
+    .cost-result {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 60px;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .cost-result .c-purple { color: #7c3aed; }
+    .cost-result .c-red    { color: #dc2626; }
+    .cost-result .c-green  { color: #059669; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-cost-breakdown" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+
+    <div class="cost-fs" id="cost-fs">
+      <!-- REPLACE: rate -->
+      <div class="cost-rate" id="cost-rate"><span class="c-purple">$100</span> / hour</div>
+
+      <div class="cost-rows">
+        <!-- REPLACE: each row's label and result. Add/remove .cost-row divs as needed. -->
+        <div class="cost-row" id="row-1">
+          <span class="cost-label">4 hours to build</span>
+          <span class="cost-result" id="result-1"><span class="c-purple">$400</span> upfront</span>
+        </div>
+        <div class="cost-row" id="row-2">
+          <span class="cost-label">2 hrs / month to maintain</span>
+          <span class="cost-result" id="result-2"><span class="c-purple">$200</span> / month</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.set('#cost-rate, #row-1, #row-2, #result-1, #result-2', { opacity: 0, y: 22 }, 0);
+
+    // REPLACE: timestamps to match voiceover
+    tl.to('#cost-rate', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.3);
+    tl.to('#row-1',     { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 1.5);
+    tl.to('#result-1',  { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out' }, 4.0);
+    tl.to('#row-2',     { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 2.5);
+    tl.to('#result-2',  { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out' }, 6.0);
+    tl.to('#cost-fs',   { opacity: 0, y: -28, scale: 0.96, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 11.1);
+
+    window.__timelines['mg-cost-breakdown'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

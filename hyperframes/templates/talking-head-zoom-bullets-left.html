@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Cabinet Grotesk';
+        src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Satoshi';
+        src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2');
+        font-weight: 500 700;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+        font-family: 'Satoshi', sans-serif;
+      }
+      #video-frame {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: left top;
+        will-change: transform;
+      }
+      #source-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+      #shade {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(90deg, rgba(26, 26, 46, 0.8) 0%, rgba(26, 26, 46, 0.28) 42%, rgba(26, 26, 46, 0) 63%);
+        opacity: 0;
+      }
+      .scene-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        padding: 120px 1030px 400px 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 32px;
+      }
+      #eyebrow {
+        align-self: flex-start;
+        padding: 11px 18px;
+        border-radius: 12px;
+        background: #7c3aed;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      #title {
+        max-width: 720px;
+        color: #ffffff;
+        font-family: 'Cabinet Grotesk', sans-serif;
+        font-size: 72px;
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        text-shadow: 0 8px 30px rgba(124, 58, 237, 0.1);
+      }
+      #rule {
+        width: 100%;
+        height: 3px;
+        border-radius: 2px;
+        background: #a78bfa;
+        transform-origin: left center;
+      }
+      #bullets {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .bullet {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        align-items: center;
+        gap: 20px;
+        color: #ffffff;
+        font-size: 32px;
+        font-weight: 500;
+        line-height: 1.28;
+      }
+      .bullet-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #a78bfa;
+        box-shadow: 0 0 0 7px rgba(124, 58, 237, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="video-frame">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="8"
+          data-track-index="0"
+        ></video>
+      </div>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="8"
+        data-track-index="1"
+        data-volume="1"
+      ></audio>
+
+      <div id="shade"></div>
+      <div class="scene-content">
+        <div id="eyebrow">Key takeaways</div>
+        <h1 id="title">Build momentum with three simple moves</h1>
+        <div id="rule"></div>
+        <div id="bullets">
+          <div class="bullet"><span class="bullet-dot"></span><span>Start with one clear outcome.</span></div>
+          <div class="bullet"><span class="bullet-dot"></span><span>Make the next action obvious.</span></div>
+          <div class="bullet"><span class="bullet-dot"></span><span>Measure what actually changed.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#eyebrow", { opacity: 0, x: 28 });
+      gsap.set("#title", { opacity: 0, x: 44 });
+      gsap.set("#rule", { scaleX: 0 });
+      gsap.set(".bullet", { opacity: 0, x: 36 });
+
+      tl.to("#video-frame", { scale: 1.43, x: 0, y: 0, duration: 1.1, ease: "expo.inOut" }, 0.3);
+      tl.to("#shade", { opacity: 1, duration: 0.75, ease: "sine.out" }, 0.7);
+      tl.to("#eyebrow", { opacity: 1, x: 0, duration: 0.38, ease: "power2.out" }, 1.08);
+      tl.to("#title", { opacity: 1, x: 0, duration: 0.64, ease: "power3.out" }, 1.25);
+      tl.to("#rule", { scaleX: 1, duration: 0.5, ease: "expo.out" }, 1.62);
+      tl.to(".bullet", { opacity: 1, x: 0, duration: 0.48, stagger: 0.2, ease: "back.out(1.25)" }, 1.86);
+
+      tl.to(".bullet", { opacity: 0, x: 28, duration: 0.3, stagger: 0.06, ease: "power2.in" }, 6.5);
+      tl.to("#title, #eyebrow", { opacity: 0, x: 32, duration: 0.36, ease: "power3.in" }, 6.62);
+      tl.to("#rule", { scaleX: 0, duration: 0.3, ease: "power2.in" }, 6.7);
+      tl.to("#shade", { opacity: 0, duration: 0.5, ease: "sine.in" }, 6.72);
+      tl.to("#video-frame", { scale: 1, x: 0, y: 0, duration: 0.85, ease: "expo.inOut" }, 6.78);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Aurora Insight List — Static Design</title>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #100d1b;
+      --ink-soft: #171226;
+      --paper: #fafafa;
+      --paper-muted: #d8d2e9;
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #5b21b6;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--ink);
+    }
+
+    body {
+      color: var(--paper);
+      font-family: "Satoshi", sans-serif;
+    }
+
+    .frame {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--ink);
+    }
+
+    .frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      opacity: 0.16;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E");
+    }
+
+    .depth {
+      position: absolute;
+      inset: 0;
+      z-index: -4;
+      background:
+        radial-gradient(circle at 76% 14%, rgba(124, 58, 237, 0.12), transparent 30%),
+        radial-gradient(circle at 17% 38%, rgba(91, 33, 182, 0.09), transparent 32%),
+        var(--ink);
+    }
+
+    .aurora {
+      position: absolute;
+      left: -7%;
+      right: -7%;
+      bottom: -280px;
+      height: 660px;
+      z-index: -3;
+      filter: blur(62px);
+      transform: rotate(-2deg);
+      background:
+        radial-gradient(ellipse at 10% 46%, rgba(124, 58, 237, 0.95) 0%, rgba(124, 58, 237, 0.45) 24%, transparent 56%),
+        radial-gradient(ellipse at 42% 72%, rgba(167, 139, 250, 0.62) 0%, rgba(91, 33, 182, 0.36) 28%, transparent 59%),
+        radial-gradient(ellipse at 76% 56%, rgba(124, 58, 237, 0.72) 0%, rgba(59, 130, 246, 0.22) 30%, transparent 61%),
+        radial-gradient(ellipse at 100% 84%, rgba(167, 139, 250, 0.52) 0%, transparent 55%);
+    }
+
+    .aurora-ribbon {
+      position: absolute;
+      z-index: -2;
+      left: -120px;
+      right: -120px;
+      bottom: 42px;
+      height: 230px;
+      opacity: 0.52;
+      filter: blur(40px);
+      transform: skewY(-4deg);
+      background:
+        radial-gradient(ellipse at 15% 100%, rgba(167, 139, 250, 0.58), transparent 58%),
+        radial-gradient(ellipse at 55% 120%, rgba(124, 58, 237, 0.48), transparent 56%),
+        radial-gradient(ellipse at 90% 100%, rgba(59, 130, 246, 0.22), transparent 52%);
+    }
+
+    .orb {
+      position: absolute;
+      z-index: -1;
+      border-radius: 999px;
+      border: 1px solid rgba(167, 139, 250, 0.13);
+    }
+
+    .orb-one {
+      width: 420px;
+      height: 420px;
+      top: -244px;
+      right: 210px;
+    }
+
+    .orb-two {
+      width: 660px;
+      height: 660px;
+      top: -364px;
+      right: 92px;
+      opacity: 0.55;
+    }
+
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      padding: 120px 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .list {
+      width: 1400px;
+      display: flex;
+      flex-direction: column;
+      gap: 52px;
+      margin-left: 200px;
+    }
+
+    .list-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr);
+      align-items: center;
+      gap: 52px;
+      min-height: 104px;
+    }
+
+    .list-item::before {
+      content: "";
+      position: absolute;
+      left: 9px;
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      background: rgba(124, 58, 237, 0.22);
+      filter: blur(28px);
+    }
+
+    .icon-token {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      display: grid;
+      place-items: center;
+      color: var(--purple-light);
+    }
+
+    .icon-token svg {
+      position: relative;
+      z-index: 1;
+      width: 72px;
+      height: 72px;
+      overflow: visible;
+      fill: currentColor;
+      stroke: none;
+      filter:
+        drop-shadow(0 0 10px rgba(167, 139, 250, 0.72))
+        drop-shadow(0 0 28px rgba(124, 58, 237, 0.52));
+    }
+
+    .copy {
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 76px;
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      color: var(--paper);
+      text-wrap: balance;
+      text-shadow:
+        0 2px 1px rgba(255, 255, 255, 0.06),
+        0 16px 48px rgba(91, 33, 182, 0.13);
+    }
+
+    .shine {
+      color: transparent;
+      background:
+        linear-gradient(105deg, #fafafa 0%, #fafafa 24%, #d8d2e9 42%, #ffffff 54%, #a78bfa 66%, #fafafa 84%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+  </style>
+</head>
+<body>
+  <main class="frame" aria-label="Aurora insight list static design">
+    <div class="depth" aria-hidden="true"></div>
+    <div class="aurora" aria-hidden="true"></div>
+    <div class="aurora-ribbon" aria-hidden="true"></div>
+    <div class="orb orb-one" aria-hidden="true"></div>
+    <div class="orb orb-two" aria-hidden="true"></div>
+
+    <section class="scene-content">
+      <div class="list">
+        <article class="list-item">
+          <div class="icon-token" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+            </svg>
+          </div>
+          <p class="copy">Which ones <span class="shine">actually pay</span></p>
+        </article>
+
+        <article class="list-item">
+          <div class="icon-token" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+            </svg>
+          </div>
+          <p class="copy">Which ones are <span class="shine">just noise</span></p>
+        </article>
+
+        <article class="list-item">
+          <div class="icon-token" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+            </svg>
+          </div>
+          <p class="copy">Which ones <span class="shine">aren’t worth your time</span></p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

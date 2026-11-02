@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      :root {
+        --accent: #7c3aed;
+        --panel-top: 225px;
+        --panel-edge: 140px;
+        --panel-width: 520px;
+        --panel-radius: 18px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        margin: 0;
+        overflow: hidden;
+        background: #09070e;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        perspective: 1500px;
+        perspective-origin: 50% 42%;
+      }
+
+      .background-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        background: #111;
+      }
+
+      .talking-head {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .frame-shade {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(5, 3, 10, 0.12), transparent 32%, transparent 68%, rgba(5, 3, 10, 0.12)),
+          linear-gradient(180deg, rgba(5, 3, 10, 0.08), transparent 58%);
+      }
+
+      .panel-stage {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        transform-style: preserve-3d;
+        pointer-events: none;
+      }
+
+      .media-card {
+        position: absolute;
+        top: var(--panel-top);
+        width: var(--panel-width);
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        border: 4px solid var(--accent);
+        border-radius: var(--panel-radius);
+        background: #0b0910;
+        box-shadow:
+          0 0 24px rgba(124, 58, 237, 0.86),
+          0 0 48px rgba(124, 58, 237, 0.36),
+          0 18px 38px rgba(0, 0, 0, 0.42),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        backface-visibility: hidden;
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+
+      .media-card.left {
+        left: var(--panel-edge);
+        transform-origin: 100% 50%;
+      }
+
+      .media-card.right {
+        right: var(--panel-edge);
+        transform-origin: 0% 50%;
+      }
+
+      /*
+       * REPLACE either image with:
+       *   <img class="media" src="your-image.jpg" alt="" />
+       * or:
+       *   <video class="media" src="your-video.mp4" muted playsinline></video>
+       */
+      .media {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        backface-visibility: hidden;
+      }
+
+      .media-card.left .media {
+        transform: scale(1.055) translateX(1.25%);
+        transform-origin: 100% 50%;
+      }
+
+      .media-card.right .media {
+        transform: scale(1.055) translateX(-1.25%);
+        transform-origin: 0% 50%;
+      }
+
+      .media-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background: linear-gradient(
+          105deg,
+          rgba(255, 255, 255, 0.13) 0%,
+          rgba(255, 255, 255, 0.025) 20%,
+          transparent 46%,
+          rgba(18, 7, 35, 0.12) 100%
+        );
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.22),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.44);
+      }
+    </style>
+  </head>
+
+  <body>
+    <main
+      id="root"
+      data-composition-id="dual-media-talking-head-overlay"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="background-layer">
+        <!-- REPLACE: swap for the main talking-head image, or a full-frame video element. -->
+        <img
+          id="talking-head"
+          class="talking-head"
+          src="assets/talking-head-placeholder.png"
+          alt="Talking-head presenter"
+        />
+      </div>
+
+      <div class="frame-shade" aria-hidden="true"></div>
+
+      <div id="panel-stage" class="panel-stage">
+        <section
+          id="left-panel"
+          class="media-card left"
+          aria-label="Left media panel"
+          data-layout-allow-overflow
+        >
+          <!-- REPLACE: left image/video source. -->
+          <img
+            id="left-media"
+            class="media"
+            src="assets/dual-media-left-placeholder.svg"
+            alt="Left media"
+          />
+        </section>
+
+        <section
+          id="right-panel"
+          class="media-card right"
+          aria-label="Right media panel"
+          data-layout-allow-overflow
+        >
+          <!-- REPLACE: right image/video source. -->
+          <img
+            id="right-media"
+            class="media"
+            src="assets/dual-media-right-placeholder.svg"
+            alt="Right media"
+          />
+        </section>
+      </div>
+
+      <audio
+        id="sfx-left-panel-in"
+        class="clip"
+        src="assets/sfx/woosh.m4a"
+        preload="auto"
+        data-start="0.2"
+        data-duration="0.882"
+        data-track-index="10"
+        data-volume="0.09"
+      ></audio>
+      <audio
+        id="sfx-right-panel-in"
+        class="clip"
+        src="assets/sfx/woosh.m4a"
+        preload="auto"
+        data-start="0.34"
+        data-duration="0.882"
+        data-track-index="11"
+        data-volume="0.09"
+      ></audio>
+      <audio
+        id="sfx-right-panel-out"
+        class="clip"
+        src="assets/sfx/woosh.m4a"
+        preload="auto"
+        data-start="4.85"
+        data-duration="0.882"
+        data-track-index="12"
+        data-volume="0.09"
+      ></audio>
+      <audio
+        id="sfx-left-panel-out"
+        class="clip"
+        src="assets/sfx/woosh.m4a"
+        preload="auto"
+        data-start="4.98"
+        data-duration="0.882"
+        data-track-index="13"
+        data-volume="0.09"
+      ></audio>
+    </main>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.addLabel("entrance", 0.2);
+
+      // Left panel drops in, angles toward the presenter, then settles.
+      tl.fromTo(
+        "#left-panel",
+        { y: -560, rotationY: 15, rotationZ: -2.2 },
+        { y: 12, rotationY: 7.4, rotationZ: -0.1, duration: 0.82, ease: "power4.out" },
+        "entrance",
+      );
+      tl.to(
+        "#left-panel",
+        { y: 0, rotationY: 8, rotationZ: -0.35, duration: 0.2, ease: "power2.inOut" },
+        1.02,
+      );
+
+      // Right panel follows just behind the left for a natural paired entrance.
+      tl.fromTo(
+        "#right-panel",
+        { y: -560, rotationY: -15, rotationZ: 2.2 },
+        { y: 12, rotationY: -7.4, rotationZ: 0.1, duration: 0.82, ease: "power4.out" },
+        0.34,
+      );
+      tl.to(
+        "#right-panel",
+        { y: 0, rotationY: -8, rotationZ: 0.35, duration: 0.2, ease: "power2.inOut" },
+        1.16,
+      );
+
+      // Restrained counter-phase drift during the hold.
+      tl.to(
+        "#left-panel",
+        { y: -5, rotationY: 8.55, rotationZ: -0.08, duration: 1.05, ease: "sine.inOut" },
+        1.5,
+      );
+      tl.to(
+        "#left-panel",
+        { y: 3, rotationY: 7.55, rotationZ: -0.56, duration: 1.05, ease: "sine.inOut" },
+        2.55,
+      );
+      tl.to(
+        "#left-panel",
+        { y: 0, rotationY: 8, rotationZ: -0.35, duration: 1, ease: "sine.inOut" },
+        3.6,
+      );
+
+      tl.to(
+        "#right-panel",
+        { y: 4, rotationY: -7.55, rotationZ: 0.56, duration: 1.05, ease: "sine.inOut" },
+        1.5,
+      );
+      tl.to(
+        "#right-panel",
+        { y: -4, rotationY: -8.55, rotationZ: 0.08, duration: 1.05, ease: "sine.inOut" },
+        2.55,
+      );
+      tl.to(
+        "#right-panel",
+        { y: 0, rotationY: -8, rotationZ: 0.35, duration: 1, ease: "sine.inOut" },
+        3.6,
+      );
+
+      tl.addLabel("exit", 4.85);
+
+      // Matching upward exit, with the right panel leaving a fraction first.
+      tl.to(
+        "#right-panel",
+        { y: -560, rotationY: -15, rotationZ: 2.2, duration: 0.78, ease: "power3.in" },
+        "exit",
+      );
+      tl.to(
+        "#left-panel",
+        { y: -560, rotationY: 15, rotationZ: -2.2, duration: 0.78, ease: "power3.in" },
+        4.98,
+      );
+
+      window.__timelines["dual-media-talking-head-overlay"] = tl;
+    </script>
+
+    <!-- Template-library-only autoplay helper. HyperFrames itself seeks the paused timeline. -->
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

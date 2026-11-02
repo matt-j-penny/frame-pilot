@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      .clip { position: absolute; }
+      #background-video,
+      #subject-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      #background-video { z-index: 0; }
+      #tone {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: rgba(26, 26, 46, 0.2);
+        pointer-events: none;
+      }
+      #icon-path-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
+      #connector {
+        position: absolute;
+        left: 450px;
+        top: 355px;
+        width: 1020px;
+        height: 170px;
+        overflow: visible;
+      }
+      #connector-path {
+        fill: none;
+        stroke: #ede9fe;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 4 14;
+        filter: drop-shadow(0 8px 18px rgba(124, 58, 237, 0.45));
+      }
+      .icon-card {
+        position: absolute;
+        top: 180px;
+        width: 520px;
+        height: 520px;
+        display: grid;
+        place-items: center;
+        border: 3px solid rgba(237, 233, 254, 0.86);
+        border-radius: 88px;
+        background: linear-gradient(145deg, #5b21b6 0%, #7c3aed 52%, #a78bfa 100%);
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.32);
+        will-change: transform, opacity, filter;
+      }
+      #icon-left { left: 208px; }
+      #icon-right { right: 208px; }
+      .icon-card img {
+        width: 308px;
+        height: 308px;
+        object-fit: contain;
+      }
+      #subject-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      #subject-video { background: transparent; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <video
+        id="background-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="0"
+      ></video>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-left-icon"
+        class="clip"
+        src="assets/sfx/cartoony pop.m4a"
+        preload="auto"
+        data-start="0.55"
+        data-duration="0.32"
+        data-track-index="3"
+        data-volume="0.12"
+      ></audio>
+      <audio
+        id="sfx-connector"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.95"
+        data-duration="0.528"
+        data-track-index="4"
+        data-volume="0.1"
+      ></audio>
+      <audio
+        id="sfx-right-icon"
+        class="clip"
+        src="assets/sfx/cartoony pop.m4a"
+        preload="auto"
+        data-start="1.72"
+        data-duration="0.32"
+        data-track-index="3"
+        data-volume="0.12"
+      ></audio>
+
+      <div id="tone"></div>
+      <div id="icon-path-layer" data-layout-allow-occlusion>
+        <svg id="connector" viewBox="0 0 1336 170" aria-hidden="true">
+          <path id="connector-path" pathLength="100" d="M 0 85 C 330 -20, 1006 190, 1336 85" />
+        </svg>
+        <div id="icon-left" class="icon-card">
+          <img src="../Icons/ai brain icon.svg" alt="AI brain icon" />
+        </div>
+        <div id="icon-right" class="icon-card">
+          <img src="../Icons/rocket icon.svg" alt="Rocket icon" />
+        </div>
+      </div>
+      <div id="subject-wrap">
+        <video
+          id="subject-video"
+          class="clip"
+          src="assets/placeholder-cutout.webm"
+          poster="assets/talking-head-cutout.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="1"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#icon-left", { opacity: 0, scale: 0.7, x: -48, rotation: -7 });
+      gsap.set("#icon-right", { opacity: 0, scale: 0.7, x: 48, rotation: 7 });
+      gsap.set("#connector", { opacity: 0, scaleX: 0, transformOrigin: "left center" });
+
+      tl.to("#icon-left", { opacity: 1, scale: 1, x: 0, rotation: 0, duration: 0.72, ease: "back.out(1.4)" }, 0.55);
+      tl.to("#connector", { opacity: 1, scaleX: 1, duration: 1.2, ease: "power2.inOut" }, 0.95);
+      tl.to("#icon-right", { opacity: 1, scale: 1, x: 0, rotation: 0, duration: 0.72, ease: "back.out(1.4)" }, 1.72);
+      tl.to(".icon-card", { y: -10, duration: 0.85, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.62);
+      tl.to("#icon-path-layer", { opacity: 0, y: -26, scale: 1.025, duration: 0.58, ease: "power3.in" }, 4.75);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

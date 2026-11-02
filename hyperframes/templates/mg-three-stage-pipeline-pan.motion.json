@@ -1,0 +1,25 @@
+{
+  "duration": 9.5,
+  "assertions": [
+    {
+      "kind": "appearsBy",
+      "selector": "#tpp-headline",
+      "bySec": 0.6
+    },
+    {
+      "kind": "appearsBy",
+      "selector": "#tpp-stage-1",
+      "bySec": 3.2
+    },
+    {
+      "kind": "before",
+      "a": "#tpp-headline",
+      "b": "#tpp-stage-1"
+    },
+    {
+      "kind": "keepsMoving",
+      "withinSelector": "#tpp-shell",
+      "maxStaticSec": 2
+    }
+  ]
+}

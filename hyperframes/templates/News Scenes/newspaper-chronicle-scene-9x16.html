@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Newspaper Chronicle — 9:16</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      :root {
+        --paper: #f1e9d2;
+        --paper-shade: #e3d8b8;
+        --paper-deep: #d4c9a8;
+        --ink: #1a1612;
+        --ink-soft: #3a322a;
+        --rule: #2a221c;
+        --accent: #7a1f1f;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        font-family: "Old Standard TT", Georgia, "Times New Roman", serif;
+        color: var(--ink);
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP 45%: newspaper front-page card ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        z-index: 2;
+        background: #ffffff;
+        will-change: transform, opacity;
+      }
+
+      .card-stage {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 30px;
+      }
+
+      .card-zoom {
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+
+      .paper {
+        position: relative;
+        width: 1020px;
+        max-width: 94vw;
+        opacity: 0;
+      }
+
+      .sheet-under {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 2px;
+        border: 1px solid rgba(60, 40, 20, 0.2);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      .sheet-under--1 {
+        background: linear-gradient(145deg, var(--paper-shade), var(--paper-deep));
+        transform: translateY(10px);
+        z-index: -1;
+        width: 99%;
+        left: 0.5%;
+      }
+
+      .sheet-under--2 {
+        background: linear-gradient(145deg, #d8ccb0, #c9bc9e);
+        transform: translateY(20px);
+        z-index: -2;
+        width: 98%;
+        left: 1%;
+      }
+
+      .paper--front {
+        position: relative;
+        z-index: 1;
+        background-color: var(--paper);
+        background-image:
+          radial-gradient(ellipse 90px 70px at 88% 14%, rgba(120, 70, 30, 0.18), transparent 70%),
+          radial-gradient(ellipse 140px 100px at 12% 86%, rgba(120, 70, 30, 0.12), transparent 70%),
+          radial-gradient(ellipse at center, transparent 40%, rgba(80, 50, 20, 0.18) 100%),
+          linear-gradient(135deg, rgba(160, 110, 50, 0.2) 0%, transparent 25%, transparent 75%, rgba(160, 110, 50, 0.2) 100%),
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+          repeating-linear-gradient(92deg, rgba(140, 100, 60, 0.05) 0 1px, transparent 1px 4px),
+          repeating-linear-gradient(2deg, rgba(140, 100, 60, 0.04) 0 1px, transparent 1px 5px);
+        background-blend-mode: multiply, multiply, multiply, multiply, multiply, normal, normal;
+        padding: 56px 64px 64px;
+        border-radius: 2px;
+        box-shadow:
+          0 1px 0 rgba(255, 245, 220, 0.4) inset,
+          0 0 0 1px rgba(60, 40, 20, 0.15),
+          0 30px 60px -20px rgba(0, 0, 0, 0.7),
+          0 60px 100px -30px rgba(0, 0, 0, 0.5);
+      }
+
+      .stamp {
+        position: absolute;
+        top: 36px;
+        right: 40px;
+        width: 92px;
+        height: 92px;
+        border: 3px solid var(--accent);
+        border-radius: 50%;
+        color: var(--accent);
+        font-family: "Special Elite", "Courier New", monospace;
+        font-size: 12px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        line-height: 1.12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-14deg);
+        opacity: 0;
+        padding: 6px;
+        box-sizing: border-box;
+        mix-blend-mode: multiply;
+        z-index: 2;
+      }
+
+      .stamp::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 1px solid var(--accent);
+        border-radius: 50%;
+      }
+
+      .masthead-block {
+        text-align: center;
+        border-bottom: 3px double var(--rule);
+        padding-bottom: 18px;
+        opacity: 0;
+      }
+
+      .top-rule {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Old Standard TT", serif;
+        font-size: 20px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        border-bottom: 1px solid var(--rule);
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+      }
+
+      .top-rule .center {
+        font-style: italic;
+        letter-spacing: 0.04em;
+      }
+
+      .title {
+        font-family: "UnifrakturMaguntia", "Old English Text MT", serif;
+        font-size: 84px;
+        line-height: 1;
+        margin: 8px 0;
+        letter-spacing: 0.01em;
+        color: var(--ink);
+        text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+      }
+
+      .lead {
+        text-align: center;
+        padding: 32px 0 0;
+        opacity: 0;
+      }
+
+      .kicker {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        text-transform: uppercase;
+        letter-spacing: 0.32em;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .headline {
+        font-family: "Playfair Display", "Times New Roman", serif;
+        font-weight: 900;
+        font-size: 94px;
+        line-height: 1.04;
+        margin: 0 0 22px;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+
+      .subhead {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 42px;
+        line-height: 1.35;
+        color: var(--ink-soft);
+        max-width: 880px;
+        margin: 0 auto;
+      }
+
+      .marker-highlight,
+      .marker-highlight--sub {
+        display: inline;
+        padding: 0 0.07em;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+        background-repeat: no-repeat;
+        background-size: 0% 100%;
+        background-position: 0 100%;
+      }
+
+      .marker-highlight {
+        padding: 0.06em 0.08em 0.12em;
+        background-image: linear-gradient(
+          to bottom,
+          transparent 8%,
+          rgba(255, 240, 135, 0.92) 22%,
+          rgba(255, 228, 95, 0.85) 72%,
+          rgba(255, 236, 145, 0.55) 88%,
+          transparent 97%
+        );
+      }
+
+      .marker-highlight--sub {
+        background-image: linear-gradient(
+          to bottom,
+          transparent 48%,
+          rgba(255, 248, 185, 0.92) 48%,
+          rgba(255, 240, 160, 0.88) 88%,
+          transparent 88%
+        );
+      }
+
+      .byline {
+        margin-top: 24px;
+        font-family: "Old Standard TT", serif;
+        font-size: 21px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--ink-soft);
+      }
+
+      .byline strong {
+        color: var(--ink);
+      }
+
+      /* ── BOTTOM 55%: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="newspaper-chronicle-scene-9x16"
+      data-start="0"
+      data-duration="12"
+      data-width="1080"
+      data-height="1920"
+      data-fps="30"
+    >
+      <div id="graphic-zone">
+        <section
+          id="graphic-clip"
+          class="clip"
+          data-start="0"
+          data-duration="12"
+          data-track-index="1"
+          aria-label="Newspaper front-page headline card"
+        >
+          <div class="card-stage">
+            <div class="card-zoom" id="card-zoom">
+              <div class="paper" id="paper">
+                <div class="sheet-under sheet-under--2" aria-hidden="true"></div>
+                <div class="sheet-under sheet-under--1" aria-hidden="true"></div>
+
+                <article class="paper--front" aria-label="Newspaper front page">
+                  <div class="stamp" id="stamp">Late<br />City<br />Edition</div>
+
+                  <header class="masthead-block" id="masthead-header">
+                    <div class="top-rule">
+                      <span>Est. 1847</span>
+                      <span class="center">— Veritas Lux Mea —</span>
+                      <span>No. 14,892</span>
+                    </div>
+                    <h1 class="title">The Daily Chronicle</h1>
+                  </header>
+
+                  <section class="lead" id="lead-section">
+                    <div class="kicker" id="kicker">Extraordinary Dispatch</div>
+                    <h2 class="headline" id="headline">
+                      <span class="marker-highlight" id="headline-marker"
+                        >Placeholder Placeholder Placeholder</span>
+                    </h2>
+                    <p class="subhead" id="subheadline">
+                      <span class="marker-highlight--sub" id="subhead-marker"
+                        >Placeholder placeholder placeholder placeholder placeholder placeholder.</span>
+                    </p>
+                    <p class="byline">By <strong>Staff Correspondent</strong> — Chronicle Desk</p>
+                  </section>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="../assets/placeholder-video.mp4"
+          poster="../assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="12"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.82, ease: "expo.out" }, 0.14);
+
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the card covers the top 864px of the canvas; the footage shows
+         through the 1080×1056 window below it. SPLIT_SHIFT slides the footage
+         down so the speaker's face lands inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700; /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1; /* never below 1 — see above */
+
+      tl.fromTo(
+        "#talking-head video",
+        { y: 0, scale: 1 },
+        { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.82, ease: "expo.out" },
+        0.14
+      );
+
+      tl.fromTo(
+        "#paper",
+        { opacity: 0, y: 24, scale: 0.97, rotation: -3 },
+        { opacity: 1, y: 0, scale: 1, rotation: -1.5, duration: 0.7, ease: "expo.out" },
+        0.4
+      );
+
+      tl.fromTo(".sheet-under", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out", stagger: 0.06 }, 0.5);
+
+      tl.fromTo("#stamp", { opacity: 0, scale: 0.85 }, { opacity: 0.65, scale: 1, duration: 0.45, ease: "back.out(1.2)" }, 0.6);
+
+      tl.fromTo("#masthead-header", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.7);
+
+      tl.fromTo("#lead-section", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0.9);
+
+      /* Subtle slow zoom on the card while it holds */
+      tl.fromTo("#card-zoom", { scale: 1 }, { scale: 1.04, duration: 9.5, ease: "none" }, 1.1);
+
+      /* Highlighter sweeps on headline & subhead */
+      tl.fromTo(
+        "#headline-marker",
+        { backgroundSize: "0% 100%" },
+        { backgroundSize: "100% 100%", duration: 1.2, ease: "power2.out" },
+        1.5
+      );
+
+      tl.fromTo(
+        "#subhead-marker",
+        { backgroundSize: "0% 100%" },
+        { backgroundSize: "100% 100%", duration: 1.1, ease: "power2.out" },
+        1.95
+      );
+
+      /* Exit: card lifts away, footage returns to fullscreen */
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.65, ease: "power3.in" }, 11.05);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.65, ease: "power3.in" }, 11.05);
+
+      window.__timelines["newspaper-chronicle-scene-9x16"] = tl;
+    </script>
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

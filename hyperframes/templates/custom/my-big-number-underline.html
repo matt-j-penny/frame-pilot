@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Big Number Underline — 9:16 Overlay</title>
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("../assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("../assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      /* Upper third, inside the social safe zone (top ~260px is UI chrome) */
+      #stat-block {
+        position: absolute;
+        left: 90px;
+        top: 300px;
+        width: 900px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        will-change: transform, opacity;
+      }
+
+      .stat-number {
+        font-family: "Cabinet Grotesk", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 300px;
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+        white-space: nowrap;
+        text-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      }
+
+      .stat-underline {
+        width: 560px;
+        height: 26px;
+        margin-top: 22px;
+        border-radius: 13px;
+        background: #7c3aed;
+        box-shadow: 0 6px 28px rgba(124, 58, 237, 0.55);
+        transform-origin: left center;
+      }
+
+      .stat-label {
+        margin-top: 34px;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        color: #ffffff;
+        text-shadow: 0 3px 16px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="my-big-number-underline"
+      data-start="0"
+      data-duration="4"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="stat-block">
+        <!-- REPLACE: the number -->
+        <div class="stat-number">73%</div>
+        <!-- REPLACE: underline colour / width via .stat-underline in <style> -->
+        <div class="stat-underline"></div>
+        <!-- REPLACE: label text -->
+        <div class="stat-label">of viewers never return</div>
+      </div>
+
+      <!-- REPLACE: pop SFX — keep data-start in sync with the number pop-in -->
+      <audio
+        id="sfx-number-pop"
+        class="clip"
+        src="../assets/sfx/deep roomy pop.mp3"
+        preload="auto"
+        data-start="0.2"
+        data-duration="0.72"
+        data-track-index="1"
+        data-volume="0.7"
+      ></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set(".stat-number", { autoAlpha: 0, scale: 0.6, y: 20 });
+      gsap.set(".stat-underline", { scaleX: 0 });
+      gsap.set(".stat-label", { autoAlpha: 0, y: 24 });
+
+      // Number pops in
+      tl.to(".stat-number", { autoAlpha: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(2.2)" }, 0.2);
+
+      // Underline draws left to right
+      tl.to(".stat-underline", { scaleX: 1, duration: 0.5, ease: "power3.inOut" }, 0.6);
+
+      // Label fades up
+      tl.to(".stat-label", { autoAlpha: 1, y: 0, duration: 0.45, ease: "power2.out" }, 1.0);
+
+      // REPLACE: exit start (3.5s) if the hold needs to be longer — also update data-duration on #root
+      tl.to("#stat-block", { autoAlpha: 0, y: 30, duration: 0.35, ease: "power2.in" }, 3.5);
+
+      window.__timelines["my-big-number-underline"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-composition-variables="[
+    {&quot;id&quot;:&quot;line1&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Line 1&quot;,&quot;default&quot;:&quot;Why is the job not&quot;},
+    {&quot;id&quot;:&quot;line2&quot;,&quot;type&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Line 2&quot;,&quot;default&quot;:&quot;already optional?&quot;},
+    {&quot;id&quot;:&quot;textColor&quot;,&quot;type&quot;:&quot;color&quot;,&quot;label&quot;:&quot;Text color&quot;,&quot;default&quot;:&quot;#ffffff&quot;},
+    {&quot;id&quot;:&quot;wordGap&quot;,&quot;type&quot;:&quot;number&quot;,&quot;label&quot;:&quot;Seconds between words&quot;,&quot;default&quot;:0.17}
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script>
+      window.__timelines = window.__timelines || {};
+      if (!window.__hyperframes) {
+        const decl = JSON.parse(document.documentElement.getAttribute("data-composition-variables") || "[]");
+        const vals = Object.fromEntries(decl.map((d) => [d.id, d.default]));
+        decl.forEach((d) => document.documentElement.style.setProperty("--" + d.id, d.default));
+        window.__hyperframes = { getVariables: () => vals };
+      }
+    </script>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Fraunces"; src: url("assets/fonts/Fraunces.ttf") format("truetype"); font-weight: 100 900; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 100%; height: 100%; }
+      #shade { position: absolute; left: 0; right: 0; bottom: 0; height: 600px; opacity: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 45%, rgba(0,0,0,.62) 100%); }
+      #text { position: absolute; left: 325px; top: 700px; color: var(--textColor); font-family: "Fraunces", serif;
+        font-weight: 700; font-size: 122px; line-height: 1.08; letter-spacing: -0.01em; font-variation-settings: "opsz" 24, "SOFT" 50; text-shadow: 0 4px 24px rgba(0,0,0,.35); }
+      .w { display: inline-block; margin-right: 0.22em; opacity: 0; }
+      .preview-talking-head { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="2.6" data-width="1920" data-height="1080">
+      <img class="preview-talking-head" data-preview-only src="assets/talking-head-placeholder.png" alt="" />
+      <div id="shade"></div>
+      <div id="text"></div>
+    </div>
+    <script>
+      const { line1, line2, wordGap } = window.__hyperframes.getVariables();
+      const box = document.getElementById("text");
+      const words = [];
+      [line1, line2].forEach((line, i) => {
+        if (i) box.appendChild(document.createElement("br"));
+        line.trim().split(/\s+/).forEach((t) => {
+          const s = document.createElement("span");
+          s.className = "w";
+          s.textContent = t;
+          box.appendChild(s);
+          words.push(s);
+        });
+      });
+
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#shade", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, 0);
+      tl.fromTo(words, { opacity: 0, y: 10, filter: "blur(4px) brightness(0.7)" },
+        { opacity: 1, y: 0, filter: "blur(0px) brightness(1)", duration: 0.22, ease: "power2.out", stagger: Number(wordGap) }, 0.1);
+      tl.set({}, {}, 2.6);
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

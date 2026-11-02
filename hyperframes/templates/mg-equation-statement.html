@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@400,700&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .card {
+      text-align: center;
+      padding: 40px 120px;
+      max-width: 1440px;
+      will-change: transform, opacity;
+    }
+
+    .equation {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 108px;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: baseline;
+      gap: 0.3em;
+    }
+
+    .eq-w { display: inline-block; will-change: transform, opacity; }
+    .c-purple { color: #7c3aed; }
+    .c-red    { color: #dc2626; }
+    .c-green  { color: #047857; }
+
+    .sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 42px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.48);
+      margin-top: 28px;
+      line-height: 1.4;
+      will-change: transform, opacity;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-equation-statement" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+
+    <div class="card" id="card">
+      <!-- REPLACE: words and colours — add/remove .eq-w spans as needed -->
+      <!-- Use .c-purple, .c-red, .c-green on any span to colour it -->
+      <div class="equation">
+        <span class="eq-w" id="eq-01">TIME</span>
+        <span class="eq-w" id="eq-02">SAVED</span>
+        <span class="eq-w c-red" id="eq-03">≠</span>
+        <span class="eq-w" id="eq-04">MONEY</span>
+        <span class="eq-w" id="eq-05">MADE</span>
+      </div>
+      <!-- REPLACE: sub-line, or delete entirely if not needed -->
+      <p class="sub" id="sub">Decide what you do with the saved time first.</p>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Equation words enter word by word
+    tl.set('.eq-w', { opacity: 0, y: 20 }, 0);
+    tl.to('#eq-01', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0.1);
+    tl.to('#eq-02', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0.3);
+    tl.to('#eq-03', { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: 'back.out(2)', transformOrigin: 'center center' }, 0.7);
+    tl.to('#eq-04', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 1.1);
+    tl.to('#eq-05', { opacity: 1, y: 0, duration: 0.4,  ease: 'power3.out' }, 1.4);
+    // Sub-line fades in after a beat
+    tl.from('#sub', { opacity: 0, y: 16, duration: 0.5, ease: 'power2.out' }, 2.2);
+    // Exit
+    tl.to('#card', { opacity: 0, y: -28, scale: 0.96, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 5.1);
+
+    window.__timelines['mg-equation-statement'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

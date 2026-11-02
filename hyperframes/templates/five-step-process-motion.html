@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: local("Satoshi");
+        font-style: normal;
+        font-weight: 500 700;
+      }
+
+      :root {
+        --background: #f5f0ff;
+        --background-deep: #ebe3f8;
+        --card: rgba(58, 29, 84, 0.94);
+        --card-edge: rgba(145, 102, 184, 0.68);
+        --text: #faf7ff;
+        --line: #4b4058;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--background-deep);
+      }
+
+      body { font-family: "Satoshi", "Inter", sans-serif; }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--background);
+      }
+
+      .scene {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .smudge {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(115px);
+        opacity: 0.52;
+        will-change: transform, opacity;
+      }
+
+      .smudge-a {
+        width: 760px;
+        height: 520px;
+        left: -170px;
+        top: 120px;
+        background: rgba(184, 151, 222, 0.58);
+      }
+
+      .smudge-b {
+        width: 940px;
+        height: 360px;
+        left: 360px;
+        top: 300px;
+        background: rgba(207, 188, 233, 0.54);
+      }
+
+      .smudge-c {
+        width: 730px;
+        height: 430px;
+        left: 360px;
+        bottom: -180px;
+        background: rgba(164, 126, 205, 0.46);
+      }
+
+      .smudge-d {
+        width: 650px;
+        height: 430px;
+        right: -150px;
+        bottom: 80px;
+        background: rgba(216, 196, 239, 0.64);
+      }
+
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.12;
+        mix-blend-mode: soft-light;
+        background-image:
+          radial-gradient(circle at 20% 30%, rgba(76,55,97,.18) 0 1px, transparent 1.5px),
+          radial-gradient(circle at 72% 62%, rgba(76,55,97,.12) 0 1px, transparent 1.5px);
+        background-size: 23px 27px, 31px 35px;
+      }
+
+      .connectors {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        z-index: 2;
+        overflow: visible;
+        filter: drop-shadow(0 0 8px rgba(255,255,255,0.72));
+      }
+
+      .connector {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+      }
+
+      .step-card {
+        position: absolute;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 280px;
+        height: 104px;
+        border: 2px solid var(--card-edge);
+        border-radius: 13px;
+        background: var(--card);
+        color: var(--text);
+        box-shadow:
+          0 0 24px rgba(103, 62, 143, 0.28),
+          0 14px 38px rgba(69, 37, 99, 0.22),
+          inset 0 1px 0 rgba(255,255,255,0.14);
+        font-size: 66px;
+        font-weight: 700;
+        letter-spacing: -0.05em;
+        line-height: 1;
+        text-shadow: 0 0 14px rgba(255,255,255,0.28);
+        will-change: transform, opacity, filter;
+      }
+
+      #step-1 { left: 100px; top: 270px; }
+      #step-2 { left: 440px; top: 640px; }
+      #step-3 { left: 780px; top: 270px; }
+      #step-4 { left: 1120px; top: 640px; }
+      #step-5 { left: 1460px; top: 270px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-41ld" id="root" data-composition-id="main" data-start="0" data-duration="6.5" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-kvz1" id="process-scene" class="clip scene" data-start="0" data-duration="6.5" data-track-index="1" data-layout-allow-overflow="true">
+        <div data-hf-id="hf-3p9a" id="smudge-a" class="smudge smudge-a" data-layout-allow-overflow="true"></div>
+        <div data-hf-id="hf-4pyn" id="smudge-b" class="smudge smudge-b"></div>
+        <div data-hf-id="hf-dw7m" id="smudge-c" class="smudge smudge-c" data-layout-allow-overflow="true"></div>
+        <div data-hf-id="hf-594q" id="smudge-d" class="smudge smudge-d" data-layout-allow-overflow="true"></div>
+        <div data-hf-id="hf-h60x" class="grain"></div>
+
+        <svg data-hf-id="hf-98os" class="connectors" viewBox="0 0 1920 1080" aria-hidden="true">
+          <path data-hf-id="hf-d2t1" id="connector-1" class="connector" pathLength="1" d="M 390 350 C 455 405, 390 575, 450 640" />
+          <path data-hf-id="hf-tp60" id="connector-2" class="connector" pathLength="1" d="M 730 640 C 790 575, 725 405, 790 350" />
+          <path data-hf-id="hf-5ugw" id="connector-3" class="connector" pathLength="1" d="M 1070 350 C 1135 405, 1070 575, 1130 640" />
+          <path data-hf-id="hf-3ihs" id="connector-4" class="connector" pathLength="1" d="M 1410 640 C 1470 575, 1405 405, 1470 350" />
+        </svg>
+
+        <div data-hf-id="hf-ii8q" id="step-1" class="step-card">Step 1</div>
+        <div data-hf-id="hf-5wi0" id="step-2" class="step-card">Step 2</div>
+        <div data-hf-id="hf-w8fe" id="step-3" class="step-card">Step 3</div>
+        <div data-hf-id="hf-e018" id="step-4" class="step-card">Step 4</div>
+        <div data-hf-id="hf-hk7m" id="step-5" class="step-card">Step 5</div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+      const cards = ["#step-1", "#step-2", "#step-3", "#step-4", "#step-5"];
+      const connectors = ["#connector-1", "#connector-2", "#connector-3", "#connector-4"];
+
+      gsap.set(cards, { autoAlpha: 0 });
+      gsap.set(connectors, { strokeDashoffset: 0, autoAlpha: 0 });
+      gsap.set("#process-scene", { autoAlpha: 1 });
+
+      const cardIn = (selector, time, x, y) => {
+        tl.to(selector, { autoAlpha: 1, duration: 0.38, ease: "sine.out" }, time);
+        tl.from(selector, {
+          x,
+          y,
+          scale: 0.94,
+          duration: 0.48,
+          ease: "power2.out"
+        }, time);
+      };
+
+      cardIn("#step-1", 0.02, -14, -9);
+      tl.to("#connector-1", { autoAlpha: 1, duration: 0.36, ease: "sine.inOut" }, 0.18);
+
+      cardIn("#step-2", 0.26, -10, 12);
+      tl.to("#connector-2", { autoAlpha: 1, duration: 0.36, ease: "sine.inOut" }, 0.42);
+
+      cardIn("#step-3", 0.50, -10, -12);
+      tl.to("#connector-3", { autoAlpha: 1, duration: 0.36, ease: "sine.inOut" }, 0.66);
+
+      cardIn("#step-4", 0.74, -10, 12);
+      tl.to("#connector-4", { autoAlpha: 1, duration: 0.36, ease: "sine.inOut" }, 0.90);
+
+      cardIn("#step-5", 0.98, -10, -12);
+
+      tl.to("#smudge-a", { x: 66, y: -24, scale: 1.1, duration: 4.8, ease: "sine.inOut" }, 0.1);
+      tl.to("#smudge-b", { x: -54, scale: 1.08, opacity: 0.64, duration: 4.9, ease: "sine.inOut" }, 0.05);
+      tl.to("#smudge-d", { x: -42, y: 24, duration: 4.7, ease: "sine.inOut" }, 0.15);
+
+      tl.to([cards, connectors], {
+        opacity: 0,
+        y: -24,
+        duration: 0.55,
+        stagger: 0.035,
+        ease: "power3.in"
+      }, 5.55);
+
+      tl.to("#process-scene", {
+        autoAlpha: 0,
+        scale: 0.985,
+        duration: 0.45,
+        ease: "power2.in"
+      }, 5.98);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

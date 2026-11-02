@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Insight Bubbles Ring — Light — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP: light graphic — center icon, insight bubbles, headline ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 950px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      /* REPLACE: swap #7c3aed for a different accent color */
+      #icon-circle {
+        position: absolute;
+        left: 410px;
+        top: 250px;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: #ece7dd;
+        border: 8px solid #7c3aed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      #icon-circle img {
+        width: 190px;
+        height: 190px;
+        object-fit: contain;
+        display: block;
+      }
+
+      /* REPLACE: reposition/reword the six bubbles below, or swap dot colors */
+      .bubble {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        border-radius: 999px;
+        padding: 16px 26px;
+        box-shadow: 0 4px 16px rgba(17, 16, 21, 0.1);
+        white-space: nowrap;
+      }
+
+      .bubble-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      .bubble-text {
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 30px;
+        font-weight: 700;
+        color: #16151a;
+        line-height: 1;
+      }
+
+      #bubble-age { left: 130px; top: 140px; }
+      #bubble-gender { right: 130px; top: 140px; }
+      #bubble-income { left: 40px; top: 360px; }
+      #bubble-where { right: 40px; top: 360px; }
+      #bubble-job { left: 150px; top: 580px; }
+      #bubble-worries { right: 150px; top: 580px; }
+
+      /* REPLACE: HEADLINE_LINE_1 / HEADLINE_LINE_2 text below */
+      #headline {
+        position: absolute;
+        left: 0;
+        top: 702px;
+        width: 100%;
+        text-align: center;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 58px;
+        font-weight: 700;
+        line-height: 1.16;
+        letter-spacing: -0.01em;
+        color: #16151a;
+      }
+
+      #headline .accent {
+        color: #7c3aed;
+        font-style: italic;
+      }
+
+      #headline-line-1,
+      #headline-line-2 {
+        display: block;
+      }
+
+      /* ── BOTTOM: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="insight-bubbles-ring-9x16"
+      data-start="0"
+      data-duration="5.6"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <!-- REPLACE: swap the src below for any other icon in Assets/Icons -->
+        <div id="icon-circle">
+          <img src="../Icons/ai brain icon.svg" alt="" />
+        </div>
+
+        <div id="bubble-age" class="bubble"><span class="bubble-dot" style="background:#e6484b"></span><span class="bubble-text">your age</span></div>
+        <div id="bubble-gender" class="bubble"><span class="bubble-dot" style="background:#2f3237"></span><span class="bubble-text">your gender</span></div>
+        <div id="bubble-income" class="bubble"><span class="bubble-dot" style="background:#2ecc71"></span><span class="bubble-text">your income</span></div>
+        <div id="bubble-where" class="bubble"><span class="bubble-dot" style="background:#4c8dff"></span><span class="bubble-text">where you live</span></div>
+        <div id="bubble-job" class="bubble"><span class="bubble-dot" style="background:#f5b400"></span><span class="bubble-text">your job</span></div>
+        <div id="bubble-worries" class="bubble"><span class="bubble-dot" style="background:#9b59b6"></span><span class="bubble-text">your worries</span></div>
+
+        <div id="headline">
+          <span id="headline-line-1">ChatGPT knows things</span>
+          <span id="headline-line-2">you <span class="accent">never told it</span></span>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="5.6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const GRAPHIC_HEIGHT = 950;
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         The graphic covers the top 950px of the canvas; the footage shows through the
+         1080×(1920-950) window below it while the graphic is on screen.
+         SPLIT_SCALE must stay at 1. SPLIT_SHIFT must stay within 0…950.
+         Read real values with: python3 scripts/face-frame.py <video> --window 970:1920
+         then add ~100–150px to the shift it returns — confirm on a real frame.
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 800;   /* px the footage travels down (0…950) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      // Center icon
+      gsap.set("#icon-circle", { transformOrigin: "50% 50%", scale: 0.85, opacity: 0 });
+      tl.to("#icon-circle", { scale: 1, opacity: 1, duration: 0.5, ease: "expo.out" }, 0.38);
+
+      // Insight bubbles — pop in staggered around the icon
+      const bubbles = ["#bubble-age", "#bubble-gender", "#bubble-income", "#bubble-where", "#bubble-job", "#bubble-worries"];
+      const bubbleEls = bubbles.map((sel) => document.querySelector(sel));
+
+      gsap.set(bubbleEls, { opacity: 0, y: 26, scale: 0.9, transformOrigin: "50% 50%" });
+
+      const BUBBLE_START = 0.6;
+      const BUBBLE_STAGGER = 0.08;
+      const BUBBLE_DUR = 0.5;
+
+      bubbleEls.forEach((el, i) => {
+        tl.to(el, { opacity: 1, y: 0, scale: 1, duration: BUBBLE_DUR, ease: "expo.out" }, BUBBLE_START + i * BUBBLE_STAGGER);
+      });
+
+      const lastBubbleEnd = BUBBLE_START + (bubbleEls.length - 1) * BUBBLE_STAGGER + BUBBLE_DUR;
+
+      // Headline — two lines fade/rise in after the bubbles land
+      gsap.set(["#headline-line-1", "#headline-line-2"], { opacity: 0, y: 24 });
+      const HEADLINE_START = lastBubbleEnd + 0.15;
+      tl.to("#headline-line-1", { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, HEADLINE_START);
+      tl.to("#headline-line-2", { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, HEADLINE_START + 0.12);
+
+      const contentReadyAt = HEADLINE_START + 0.12 + 0.55;
+
+      // Hold
+      const HOLD = 1.1;
+      const EXIT_START = contentReadyAt + HOLD;
+
+      // Exit — headline, bubbles, and icon fade/settle out together (quick, staggered)
+      tl.to(["#headline-line-1", "#headline-line-2"], { opacity: 0, y: -18, duration: 0.35, ease: "power2.in" }, EXIT_START);
+      bubbleEls.forEach((el, i) => {
+        tl.to(el, { opacity: 0, y: -18, scale: 0.92, duration: 0.35, ease: "power2.in" }, EXIT_START + i * 0.04);
+      });
+      tl.to("#icon-circle", { opacity: 0, scale: 0.85, duration: 0.35, ease: "power2.in" }, EXIT_START + 0.1);
+
+      const exitContentEnd = EXIT_START + (bubbleEls.length - 1) * 0.04 + 0.35;
+
+      // Graphic zone slides back up and out, revealing the talking head full-screen again
+      const zoneExitStart = exitContentEnd + 0.3;
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+
+      window.__timelines["insight-bubbles-ring-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

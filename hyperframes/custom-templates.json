@@ -1,0 +1,40 @@
+[
+  {
+    "id": "my-big-number-underline",
+    "name": "Big Number Underline",
+    "path": "templates/custom/my-big-number-underline.html",
+    "description": "Transparent 9:16 overlay where a huge bold white number pops in centered in the upper third with a soft pop SFX, a thick purple underline draws left to right beneath it, a short white label fades up below, and everything exits with a quick fade-down.",
+    "bestFor": [
+      "talking-head clips",
+      "stat callouts",
+      "percentages and key figures",
+      "social clips that need a single headline number over the speaker"
+    ],
+    "replace": [
+      ".stat-number text (the number)",
+      ".stat-label text (short label)",
+      ".stat-underline width / background colour in <style>",
+      "#sfx-number-pop src, data-start and data-volume",
+      "data-duration on #root if clip length differs",
+      "GSAP exit timing at 3.5s if hold duration needs adjusting"
+    ],
+    "features": [
+      "overlay only — transparent background, no footage element",
+      "number, underline and label kept inside the social safe zone in the upper third",
+      "number pops in with back.out scale",
+      "thick purple (#7c3aed) underline draws left to right via scaleX",
+      "white Satoshi label fades up under the underline",
+      "soft pop SFX synced to the number",
+      "quick fade-down exit for the whole block",
+      "Cabinet Grotesk ExtraBold number loaded from local assets/fonts"
+    ],
+    "technical": {
+      "framework": "HyperFrames",
+      "width": 1080,
+      "height": 1920,
+      "fps": 30,
+      "defaultDuration": 4,
+      "mediaMode": "overlay"
+    }
+  }
+]

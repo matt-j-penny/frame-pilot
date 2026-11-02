@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1920px; height: 1080px; overflow: hidden; background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .phone-wrap { position: relative; will-change: transform; }
+
+    .phone {
+      position: relative;
+      width: 390px;
+      height: 844px;
+      background: #0a0a0a;
+      border-radius: 55px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 2px #e5e5e5,
+        0 0 0 4px #f0f0f0,
+        0 25px 60px rgba(0,0,0,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .notch {
+      position: absolute;
+      top: 14px; left: 50%;
+      transform: translateX(-50%);
+      width: 120px; height: 35px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .screen {
+      width: 100%; height: 100%;
+      background: #0b141a;
+      border-radius: 44px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-bar {
+      height: 47px;
+      padding: 16px 32px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+      background: #1f2c33;
+    }
+
+    .status-icons { display: flex; align-items: center; gap: 6px; margin-right: 6px; }
+
+    .battery {
+      width: 26px; height: 12px;
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 3px;
+      position: relative;
+      padding: 1px;
+    }
+    .battery::after {
+      content: '';
+      position: absolute;
+      right: -3px; top: 3px;
+      width: 2px; height: 4px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 0 1px 1px 0;
+    }
+    .battery span { display: block; width: 80%; height: 100%; background: #fff; border-radius: 1.5px; }
+
+    .wa-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: #1f2c33;
+      color: #e9edef;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .wa-back { background: transparent; border: 0; color: #00a884; padding: 4px; display: flex; align-items: center; }
+
+    .avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: #2a3942;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #8696a0;
+    }
+
+    .contact { flex: 1; line-height: 1.2; }
+    .contact .name { font-size: 16px; font-weight: 600; color: #e9edef; }
+    .contact .presence { font-size: 12px; color: #8696a0; margin-top: 2px; }
+
+    .header-actions { display: flex; gap: 4px; }
+    .header-actions button { background: transparent; border: 0; color: #00a884; padding: 4px; display: flex; }
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 8px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background-color: #0b141a;
+      background-image:
+        radial-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 22px 22px, 14px 14px;
+      background-position: 0 0, 11px 11px;
+    }
+    .chat::-webkit-scrollbar { width: 0; }
+
+    .date-chip {
+      align-self: center;
+      background: #1d282f;
+      color: #8696a0;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      margin: 6px 0 10px;
+      letter-spacing: 0.4px;
+    }
+
+    .msg {
+      position: relative;
+      max-width: 78%;
+      padding: 6px 9px 8px 12px;
+      border-radius: 8px;
+      font-size: 14.6px;
+      line-height: 1.35;
+      color: #e9edef;
+      box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+      word-wrap: break-word;
+      margin-top: 2px;
+      will-change: transform, opacity;
+      opacity: 0;
+      transform: translateY(22px) scale(0.94);
+    }
+    .msg p { display: inline; padding-right: 66px; }
+    .msg .meta {
+      position: absolute;
+      right: 10px; bottom: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: rgba(233,237,239,0.55);
+      white-space: nowrap;
+    }
+    .msg.out {
+      align-self: flex-end;
+      background: #005c4b;
+      border-top-right-radius: 0;
+      margin-right: 10px;
+      transform-origin: bottom right;
+    }
+    .msg.out::before {
+      content: '';
+      position: absolute;
+      top: 0; right: -8px;
+      width: 8px; height: 13px;
+      background: #005c4b;
+      clip-path: polygon(0 0, 0 100%, 100% 0);
+    }
+    .msg.in {
+      align-self: flex-start;
+      background: #1f2c33;
+      border-top-left-radius: 0;
+      margin-left: 10px;
+      transform-origin: bottom left;
+    }
+    .msg.in::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -8px;
+      width: 8px; height: 13px;
+      background: #1f2c33;
+      clip-path: polygon(100% 0, 100% 100%, 0 0);
+    }
+    .ticks { color: #53bdeb; font-size: 12px; letter-spacing: -2px; }
+
+    .composer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 8px 10px;
+      background: #1f2c33;
+      flex-shrink: 0;
+    }
+    .composer .round {
+      background: transparent; border: 0;
+      color: #8696a0; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .composer .input {
+      flex: 1;
+      background: #2a3942;
+      border-radius: 22px;
+      height: 40px;
+      display: flex; align-items: center;
+      padding: 0 10px 0 16px;
+      color: #8696a0; font-size: 15px;
+    }
+    .composer .input .placeholder { flex: 1; }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 6px; left: 50%;
+      transform: translateX(-50%);
+      width: 134px; height: 5px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-whatsapp-chat" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+
+    <div class="phone-wrap" id="phone-wrap">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">
+              <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="6" width="3" height="6" rx="1" fill="currentColor"/><rect x="5" y="4" width="3" height="8" rx="1" fill="currentColor"/><rect x="10" y="2" width="3" height="10" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+              <div class="battery"><span></span></div>
+            </div>
+          </div>
+
+          <header class="wa-header">
+            <button class="wa-back">
+              <svg viewBox="0 0 24 24" width="22" height="22"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <!-- REPLACE: avatar letter, contact name, role/presence -->
+            <div class="avatar">D</div>
+            <div class="contact">
+              <div class="name">David</div>
+              <div class="presence">Estate Agency Owner</div>
+            </div>
+            <div class="header-actions">
+              <button><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 7a2 2 0 012-2h9a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm14 3l4-2v8l-4-2v-4z" fill="currentColor"/></svg></button>
+              <button><svg viewBox="0 0 24 24" width="22" height="22"><path d="M6.6 10.8a15.5 15.5 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.5 11.5 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.5 11.5 0 00.57 3.6 1 1 0 01-.25 1l-2.22 2.2z" fill="currentColor"/></svg></button>
+            </div>
+          </header>
+
+          <main class="chat">
+            <div class="date-chip">TODAY</div>
+            <!-- REPLACE: message text and timestamps. .out = right (you), .in = left (them) -->
+            <div id="msg-1" class="msg out">
+              <p>Hey — quick follow up. What's actually changed in the business from that saved time?</p>
+              <span class="meta"><span>2:14 PM</span><span class="ticks">✓✓</span></span>
+            </div>
+            <div id="msg-2" class="msg in">
+              <p>Honestly? Nothing really.</p>
+              <span class="meta"><span>2:15 PM</span></span>
+            </div>
+          </main>
+
+          <footer class="composer">
+            <button class="round"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+            <div class="input"><span class="placeholder">Message</span></div>
+            <button class="round"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3" stroke-linecap="round"/></svg></button>
+          </footer>
+
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Phone starts slightly zoomed in, zooms in further as messages arrive
+    gsap.set('#phone-wrap', { scale: 1.14, transformOrigin: '50% 50%' });
+
+    // Message 1 — REPLACE timestamp to match voiceover
+    tl.to('#msg-1', { opacity: 1, y: 0, scale: 1, duration: 0.58, ease: 'back.out(1.35)' }, 0.15);
+    tl.to('#phone-wrap', { scale: 2.92, y: 118, transformOrigin: '50% 29%', duration: 1.35, ease: 'power3.inOut' }, 0.15);
+
+    // Message 2 — REPLACE timestamp to match voiceover
+    tl.to('#msg-2', { opacity: 1, y: 0, scale: 1, duration: 0.58, ease: 'back.out(1.35)' }, 4.7);
+
+    // Exit
+    tl.to('#phone-wrap', { scale: 1.08, y: 24, transformOrigin: '50% 50%', duration: 0.52, ease: 'power3.in' }, 7.1);
+    tl.to('#root',       { opacity: 0, duration: 0.52, ease: 'power2.in' }, 7.1);
+
+    window.__timelines['mg-whatsapp-chat'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

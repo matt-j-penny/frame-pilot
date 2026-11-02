@@ -23,3 +23,11 @@ test('landscape, disabled features, references and source-word instructions surv
 test('rejects malformed formats, feature flags and transcript ranges', () => {
   for (const body of [{aspectRatio:'1:1'}, {features:{music:'false'}}, {references:'file'}, {transcriptEdits:[{from:5,to:2,instruction:'remove'}]}, {transcriptEdits:[{from:0,to:2,instruction:''}]}]) assert.throws(() => creationSettings(body));
 });
+test('a transcript instruction can name a HyperFrames template without text', () => {
+  const s = creationSettings({ transcriptEdits: [{ from: 1, to: 4, template: 'mg-wrong-stamp' }, { from: 6, to: 7, instruction: 'cut this' }] });
+  assert.deepEqual(s.transcriptEdits[0], { from: 1, to: 4, instruction: '', template: 'mg-wrong-stamp' });
+  assert.equal(s.transcriptEdits[1].template, undefined);
+  assert.match(settingsPrompt({ transcriptEdits: s.transcriptEdits }), /HyperFrames templates/);
+  assert.doesNotMatch(settingsPrompt({ transcriptEdits: [{ from: 1, to: 2, instruction: 'x' }] }), /HyperFrames templates/);
+  assert.throws(() => creationSettings({ transcriptEdits: [{ from: 1, to: 2, template: '../etc' }] }));
+});

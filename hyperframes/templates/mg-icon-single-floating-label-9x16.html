@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Icon Single Floating + Label — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 800;
+      }
+
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #fafafa; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP HALF: icon card + label ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #fafafa;
+        z-index: 2;
+        will-change: transform, opacity;
+        background-image:
+          linear-gradient(rgba(124, 58, 237, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(124, 58, 237, 0.055) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 68px;
+      }
+
+      .icon-option {
+        position: relative;
+        width: 440px;
+        height: 440px;
+        display: grid;
+        place-items: center;
+        border: 3px solid #ede9fe;
+        border-radius: 64px;
+        background: #ffffff;
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
+        will-change: transform, opacity, filter;
+      }
+
+      .main-icon {
+        width: 250px;
+        height: 250px;
+        object-fit: contain;
+      }
+
+      #label {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: center;
+        gap: 0 22px;
+        max-width: 900px;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-weight: 800;
+        font-size: 84px;
+        line-height: 1.02;
+        letter-spacing: -0.02em;
+        color: #1a1a2e;
+        text-align: center;
+      }
+
+      #label .word {
+        display: inline-block;
+        will-change: transform, opacity;
+      }
+
+      #label .word.accent { color: #7c3aed; }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="mg-icon-single-floating-label-9x16" data-start="0" data-duration="6" data-width="1080" data-height="1920" data-fps="30">
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <div id="scene-content" class="scene-content">
+          <!-- REPLACE: icon src -->
+          <div id="option-single" class="icon-option">
+            <img id="icon-single" class="main-icon" src="../Icons/automation icon.svg" alt="Automation icon" />
+          </div>
+          <!-- REPLACE: label copy — keep it to about four words -->
+          <div id="label">
+            <span class="word">Set</span>
+            <span class="word">It</span>
+            <span class="word">And</span>
+            <span class="word accent">Forget</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set('#graphic-zone', { autoAlpha: 1, y: -864 });
+      tl.to('#graphic-zone', { autoAlpha: 1, y: 0, duration: 0.78, ease: 'expo.out' }, 0.14);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+         through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+         down so the speaker's face lands inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo('#talking-head video', { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.78, ease: 'expo.out' }, 0.14);
+      tl.set('#option-single', { opacity: 0, scale: 0.88, rotation: -2 }, 0);
+      tl.set('.main-icon', { opacity: 0, scale: 0.76 }, 0);
+      tl.set('#label .word', { opacity: 0, yPercent: 60, rotationX: -55 }, 0);
+
+      tl.to('#option-single', { opacity: 1, scale: 1, rotation: 0, duration: 0.72, ease: 'power3.out' }, 0.35);
+      tl.to('#icon-single', { opacity: 1, scale: 1, duration: 0.62, ease: 'back.out(1.4)' }, 0.72);
+      tl.to('#label .word', { opacity: 1, yPercent: 0, rotationX: 0, duration: 0.66, ease: 'expo.out', stagger: 0.09 }, 1.02);
+
+      /* Continuous float — runs from the card's arrival through the exit.
+         Finite repeat count (yoyo) keeps the timeline duration deterministic;
+         0.72s per leg × 8 legs = 5.76s, running just past the 6s clip end. */
+      tl.to('.icon-option', { y: -18, duration: 0.72, ease: 'sine.inOut', yoyo: true, repeat: 7 }, 0.5);
+      tl.to('.main-icon', { y: -8, duration: 0.72, ease: 'sine.inOut', yoyo: true, repeat: 7 }, 0.62);
+      tl.to('#label', { y: -8, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 4 }, 1.5);
+
+      tl.to('#scene-content', { opacity: 0, y: -30, scale: 1.025, duration: 0.58, ease: 'power3.in' }, 5.18);
+      tl.to('#graphic-zone', { autoAlpha: 1, y: -864, duration: 0.62, ease: 'power3.in' }, 5.24);
+      tl.to('#talking-head video', { y: 0, scale: 1, duration: 0.62, ease: 'power3.in' }, 5.24);
+
+      window.__timelines['mg-icon-single-floating-label-9x16'] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

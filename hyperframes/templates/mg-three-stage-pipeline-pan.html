@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Three-Stage Pipeline Pan</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --text-secondary: #64648c;
+      --accent: #7c3aed;
+      --accent-light: #a78bfa;
+      --accent-lighter: #ede9fe;
+      --accent-dark: #5b21b6;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      color: var(--text);
+      font-family: "Satoshi", sans-serif;
+    }
+
+    #tpp-root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+    }
+
+    #tpp-shell {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--bg);
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, filter;
+    }
+
+    .tpp-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26, 26, 46, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 46, 0.055) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .tpp-headline-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 160px;
+      text-align: center;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, filter;
+    }
+
+    .tpp-headline {
+      width: 1160px;
+      color: var(--text);
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 96px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 0.96;
+    }
+
+    .tpp-headline-line {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 22px;
+    }
+
+    .tpp-headline-word {
+      display: inline-block;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .tpp-headline-word.tpp-accent {
+      color: var(--accent);
+    }
+
+    #tpp-pipeline {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      will-change: opacity;
+    }
+
+    #tpp-world {
+      position: absolute;
+      left: 700px;
+      top: 318px;
+      width: 2230px;
+      height: 500px;
+      display: flex;
+      align-items: flex-start;
+      gap: 100px;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .tpp-stage {
+      position: relative;
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 34px;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, filter;
+    }
+
+    .tpp-stage-one {
+      width: 520px;
+    }
+
+    .tpp-stage-two {
+      width: 590px;
+    }
+
+    .tpp-stage-three {
+      width: 360px;
+    }
+
+    .tpp-halo {
+      position: absolute;
+      z-index: 0;
+      width: 680px;
+      height: 470px;
+      left: 50%;
+      top: -76px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0) 70%);
+      opacity: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .tpp-visual {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 320px;
+    }
+
+    .tpp-main-card,
+    .tpp-upload-card,
+    .tpp-clip-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 2px solid rgba(124, 58, 237, 0.14);
+      border-radius: 24px;
+      background: var(--card);
+    }
+
+    .tpp-main-card {
+      width: 520px;
+      height: 320px;
+      background: var(--accent);
+    }
+
+    .tpp-upload-card {
+      width: 360px;
+      height: 320px;
+      background: var(--accent);
+    }
+
+    .tpp-clips {
+      width: 590px;
+      height: 320px;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 22px;
+    }
+
+    .tpp-clip-card {
+      width: 172px;
+      height: 320px;
+      background: var(--card);
+    }
+
+    .tpp-clip-card.tpp-active {
+      background: var(--accent);
+    }
+
+    .tpp-icon {
+      display: block;
+      width: 152px;
+      height: 152px;
+    }
+
+    .tpp-icon-small {
+      width: 84px;
+      height: 84px;
+    }
+
+    .tpp-label {
+      position: relative;
+      z-index: 2;
+      color: var(--text);
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 50px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tpp-connector {
+      position: relative;
+      flex: 0 0 180px;
+      width: 180px;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      will-change: transform, opacity;
+    }
+
+    .tpp-connector svg {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 148px;
+      height: 148px;
+      overflow: visible;
+    }
+
+    .tpp-connector .tpp-arrow {
+      width: 136px;
+      height: 136px;
+    }
+  </style>
+</head>
+<body>
+  <div id="tpp-root" data-composition-id="mg-three-stage-pipeline-pan" data-start="0" data-duration="9.5" data-width="1920" data-height="1080" data-fps="30">
+    <section id="tpp-clip" class="clip" data-start="0" data-duration="9.5" data-track-index="1" aria-label="Three-stage content pipeline">
+      <div id="tpp-shell">
+        <div class="tpp-grid"></div>
+
+        <!-- REPLACE: headline words. Preserve the two line wrappers for the same composition. -->
+        <div id="tpp-headline-wrap" class="tpp-headline-wrap" data-layout-allow-occlusion="true">
+          <h1 id="tpp-headline" class="tpp-headline">
+            <span class="tpp-headline-line">
+              <span class="tpp-headline-word">Creators</span>
+              <span class="tpp-headline-word tpp-accent">&amp;</span>
+              <span class="tpp-headline-word">brands</span>
+            </span>
+            <span class="tpp-headline-line">
+              <span class="tpp-headline-word">pay</span>
+              <span class="tpp-headline-word">you</span>
+              <span class="tpp-headline-word">per</span>
+              <span class="tpp-headline-word tpp-accent">view</span>
+            </span>
+          </h1>
+        </div>
+
+        <div id="tpp-pipeline" data-layout-allow-overflow="true">
+          <div id="tpp-world" data-layout-allow-overflow="true">
+            <article id="tpp-stage-1" class="tpp-stage tpp-stage-one" data-layout-allow-overflow="true">
+              <div id="tpp-halo-1" class="tpp-halo" data-layout-ignore="true"></div>
+              <div class="tpp-visual tpp-main-card">
+                <svg class="tpp-icon" viewBox="0 0 160 160" aria-hidden="true">
+                  <path d="M55 35 L125 80 L55 125 Z" fill="#ffffff"/>
+                </svg>
+              </div>
+              <!-- REPLACE: first stage label -->
+              <h2 class="tpp-label">Long-form video</h2>
+            </article>
+
+            <div id="tpp-connector-cut" class="tpp-connector" aria-hidden="true" data-layout-allow-overflow="true">
+              <svg viewBox="0 0 160 160" fill="none">
+                <circle cx="43" cy="114" r="22" stroke="currentColor" stroke-width="13"/>
+                <circle cx="43" cy="46" r="22" stroke="currentColor" stroke-width="13"/>
+                <path d="M58 62 L127 116" stroke="currentColor" stroke-width="15" stroke-linecap="round"/>
+                <path d="M58 98 L127 44" stroke="currentColor" stroke-width="15" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <article id="tpp-stage-2" class="tpp-stage tpp-stage-two" data-layout-allow-overflow="true">
+              <div id="tpp-halo-2" class="tpp-halo" data-layout-ignore="true"></div>
+              <div class="tpp-visual tpp-clips">
+                <div class="tpp-clip-card">
+                  <svg class="tpp-icon-small" viewBox="0 0 100 100" aria-hidden="true">
+                    <path d="M34 24 L78 50 L34 76 Z" fill="#7c3aed"/>
+                  </svg>
+                </div>
+                <div class="tpp-clip-card tpp-active">
+                  <svg class="tpp-icon-small" viewBox="0 0 100 100" aria-hidden="true">
+                    <path d="M34 24 L78 50 L34 76 Z" fill="#ffffff"/>
+                  </svg>
+                </div>
+                <div class="tpp-clip-card">
+                  <svg class="tpp-icon-small" viewBox="0 0 100 100" aria-hidden="true">
+                    <path d="M34 24 L78 50 L34 76 Z" fill="#7c3aed"/>
+                  </svg>
+                </div>
+              </div>
+              <!-- REPLACE: second stage label -->
+              <h2 class="tpp-label">Short viral clips</h2>
+            </article>
+
+            <div id="tpp-connector-publish" class="tpp-connector" aria-hidden="true" data-layout-allow-overflow="true">
+              <svg class="tpp-arrow" viewBox="0 0 160 160" fill="none">
+                <path d="M28 80 H126" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+                <path d="M94 48 L126 80 L94 112" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <article id="tpp-stage-3" class="tpp-stage tpp-stage-three" data-layout-allow-overflow="true">
+              <div id="tpp-halo-3" class="tpp-halo" data-layout-ignore="true"></div>
+              <div class="tpp-visual tpp-upload-card">
+                <svg class="tpp-icon" viewBox="0 0 160 160" fill="none" aria-hidden="true">
+                  <path d="M80 112 V42" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+                  <path d="M49 72 L80 40 L111 72" stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M37 101 V118 C37 130 47 140 59 140 H101 C113 140 123 130 123 118 V101" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <!-- REPLACE: third stage label -->
+              <h2 class="tpp-label">Your accounts</h2>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const tl = gsap.timeline({ paused: true });
+    const headlineWords = gsap.utils.toArray(".tpp-headline-word");
+
+    headlineWords.forEach((word, index) => {
+      const start = 0.18 + index * 0.17;
+      const travel = index === 0 || index === 3 ? 66 : 44;
+      const duration = index === 0 || index === 3 ? 0.42 : 0.34;
+
+      tl.set(word, { opacity: 1, y: travel }, start);
+      tl.to(word, {
+        y: 0,
+        duration,
+        ease: "power4.out"
+      }, start);
+    });
+
+    tl.fromTo("#tpp-pipeline", {
+      opacity: 0
+    }, {
+      opacity: 1,
+      duration: 0.28,
+      ease: "power2.out"
+    }, 2.28);
+
+    tl.to("#tpp-headline-wrap", {
+      opacity: 0,
+      scale: 0.84,
+      x: -150,
+      filter: "blur(18px)",
+      duration: 0.72,
+      ease: "expo.out"
+    }, 2.34);
+
+    tl.fromTo("#tpp-stage-1", {
+      opacity: 0,
+      scale: 0.88,
+      y: 28
+    }, {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.72,
+      ease: "expo.out"
+    }, 2.34);
+
+    tl.fromTo("#tpp-connector-cut", {
+      opacity: 0,
+      scale: 0.82,
+      y: 18
+    }, {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      duration: 0.56,
+      ease: "power3.out"
+    }, 2.52);
+
+    tl.fromTo("#tpp-stage-2", {
+      opacity: 0,
+      scale: 0.9,
+      y: 28,
+      filter: "blur(7px)"
+    }, {
+      opacity: 0.5,
+      scale: 1,
+      y: 0,
+      filter: "blur(7px)",
+      duration: 0.68,
+      ease: "power3.out"
+    }, 2.68);
+
+    tl.fromTo("#tpp-connector-publish", {
+      opacity: 0,
+      scale: 0.84,
+      y: 18
+    }, {
+      opacity: 0.5,
+      scale: 1,
+      y: 0,
+      duration: 0.54,
+      ease: "power3.out"
+    }, 2.82);
+
+    tl.fromTo("#tpp-stage-3", {
+      opacity: 0,
+      scale: 0.9,
+      y: 28,
+      filter: "blur(7px)"
+    }, {
+      opacity: 0.34,
+      scale: 1,
+      y: 0,
+      filter: "blur(7px)",
+      duration: 0.66,
+      ease: "power3.out"
+    }, 2.96);
+
+    tl.fromTo("#tpp-halo-1", {
+      opacity: 0,
+      scale: 0.86
+    }, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.82,
+      ease: "power2.out"
+    }, 2.3);
+
+    tl.to("#tpp-world", {
+      x: -935,
+      duration: 0.96,
+      ease: "expo.inOut"
+    }, 4.35);
+    tl.to("#tpp-stage-1", {
+      opacity: 0.42,
+      scale: 0.97,
+      filter: "blur(7px)",
+      duration: 0.58,
+      ease: "power2.inOut"
+    }, 4.35);
+    tl.to("#tpp-stage-2", {
+      filter: "blur(0px)",
+      duration: 0.96,
+      ease: "expo.inOut"
+    }, 4.35);
+    tl.to("#tpp-halo-1", {
+      opacity: 0,
+      duration: 0.42,
+      ease: "power2.in"
+    }, 4.35);
+    tl.to(["#tpp-stage-2", "#tpp-connector-publish"], {
+      opacity: 1,
+      duration: 0.56,
+      ease: "power3.out"
+    }, 4.58);
+    tl.to("#tpp-stage-3", {
+      opacity: 0.58,
+      duration: 0.5,
+      ease: "power2.out"
+    }, 4.58);
+    tl.to("#tpp-halo-2", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.72,
+      ease: "power2.out"
+    }, 4.46);
+
+    tl.to("#tpp-world", {
+      x: -1650,
+      duration: 1.04,
+      ease: "expo.inOut"
+    }, 6.48);
+    tl.to("#tpp-stage-2", {
+      opacity: 0.48,
+      scale: 0.98,
+      filter: "blur(7px)",
+      duration: 0.62,
+      ease: "power2.inOut"
+    }, 6.48);
+    tl.to("#tpp-stage-3", {
+      filter: "blur(0px)",
+      duration: 1.04,
+      ease: "expo.inOut"
+    }, 6.48);
+    tl.to("#tpp-halo-2", {
+      opacity: 0,
+      duration: 0.44,
+      ease: "power2.in"
+    }, 6.48);
+    tl.to(["#tpp-stage-3", "#tpp-connector-publish"], {
+      opacity: 1,
+      scale: 1,
+      duration: 0.62,
+      ease: "power3.out"
+    }, 6.72);
+    tl.to("#tpp-halo-3", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.76,
+      ease: "power2.out"
+    }, 6.6);
+
+    tl.to("#tpp-shell", {
+      opacity: 0,
+      y: -22,
+      scale: 0.985,
+      duration: 0.62,
+      ease: "power2.in"
+    }, 8.72);
+
+    window.__timelines["mg-three-stage-pipeline-pan"] = tl;
+  </script>
+
+  <!-- hf-autoplay -->
+  <script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

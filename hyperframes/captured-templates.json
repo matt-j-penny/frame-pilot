@@ -1,0 +1,47 @@
+[
+ {
+  "id": "cap-2026-10-15_072745-9-grok-bot-use-cases-you-should-try-asap",
+  "name": "Captured: 9 Grok Bot Use Cases You Should Try ASAP",
+  "category": "mg",
+  "duration": 5.75,
+  "mediaMode": "standalone",
+  "desc": "First draft rebuilt from YouTube (Claude rebuild). Source: 9 Grok Bot Use Cases You Should Try ASAP. Swap the words to make it yours.",
+  "features": [
+   "captured from YouTube",
+   "Claude rebuild",
+   "editable copy"
+  ],
+  "path": "Assets/templates/captured/cap-2026-10-15_072745-9-grok-bot-use-cases-you-should-try-asap.html",
+  "captured": true
+ },
+ {
+  "id": "cap-2026-09-29_181323-your-monthly-dose-of-good-news-september",
+  "name": "Captured: Your Monthly Dose of Good News | September",
+  "category": "mg",
+  "duration": 15.08,
+  "mediaMode": "standalone",
+  "desc": "First draft rebuilt from YouTube (Claude rebuild). Source: Your Monthly Dose of Good News | September. Swap the words to make it yours.",
+  "features": [
+   "captured from YouTube",
+   "Claude rebuild",
+   "editable copy"
+  ],
+  "path": "Assets/templates/captured/cap-2026-09-29_181323-your-monthly-dose-of-good-news-september.html",
+  "captured": true
+ },
+ {
+  "id": "cap-2026-09-29_175828-the-sustainable-development-goals-report",
+  "name": "Captured: The Sustainable Development Goals Report",
+  "category": "mg",
+  "duration": 7.17,
+  "mediaMode": "standalone",
+  "desc": "First draft rebuilt from YouTube (Callout stack). Source: Your Monthly Dose of Good News | September. Swap the words to make it yours.",
+  "features": [
+   "captured from YouTube",
+   "Callout stack",
+   "editable copy"
+  ],
+  "path": "Assets/templates/captured/cap-2026-09-29_175828-the-sustainable-development-goals-report.html",
+  "captured": true
+ }
+]

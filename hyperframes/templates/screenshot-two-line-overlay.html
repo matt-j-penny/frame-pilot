@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Screenshot + Two-Line Overlay</title>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #fafafa;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #fafafa;
+        background-image:
+          linear-gradient(rgba(26, 26, 46, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 26, 46, 0.055) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
+      .screenshot-frame {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: 2px solid rgba(124, 58, 237, 0.18);
+        border-radius: 28px;
+        background: #1a1a2e;
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
+      }
+
+      .screenshot-frame img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .screenshot-frame::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 10, 18, 0.48);
+        pointer-events: none;
+      }
+
+      .headline {
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        width: calc(100% - 160px);
+        max-width: 1440px;
+        transform: translate(-50%, -50%);
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 112px;
+        font-weight: 800;
+        line-height: 0.92;
+        letter-spacing: -0.04em;
+        text-align: center;
+        text-transform: uppercase;
+        text-wrap: balance;
+        filter: drop-shadow(0 4px 18px rgba(10, 10, 18, 0.45));
+      }
+
+      .headline-line {
+        display: block;
+      }
+
+      .headline-line + .headline-line {
+        margin-top: 18px;
+      }
+
+      .headline-white {
+        color: #ffffff;
+      }
+
+      .headline-purple {
+        color: #7c3aed;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="screenshot-two-line-overlay"
+      data-start="0"
+      data-duration="5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="scene-content">
+        <figure class="screenshot-frame">
+          <!-- REPLACE: swap src with the screenshot or product image to feature. -->
+          <img
+            src="assets/images/zoom-card-source.png"
+            alt="Replaceable product screenshot"
+          />
+
+          <figcaption class="headline">
+            <!-- REPLACE: keep each line short enough to remain on one line. -->
+            <span class="headline-line headline-white">Build with context.</span>
+            <span class="headline-line headline-purple">Not from scratch.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </main>
+  </body>
+</html>

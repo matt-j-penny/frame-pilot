@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Cabinet Grotesk';
+        src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Satoshi';
+        src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2');
+        font-weight: 400 600;
+        font-style: normal;
+      }
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      .clip { position: absolute; }
+      #video-frame {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: right top;
+        will-change: transform;
+      }
+      #source-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      #shade {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background: linear-gradient(90deg, rgba(26, 26, 46, 0) 42%, rgba(26, 26, 46, 0.18) 66%, rgba(26, 26, 46, 0.46) 100%);
+        opacity: 0;
+        pointer-events: none;
+      }
+      #badge {
+        position: absolute;
+        z-index: 3;
+        top: 220px;
+        right: 160px;
+        min-width: 560px;
+        padding: 56px 64px;
+        border-radius: 24px;
+        background-color: #f8f9fb;
+        background-image:
+          linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.22);
+        will-change: transform, opacity;
+      }
+      #stat-num {
+        font-family: 'Cabinet Grotesk', sans-serif;
+        font-size: 132px;
+        font-weight: 800;
+        color: #7c3aed;
+        line-height: 1;
+        letter-spacing: -0.04em;
+      }
+      #stat-label {
+        margin-top: 10px;
+        font-family: 'Satoshi', sans-serif;
+        font-size: 36px;
+        font-weight: 400;
+        color: rgba(26, 26, 46, 0.68);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="video-frame">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-camera-push"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.3"
+        data-duration="0.528"
+        data-track-index="3"
+        data-volume="0.12"
+      ></audio>
+      <audio
+        id="sfx-stat-badge"
+        class="clip"
+        src="assets/sfx/deep roomy pop.mp3"
+        preload="auto"
+        data-start="1.22"
+        data-duration="0.72"
+        data-track-index="4"
+        data-volume="0.12"
+      ></audio>
+
+      <div id="shade"></div>
+      <div id="badge">
+        <div id="stat-num">25</div>
+        <div id="stat-label">hours / week saved</div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#badge", { opacity: 0, scale: 0.9, x: 32 });
+
+      tl.to("#video-frame", { scale: 1.43, x: 0, y: 0, duration: 1.1, ease: "expo.inOut" }, 0.3);
+      tl.to("#shade", { opacity: 1, duration: 0.72, ease: "sine.out" }, 0.72);
+      tl.to("#badge", { opacity: 1, scale: 1, x: 0, duration: 0.58, ease: "back.out(1.4)", transformOrigin: "right top" }, 1.22);
+
+      tl.to("#badge", { opacity: 0, y: -20, scale: 0.96, duration: 0.4, ease: "power2.in", transformOrigin: "right top" }, 4.65);
+      tl.to("#shade", { opacity: 0, duration: 0.45, ease: "sine.in" }, 4.8);
+      tl.to("#video-frame", { scale: 1, x: 0, y: 0, duration: 0.85, ease: "expo.inOut" }, 4.82);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "duration": 6,
+  "assertions": [
+    {
+      "kind": "keepsMoving",
+      "withinSelector": "#panel-stage",
+      "maxStaticSec": 0.5
+    }
+  ]
+}

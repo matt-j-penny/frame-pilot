@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: 'Cabinet Grotesk'; src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2'); font-weight: 800; font-style: normal; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+
+    /* Transparent overlay — layer over source video (typically blurred) in parent composition */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+    .preview-video-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .blur-backdrop { position: absolute; inset: 0; z-index: 1; backdrop-filter: blur(0px); background: rgba(26,26,46,0); will-change: backdrop-filter, background; }
+
+    .panel {
+      position: relative;
+      z-index: 2;
+      background: rgba(8,6,20,0.94);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      border: 3px solid #7c3aed;
+      border-radius: 18px;
+      padding: 48px 64px;
+      max-width: 1400px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      will-change: transform, opacity;
+    }
+
+    /* Single-line WBW variant — for equations or short statements */
+    .wbw-line {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: baseline;
+      gap: 0.5em;
+    }
+
+    .wbw-w {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      will-change: transform, opacity;
+    }
+
+    /* Multi-line stacked variant — for 2–3 sentence quotes */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .stack-line {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.28;
+      letter-spacing: -0.02em;
+      will-change: transform, opacity;
+    }
+
+    .c-red    { color: #f87171; }
+    .c-purple { color: #c4b5fd; }
+    .c-green  { color: #6ee7b7; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-dark-caption-panel" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+
+    <img class="preview-video-bg" data-preview-only src="assets/talking-head-placeholder.png" alt="">
+    <div class="blur-backdrop" id="blur-backdrop"></div>
+
+    <div class="panel" id="panel">
+      <!--
+        CHOOSE ONE of the two layouts below and delete the other.
+
+        LAYOUT A — word-by-word single line (good for equations and short punchy statements):
+      -->
+      <div class="wbw-line" id="wbw-line">
+        <!-- REPLACE: words and colour classes -->
+        <span class="wbw-w" id="w-01">99%</span>
+        <span class="wbw-w" id="w-02">success</span>
+        <span class="wbw-w" id="w-03">×</span>
+        <span class="wbw-w" id="w-04">100</span>
+        <span class="wbw-w" id="w-05">runs/day</span>
+        <span class="wbw-w" id="w-06">=</span>
+        <span class="wbw-w c-red" id="w-07">breaks</span>
+        <span class="wbw-w" id="w-08">every</span>
+        <span class="wbw-w" id="w-09">single</span>
+        <span class="wbw-w" id="w-10">day.</span>
+      </div>
+
+      <!--
+        LAYOUT B — stacked lines (good for 2–3 sentence quotes, delete above and uncomment this):
+
+      <div class="stack">
+        <div class="stack-line" id="sl-1">Like someone at a networking event.</div>
+        <div class="stack-line" id="sl-2">Interesting,</div>
+        <div class="stack-line" id="sl-3">but you don't know if it's actually true.</div>
+      </div>
+      -->
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // ── LAYOUT A — word-by-word ──────────────────────────────
+    tl.to('#blur-backdrop', { backdropFilter: 'blur(16px)', backgroundColor: 'rgba(26,26,46,0.12)', duration: 0.5, ease: 'power2.out' }, 0.08);
+    tl.from('#panel',  { opacity: 0, y: 28, scale: 0.96, duration: 0.45, ease: 'power3.out', transformOrigin: 'center center' }, 0);
+    tl.set('.wbw-w', { opacity: 0, y: 14 }, 0);
+    // REPLACE: timestamps to match transcript
+    tl.to('#w-01', { opacity: 1, y: 0, duration: 0.28, ease: 'power3.out' }, 0.25);
+    tl.to('#w-02', { opacity: 1, y: 0, duration: 0.2,  ease: 'power2.out' }, 0.55);
+    tl.to('#w-03', { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.75);
+    tl.to('#w-04', { opacity: 1, y: 0, duration: 0.24, ease: 'power3.out' }, 1.4);
+    tl.to('#w-05', { opacity: 1, y: 0, duration: 0.2,  ease: 'power2.out' }, 1.6);
+    tl.to('#w-06', { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 1.8);
+    tl.to('#w-07', { opacity: 1, y: 0, duration: 0.28, ease: 'power3.out' }, 1.95);
+    tl.to('#w-08', { opacity: 1, y: 0, duration: 0.2,  ease: 'power2.out' }, 2.3);
+    tl.to('#w-09', { opacity: 1, y: 0, duration: 0.2,  ease: 'power2.out' }, 2.55);
+    tl.to('#w-10', { opacity: 1, y: 0, duration: 0.22, ease: 'power3.out' }, 2.8);
+    tl.to('#panel', { opacity: 0, y: -20, scale: 0.97, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 4.1);
+    tl.to('#blur-backdrop', { backdropFilter: 'blur(0px)', backgroundColor: 'rgba(26,26,46,0)', duration: 0.5, ease: 'power2.in' }, 4.08);
+
+    // ── LAYOUT B — stacked lines (uncomment if using that layout) ──
+    // tl.from('#panel',  { opacity: 0, y: 28, scale: 0.96, duration: 0.45, ease: 'power3.out', transformOrigin: 'center center' }, 0);
+    // tl.set('#sl-1, #sl-2, #sl-3', { opacity: 0, y: 20 }, 0);
+    // tl.to('#sl-1', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.2);
+    // tl.to('#sl-2', { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 1.6);
+    // tl.to('#sl-3', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 2.8);
+    // tl.to('#panel', { opacity: 0, y: -20, scale: 0.97, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 4.1);
+
+    window.__timelines['mg-dark-caption-panel'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

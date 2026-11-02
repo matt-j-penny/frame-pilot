@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g7: ASSETS YOU NEED (list card · overlay · Callout R)</title>
+<script src="../vendor/gsap.min.js"></script>
+<script src="hf-anim.js"></script>
+<style>
+/* g7 · timeline 24.99 -> 29.50 (DUR 4.51) · alpha overlay · Callout R x1180 y150 w620 */
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Bold.otf') format('opentype');font-weight:700;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--royal:#1e48ff;--txt:#e8f0ff;--muted:#8fa6d4;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Inter',sans-serif;}
+#float{position:absolute;inset:0;will-change:transform;}
+.panel{position:absolute;left:1180px;top:150px;width:620px;height:380px;
+  background:linear-gradient(160deg,#12224e 0%,#0a1435 100%);
+  border:2px solid rgba(96,146,255,0.42);border-radius:22px;
+  box-shadow:0 26px 60px rgba(2,7,24,0.72), 0 0 0 1px rgba(6,13,36,0.85),
+             inset 0 2px 0 rgba(140,180,255,0.22);opacity:0;overflow:visible;}
+.eyebrow{position:absolute;left:40px;top:40px;font-weight:700;font-size:23px;
+  letter-spacing:3.4px;text-transform:uppercase;color:var(--muted);opacity:0;}
+.row{position:absolute;left:40px;width:540px;height:70px;opacity:0;}
+.row .chip{position:absolute;left:0;top:14px;width:42px;height:42px;border-radius:50%;
+  background:var(--royal);box-shadow:0 0 12px rgba(30,72,255,0.60), 0 0 24px rgba(30,72,255,0.28);}
+.row .chip svg{position:absolute;left:11px;top:14px;}
+.row .lbl{position:absolute;left:62px;top:15px;font-weight:700;font-size:36px;
+  letter-spacing:-0.8px;color:var(--txt);}
+#r1{top:106px;} #r2{top:186px;} #r3{top:266px;}
+</style></head>
+<body style="margin:0;background:transparent;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="4.5100">
+<div id="float">
+  <div class="panel" id="panel">
+    <div class="eyebrow" id="eyebrow">Assets You Need</div>
+    <div class="row" id="r1">
+      <div class="chip"><svg width="20" height="16" viewBox="0 0 20 16"><polygon fill="#fff" points="7,16 0,9 3,6 7,10 17,0 20,3"/></svg></div>
+      <div class="lbl">Music</div>
+    </div>
+    <div class="row" id="r2">
+      <div class="chip"><svg width="20" height="16" viewBox="0 0 20 16"><polygon fill="#fff" points="7,16 0,9 3,6 7,10 17,0 20,3"/></svg></div>
+      <div class="lbl">Sound Effects</div>
+    </div>
+    <div class="row" id="r3">
+      <div class="chip"><svg width="20" height="16" viewBox="0 0 20 16"><polygon fill="#fff" points="7,16 0,9 3,6 7,10 17,0 20,3"/></svg></div>
+      <div class="lbl">B-Roll</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const DUR = 4.51;
+const H = HF.init({fps: 50/1, dur: DUR});
+const {tl, F, riseIn, exit, float} = H;
+float('#float', 0, DUR, 'subtle');
+tl.set('#panel', {opacity: 1}, 0);
+riseIn('#eyebrow', 0.10, 18);
+// word-synced to when each asset is actually named (relative to this comp's start at 24.99):
+// 'music,' 26.96 -> 1.97 · 'sound' 27.68 -> 2.69 · 'B-roll' 28.78 -> 3.79
+riseIn('#r1', 1.97, 18);
+riseIn('#r2', 2.69, 18);
+riseIn('#r3', 3.79, 18);
+exit('#panel'); exit('#eyebrow'); exit('#r1'); exit('#r2'); exit('#r3');
+H.finish();
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

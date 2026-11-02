@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>AI Thumbnail Generator Icon Tour</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Brush Script MT";
+      src: local("Brush Script MT");
+      font-style: normal;
+      font-weight: 400 700;
+    }
+
+    @font-face {
+      font-family: "Segoe Script";
+      src: local("Segoe Script");
+      font-style: normal;
+      font-weight: 400 700;
+    }
+
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      overflow: hidden;
+      background: #01020b;
+    }
+
+    #atg-root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    #atg-clip,
+    .atg-stage,
+    .atg-camera {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    .atg-stage {
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 55% 36% at 50% 68%, rgba(25, 58, 96, .48) 0%, rgba(8, 21, 48, .24) 44%, transparent 76%),
+        radial-gradient(ellipse 43% 73% at 14% 42%, rgba(0, 10, 70, .36), transparent 78%),
+        radial-gradient(ellipse 34% 78% at 87% 55%, rgba(0, 9, 40, .3), transparent 83%),
+        linear-gradient(116deg, #000108 0%, #020516 44%, #02030d 74%, #000105 100%);
+    }
+
+    .atg-stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: .24;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+      mix-blend-mode: screen;
+    }
+
+    .atg-camera {
+      z-index: 1;
+      transform-origin: 0 0;
+      filter: url("#atg-motion-blur");
+      will-change: transform, filter;
+    }
+
+    .atg-content {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      width: 78%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .atg-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5.9%;
+      margin: 0 auto 4.15%;
+    }
+
+    .atg-tile {
+      position: relative;
+      flex: 0 0 12.75%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-radius: 20%;
+      opacity: 0;
+      transform: scale(.52);
+      transform-origin: center center;
+      will-change: transform, opacity;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, .18),
+        0 0 34px rgba(93, 214, 255, .19),
+        0 18px 40px rgba(0, 0, 0, .42);
+    }
+
+    .atg-canva {
+      display: grid;
+      place-items: center;
+      color: white;
+      font-family: "Brush Script MT", "Segoe Script", cursive;
+      font-size: 47px;
+      font-weight: 600;
+      letter-spacing: -2px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, .2);
+      background:
+        radial-gradient(circle at 69% 81%, #fb6d78 0 1.25%, transparent 1.55%),
+        radial-gradient(circle at 78% 73%, #ff8959 0 1.25%, transparent 1.55%),
+        radial-gradient(circle at 84% 63%, #ffb449 0 1.25%, transparent 1.55%),
+        radial-gradient(circle at 89% 53%, #fdd45a 0 1.25%, transparent 1.55%),
+        linear-gradient(145deg, #48d9d9 2%, #3bb8e5 48%, #6351d8 73%, #8b26a8 100%);
+    }
+
+    .atg-canva::after {
+      content: "";
+      position: absolute;
+      right: -18%;
+      bottom: -8%;
+      width: 96%;
+      height: 50%;
+      opacity: .8;
+      transform: rotate(-8deg);
+      background: repeating-linear-gradient(160deg, transparent 0 9%, rgba(255, 135, 76, .9) 10% 11%, transparent 12% 18%);
+    }
+
+    .atg-canva span {
+      position: relative;
+      z-index: 1;
+      transform: translateY(-2%);
+    }
+
+    .atg-canva span::before {
+      content: "Canva";
+    }
+
+    .atg-thumbnail {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(160deg, #5ac8fa 0%, #31adea 44%, #1999d8 100%);
+    }
+
+    .atg-thumbnail span {
+      color: rgba(255, 255, 255, .93);
+      font-size: 27px;
+      font-weight: 750;
+      letter-spacing: -1.25px;
+      text-shadow: 0 1px 8px rgba(255, 255, 255, .18);
+    }
+
+    .atg-thumbnail span::before {
+      content: "Thumbnail";
+    }
+
+    .atg-thumbnail span::after {
+      content: " AI";
+      color: #f9c946;
+      font-size: .75em;
+      letter-spacing: -2px;
+    }
+
+    .atg-pikzels {
+      background: #22272b;
+    }
+
+    .atg-pikzels .atg-mint {
+      position: absolute;
+      background: #56e5cb;
+    }
+
+    .atg-pikzels .atg-left {
+      left: 0;
+      top: 27%;
+      width: 25%;
+      height: 73%;
+    }
+
+    .atg-pikzels .atg-top {
+      left: 25%;
+      top: 0;
+      width: 25%;
+      height: 27%;
+    }
+
+    .atg-pikzels .atg-bottom {
+      right: 0;
+      bottom: 0;
+      width: 51%;
+      height: 31%;
+    }
+
+    .atg-pikzels .atg-cut {
+      position: absolute;
+      right: -12%;
+      bottom: 24%;
+      width: 66%;
+      height: 34%;
+      border-radius: 0 0 70% 0;
+      background: #22272b;
+    }
+
+    .atg-pikzels .atg-eye {
+      position: absolute;
+      top: 25%;
+      right: 17%;
+      width: 32%;
+      height: 21%;
+      background: white;
+      box-shadow: 0 0 7px rgba(255, 255, 255, .3);
+    }
+
+    .atg-vidiq {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(155deg, #4dc2ff, #25a7ed 70%);
+    }
+
+    .atg-vidiq .atg-play {
+      position: relative;
+      width: 67%;
+      height: 56%;
+      transform: translateX(6%);
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      background: linear-gradient(140deg, #354054, #182642 73%);
+      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .32));
+    }
+
+    .atg-vidiq .atg-word {
+      position: absolute;
+      top: 47%;
+      left: 42%;
+      color: white;
+      transform: translate(-50%, -50%);
+      font-size: 39px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, .35);
+    }
+
+    .atg-openai {
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #6adcc9, #31aa96);
+    }
+
+    .atg-knot {
+      position: relative;
+      width: 64%;
+      height: 64%;
+    }
+
+    .atg-knot i {
+      position: absolute;
+      inset: 21% 5%;
+      border: 7px solid white;
+      border-radius: 50%;
+      transform: rotate(calc(var(--i) * 60deg)) translateX(13%);
+      box-shadow: 0 0 4px rgba(255, 255, 255, .16);
+    }
+
+    .atg-copy {
+      color: #f4f5fa;
+    }
+
+    .atg-eyebrow,
+    .atg-title {
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .atg-eyebrow {
+      margin: 0;
+      font-size: 64px;
+      font-weight: 500;
+      line-height: 1.04;
+      letter-spacing: -0.018em;
+      text-shadow:
+        0 0 6px rgba(255, 255, 255, .32),
+        0 0 18px rgba(111, 159, 255, .2),
+        0 3px 10px rgba(0, 0, 0, .64);
+    }
+
+    .atg-title {
+      margin: .2% 0 0;
+      color: #0c72e6;
+      font-size: 90px;
+      font-weight: 750;
+      line-height: 1.02;
+      letter-spacing: -0.028em;
+      text-shadow:
+        0 0 7px rgba(35, 130, 255, .7),
+        0 0 20px rgba(20, 104, 255, .52),
+        0 0 42px rgba(13, 81, 224, .24),
+        0 3px 10px rgba(0, 0, 0, .68);
+    }
+  </style>
+</head>
+<body>
+  <div id="atg-root" data-composition-id="mg-ai-thumbnail-generator-tour" data-start="0" data-duration="8.5" data-width="1920" data-height="1080" data-fps="30">
+    <section id="atg-clip" class="clip" data-start="0" data-duration="8.5" data-track-index="1" aria-label="AI thumbnail generator icon camera tour">
+      <div class="atg-stage">
+        <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+          <filter id="atg-motion-blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur id="atg-motion-blur-node" in="SourceGraphic" stdDeviation="0 0"></feGaussianBlur>
+          </filter>
+        </svg>
+        <div id="atg-camera" class="atg-camera" data-layout-allow-overflow="true">
+          <div class="atg-content">
+            <div class="atg-logos" aria-label="Five AI thumbnail generator icons">
+              <!-- REPLACE: tile artwork or label content. Keep the five tile IDs to preserve the camera path. -->
+              <div id="atg-icon-1" class="atg-tile atg-canva" role="img" aria-label="Canva"><span aria-hidden="true"></span></div>
+              <div id="atg-icon-2" class="atg-tile atg-thumbnail" role="img" aria-label="Thumbnail AI"><span aria-hidden="true"></span></div>
+              <div id="atg-icon-3" class="atg-tile atg-pikzels" aria-label="Pikzels">
+                <i class="atg-mint atg-left"></i>
+                <i class="atg-mint atg-top"></i>
+                <i class="atg-mint atg-bottom"></i>
+                <i class="atg-cut"></i>
+                <i class="atg-eye"></i>
+              </div>
+              <div id="atg-icon-4" class="atg-tile atg-vidiq" aria-label="vidIQ">
+                <i class="atg-play"></i>
+                <span class="atg-word">IQ</span>
+              </div>
+              <div id="atg-icon-5" class="atg-tile atg-openai" aria-label="ChatGPT">
+                <span class="atg-knot">
+                  <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i>
+                  <i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i>
+                </span>
+              </div>
+            </div>
+
+            <div class="atg-copy">
+              <!-- REPLACE: supporting line and headline text. -->
+              <p id="atg-eyebrow" class="atg-eyebrow">I’ll Be Comparing These</p>
+              <h1 id="atg-title" class="atg-title">AI Thumbnail Generators</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const atgTimeline = gsap.timeline({ paused: true });
+    const atgIcons = ["#atg-icon-1", "#atg-icon-2", "#atg-icon-3", "#atg-icon-4", "#atg-icon-5"];
+    const atgFocusScale = 3.2;
+    const atgBlurNode = document.getElementById("atg-motion-blur-node");
+    const atgBlur = { value: 18 };
+    const atgWriteBlur = () => atgBlurNode.setAttribute("stdDeviation", `${atgBlur.value} 0`);
+    const atgCenters = {
+      "#atg-icon-1": { x: 401.4, y: 341.85 },
+      "#atg-icon-2": { x: 680.7, y: 341.85 },
+      "#atg-icon-3": { x: 960, y: 341.85 },
+      "#atg-icon-4": { x: 1239.3, y: 341.85 },
+      "#atg-icon-5": { x: 1518.6, y: 341.85 }
+    };
+
+    const atgCameraPosition = (selector) => ({
+      x: 960 - atgCenters[selector].x * atgFocusScale,
+      y: 540 - atgCenters[selector].y * atgFocusScale,
+      scale: atgFocusScale
+    });
+
+    atgWriteBlur();
+    gsap.set("#atg-camera", atgCameraPosition(atgIcons[0]));
+
+    const atgEntranceTimes = [0.04, 0.24, 0.44, 0.64, 0.84];
+    const atgCameraTimes = [0, 0.18, 0.38, 0.58, 0.78];
+
+    atgTimeline.to(atgBlur, {
+      value: 0,
+      duration: 0.14,
+      ease: "power4.out",
+      onUpdate: atgWriteBlur
+    }, 0.04);
+
+    atgIcons.forEach((selector, index) => {
+      if (index > 0) {
+        atgTimeline.to("#atg-camera", {
+          ...atgCameraPosition(selector),
+          duration: 0.16,
+          ease: "expo.inOut"
+        }, atgCameraTimes[index]);
+
+        atgTimeline.to(atgBlur, {
+          value: 18,
+          duration: 0.06,
+          ease: "power3.in",
+          onUpdate: atgWriteBlur
+        }, atgCameraTimes[index]);
+
+        atgTimeline.to(atgBlur, {
+          value: 0,
+          duration: 0.1,
+          ease: "power4.out",
+          onUpdate: atgWriteBlur
+        }, atgCameraTimes[index] + 0.06);
+      }
+
+      atgTimeline.fromTo(selector, {
+        opacity: 0,
+        scale: 0.52,
+        rotation: index % 2 === 0 ? -7 : 7
+      }, {
+        opacity: 1,
+        scale: 1.06,
+        rotation: 0,
+        duration: 0.14,
+        ease: "back.out(1.75)",
+        immediateRender: false
+      }, atgEntranceTimes[index]);
+
+      atgTimeline.to(selector, {
+        scale: 1,
+        duration: 0.05,
+        ease: "power2.out"
+      }, atgEntranceTimes[index] + 0.13);
+    });
+
+    atgTimeline.to("#atg-camera", {
+      x: 0,
+      y: 0,
+      scale: 1,
+      duration: 0.9,
+      ease: "expo.inOut"
+    }, 1.2);
+
+    atgTimeline.fromTo("#atg-eyebrow", {
+      opacity: 0,
+      y: 34
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.58,
+      ease: "power3.out",
+      immediateRender: false
+    }, 2.12);
+
+    atgTimeline.fromTo("#atg-title", {
+      opacity: 0,
+      y: 44,
+      scale: 0.965
+    }, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.76,
+      ease: "back.out(1.28)",
+      immediateRender: false
+    }, 2.38);
+
+    window.__timelines["mg-ai-thumbnail-generator-tour"] = atgTimeline;
+  </script>
+
+  <!-- hf-autoplay -->
+  <script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1400)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

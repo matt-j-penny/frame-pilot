@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Icon Cluster Slide-In Reveal — Dot Grid — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP HALF: off-white dot grid + icon cluster ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* REPLACE: swap the <symbol> path for any other icon mark, and #7c3aed for a different accent */
+      #icon-cluster {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      .icon-item {
+        position: absolute;
+        display: block;
+      }
+
+      .icon-item svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .icon-item svg path {
+        fill: #7c3aed;
+      }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="icon-cluster-slide-reveal-9x16"
+      data-start="0"
+      data-duration="4.6"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <svg id="dot-grid" width="1080" height="864"></svg>
+
+        <!-- Shared icon mark, referenced by every .icon-item below via <use> -->
+        <svg width="0" height="0" style="position:absolute">
+          <defs>
+            <symbol id="icon-mark" viewBox="0 0 180 180">
+              <path d="M 45.507812 175.832031 C 44.386719 176.523438 42.117188 176.539062 42.421875 174.710938 C 42.519531 174.160156 42.96875 173.617188 43.222656 173.152344 C 43.808594 171.613281 44.4375 170.078125 45.117188 168.640625 C 48.453125 162.515625 51.847656 156.367188 55.164062 150.246094 C 61.054688 140.0625 66.699219 129.742188 72.773438 119.667969 C 76.199219 113.128906 80.28125 106.972656 83.921875 100.554688 C 86.28125 96.363281 88.617188 92.0625 90.628906 87.683594 C 88.289062 87.441406 85.949219 87.207031 83.621094 86.878906 C 78.988281 86.472656 74.375 85.859375 69.761719 85.285156 C 68.617188 85.09375 67.464844 84.949219 66.304688 84.882812 C 65.238281 84.84375 63.722656 84.816406 63.894531 83.589844 C 63.789062 83.398438 63.738281 83.171875 63.773438 82.929688 C 63.902344 82.199219 64.488281 81.65625 64.882812 81.054688 C 66.402344 78.984375 67.890625 76.894531 69.527344 74.914062 C 71.613281 72.304688 73.558594 69.585938 75.664062 66.988281 C 78.886719 63.058594 81.699219 58.820312 85.089844 55.023438 C 89.804688 49.765625 94.21875 44.242188 99.015625 39.058594 C 109.316406 28.070312 119.050781 16.519531 130.476562 6.652344 C 131.632812 5.65625 132.667969 4.488281 133.917969 3.613281 C 137.265625 2.953125 135.191406 7.546875 134.457031 9.023438 C 133.363281 11.421875 131.894531 13.613281 130.621094 15.910156 C 129.367188 18.175781 128.453125 20.59375 127.429688 22.964844 C 124.0625 29.976562 120.070312 36.691406 116.835938 43.773438 C 114.449219 49.429688 111.796875 54.917969 108.933594 60.347656 C 108.175781 62.007812 107.503906 63.707031 106.753906 65.375 C 107.347656 65.476562 107.929688 65.59375 108.367188 65.578125 C 113.898438 65.769531 119.375 66.664062 124.847656 67.46875 C 127.835938 67.820312 130.792969 68.382812 133.789062 68.667969 C 134.949219 68.824219 137.507812 68.8125 137.597656 70.105469 C 137.730469 70.695312 137.464844 71.464844 136.925781 71.964844 C 131.429688 79 126.019531 86.097656 120.589844 93.183594 C 115.195312 99.320312 110.148438 105.753906 104.816406 111.945312 C 100.714844 116.753906 96.445312 121.417969 92.105469 126.011719 C 88.523438 130.03125 85.15625 134.226562 81.6875 138.34375 C 75.546875 146.09375 68.1875 152.753906 61.625 160.132812 C 57.757812 164.382812 53.730469 168.480469 49.503906 172.375 C 48.621094 173.109375 47.992188 174.179688 46.972656 174.722656 C 46.949219 174.734375 46.921875 174.746094 46.894531 174.753906 C 46.457031 175.140625 45.996094 175.507812 45.507812 175.828125 Z M 45.507812 175.832031 " />
+            </symbol>
+          </defs>
+        </svg>
+
+        <!-- REPLACE: reposition/resize/reorder icons, or add/remove entries — each needs a unique #icon-N id.
+             Positions are hand-scattered (not a grid) with big size swings and uneven gaps so the
+             cluster reads as organic/random rather than evenly spaced. -->
+        <div id="icon-1" class="icon-item" style="left:600px; top:60px; width:210px; height:210px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-2" class="icon-item" style="left:860px; top:340px; width:80px; height:80px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-3" class="icon-item" style="left:150px; top:260px; width:140px; height:140px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-4" class="icon-item" style="left:380px; top:60px; width:60px; height:60px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-5" class="icon-item" style="left:750px; top:560px; width:180px; height:180px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-6" class="icon-item" style="left:40px; top:600px; width:100px; height:100px;"><svg><use href="#icon-mark"/></svg></div>
+        <div id="icon-7" class="icon-item" style="left:415px; top:415px; width:260px; height:260px;"><svg><use href="#icon-mark"/></svg></div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="4.6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      // Dot grid matching the Off-White Dot Grid template, sized for the 1080×864 top half
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+         through the 1080×864 window below it while the icon cluster is on screen.
+         SPLIT_SCALE must stay at 1 (never below). SPLIT_SHIFT must stay within 0…864.
+         Read real values with: python3 scripts/face-frame.py <video> --window 864:1920
+         then add ~100–150px to the shift it returns — confirm on a real frame.
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      // Icon cluster — each icon slides in from the left, eases into its rest position,
+      // holds, then slides back out to the right before the graphic zone exits.
+      const icons = ["#icon-1", "#icon-2", "#icon-3", "#icon-4", "#icon-5", "#icon-6", "#icon-7"];
+      const iconEls = icons.map((sel) => document.querySelector(sel));
+
+      // How far left of its own rest position each icon starts (keeps every icon off-canvas
+      // to the left regardless of its final `left`/`width`, so the slide always reads as "from the left")
+      const ENTER_MARGIN = 200;
+      const enterStartX = iconEls.map((el) => {
+        const left = parseFloat(el.style.left);
+        const width = parseFloat(el.style.width);
+        return -(left + width + ENTER_MARGIN);
+      });
+
+      // How far right of its own rest position each icon ends up (keeps every icon off-canvas
+      // to the right regardless of its final `left`, so the exit always reads as "to the right")
+      const exitStartX = iconEls.map((el) => {
+        const left = parseFloat(el.style.left);
+        return 1080 - left + ENTER_MARGIN;
+      });
+
+      // Fixed tilt per icon, uneven on purpose, so the cluster reads as scattered rather than grid-aligned
+      const ROT = [-14, 10, -6, 18, -9, 13, -4];
+      gsap.set(iconEls, { transformOrigin: "50% 50%" });
+      gsap.set(iconEls, {
+        x: (i) => enterStartX[i],
+        rotation: (i) => ROT[i],
+        scale: 0.92,
+        opacity: 0,
+      });
+
+      const ENTER_START = 0.5;
+      const ENTER_STAGGER = 0.09;
+      const ENTER_DUR = 0.62;
+
+      iconEls.forEach((el, i) => {
+        tl.to(
+          el,
+          { x: 0, scale: 1, opacity: 1, duration: ENTER_DUR, ease: "expo.out" },
+          ENTER_START + i * ENTER_STAGGER
+        );
+      });
+
+      const lastEnterStart = ENTER_START + (iconEls.length - 1) * ENTER_STAGGER;
+      const lastEnterEnd = lastEnterStart + ENTER_DUR;
+
+      // Hold — icons stay put on screen
+      const HOLD = 1.0;
+      const EXIT_START = lastEnterEnd + HOLD;
+      const EXIT_STAGGER = 0.07;
+      const EXIT_DUR = 0.48;
+
+      iconEls.forEach((el, i) => {
+        tl.to(
+          el,
+          { x: exitStartX[i], scale: 0.94, opacity: 0, duration: EXIT_DUR, ease: "power2.in" },
+          EXIT_START + i * EXIT_STAGGER
+        );
+      });
+
+      const lastExitStart = EXIT_START + (iconEls.length - 1) * EXIT_STAGGER;
+      const lastExitEnd = lastExitStart + EXIT_DUR;
+
+      // Graphic zone slides back up and out, revealing the talking head full-screen again
+      const zoneExitStart = lastExitEnd + 0.3;
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+
+      window.__timelines["icon-cluster-slide-reveal-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

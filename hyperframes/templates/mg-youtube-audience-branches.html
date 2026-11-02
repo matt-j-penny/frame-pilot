@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>YouTube Audience Branches</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      :root {
+        --youtube: #ff0000;
+        --white: #ffffff;
+        --ink: #050505;
+        --paper: #f4f4f4;
+        --edge: #c7c7c7;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        margin: 0;
+        overflow: hidden;
+        background: var(--paper);
+      }
+
+      #youtube-audience-branches {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      .background {
+        position: absolute;
+        inset: 0;
+        background-color: #f8f9fb;
+        background-image:
+          linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      .world {
+        position: absolute;
+        inset: 0;
+        transform-origin: 806px 540px;
+        will-change: transform, opacity;
+      }
+
+      .video-card {
+        position: absolute;
+        left: 503.5px;
+        top: 367.5px;
+        width: 605px;
+        height: 345px;
+        display: grid;
+        place-items: center;
+        border-radius: 30px;
+        background: var(--ink);
+      }
+
+      .youtube-badge {
+        width: 206px;
+        height: 117px;
+        display: grid;
+        place-items: center;
+        border-radius: 26px;
+        background: var(--youtube);
+      }
+
+      .play {
+        width: 0;
+        height: 0;
+        margin-left: 12px;
+        border-top: 31px solid transparent;
+        border-bottom: 31px solid transparent;
+        border-left: 52px solid var(--white);
+      }
+
+      .connectors {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: visible;
+      }
+
+      .connector {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        vector-effect: non-scaling-stroke;
+        will-change: transform, opacity;
+      }
+
+      #center-trunk {
+        transform-box: fill-box;
+        transform-origin: left center;
+      }
+
+      #upper-branch,
+      #lower-branch {
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+
+      .junction-anchor {
+        position: absolute;
+        left: 1148px;
+        top: 560px;
+        width: 20px;
+        height: 20px;
+        color: var(--ink);
+        font-size: 1px;
+        line-height: 1;
+      }
+
+      .outcome-card {
+        position: absolute;
+        left: 1382px;
+        width: 216px;
+        height: 216px;
+        display: grid;
+        place-items: center;
+        border: 6px solid var(--ink);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.12);
+        transform-origin: center;
+      }
+
+      #automation-card { top: 194px; }
+      #process-card { top: 462px; }
+      #growth-card { top: 730px; }
+
+      .outcome-icon {
+        display: block;
+        width: 138px;
+        height: 138px;
+        object-fit: contain;
+        transform-origin: center;
+      }
+    </style>
+  </head>
+  <body>
+    <main data-hf-id="hf-7k4z" id="youtube-audience-branches" data-composition-id="youtube-audience-branches" data-start="0" data-duration="6.5" data-fps="30" data-width="1920" data-height="1080" aria-label="A YouTube video branching into three outcomes">
+      <div data-hf-id="hf-7jad" class="background" aria-hidden="true"></div>
+
+      <section data-hf-id="hf-vljt" id="diagram" class="clip world" data-start="0" data-duration="6.5" data-track-index="1">
+        <div data-hf-id="hf-a0k8" class="video-card" aria-label="YouTube video source">
+          <div data-hf-id="hf-8zi3" class="youtube-badge" aria-label="YouTube">
+            <span data-hf-id="hf-itxk" class="play" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <svg data-hf-id="hf-98os" class="connectors" viewBox="0 0 1920 1080" aria-hidden="true">
+          <path data-hf-id="hf-fahu" id="center-trunk" class="connector" pathLength="1" d="M1108 570 H1382" />
+          <path data-hf-id="hf-fgtc" id="upper-branch" class="connector" data-layout-ignore="" pathLength="1" d="M1158 570 C1192 570 1205 548 1205 504 V382 C1205 334 1250 302 1326 302 H1382" />
+          <path data-hf-id="hf-6itb" id="lower-branch" class="connector" data-layout-ignore="" pathLength="1" d="M1158 570 C1192 570 1205 592 1205 636 V758 C1205 806 1250 838 1326 838 H1382" />
+        </svg>
+        <span data-hf-id="hf-qkho" class="junction-anchor" data-layout-allow-overflow aria-hidden="true">junction</span>
+
+        <article data-hf-id="hf-odc8" id="automation-card" class="outcome-card" aria-label="Automation outcome">
+          <img data-hf-id="hf-53t8" id="automation-icon" class="outcome-icon" src="assets/youtube-audience-branches/automation.svg" alt="Automation workflow">
+        </article>
+        <article data-hf-id="hf-h2tz" id="process-card" class="outcome-card" aria-label="Structured process outcome">
+          <img data-hf-id="hf-e06p" id="process-icon" class="outcome-icon" src="assets/youtube-audience-branches/flowchart.svg" alt="Structured process">
+        </article>
+        <article data-hf-id="hf-fmn1" id="growth-card" class="outcome-card" aria-label="Positive growth outcome">
+          <img data-hf-id="hf-8do2" id="growth-icon" class="outcome-icon" src="assets/youtube-audience-branches/growth.svg" alt="Positive growth">
+        </article>
+      </section>
+    </main>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+      const cards = ["#automation-card", "#process-card", "#growth-card"];
+      const icons = ["#automation-icon", "#process-icon", "#growth-icon"];
+
+      gsap.set(".world", { scale: 3.4, x: 154, y: 0, opacity: 1 });
+      gsap.set("#center-trunk", { x: -32, opacity: 0 });
+      gsap.set(["#upper-branch", "#lower-branch"], { x: -32, opacity: 0 });
+      gsap.set(cards, { autoAlpha: 0, x: 36, scale: 0.88 });
+      gsap.set(icons, { autoAlpha: 0, scale: 0.82 });
+
+      tl.to(".world", { scale: 1, x: 0, y: 0, duration: 1.5, ease: "power3.inOut" }, 0.25);
+      tl.to("#center-trunk", { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 1.75);
+      tl.to(["#upper-branch", "#lower-branch"], { x: 0, opacity: 1, duration: 0.65, ease: "power3.out", stagger: 0.08 }, 2.0);
+
+      cards.forEach((card, index) => {
+        const cardStart = 2.75 + index * 0.3;
+        const iconStart = cardStart + 0.12;
+        tl.to(card, { autoAlpha: 1, x: 0, scale: 1, duration: 0.5, ease: "power3.out" }, cardStart);
+        tl.to(icons[index], { autoAlpha: 1, scale: 1, duration: 0.38, ease: "power2.out" }, iconStart);
+      });
+
+      tl.to(".world", { scale: 1.008, duration: 0.8, ease: "sine.inOut" }, 3.8);
+      tl.to(".world", { scale: 1, duration: 0.8, ease: "sine.inOut" }, 4.6);
+      tl.to(".world", { scale: 0.94, opacity: 0, duration: 0.7, ease: "power2.in", transformOrigin: "960px 540px" }, 5.4);
+      tl.seek(0);
+
+      window.__timelines["youtube-audience-branches"] = tl;
+    </script>
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var timelines=window.__timelines||{};var ids=Object.keys(timelines);if(!ids.length){setTimeout(play,150);return;}ids.forEach(function(id){var timeline=timelines[id];timeline.eventCallback("onComplete",function(){setTimeout(play,1200)});timeline.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

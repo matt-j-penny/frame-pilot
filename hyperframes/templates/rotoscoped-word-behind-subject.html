@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Cabinet Grotesk';
+        src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+        font-family: 'Cabinet Grotesk', sans-serif;
+      }
+      .clip { position: absolute; }
+      #background-video,
+      #subject-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      #background-video { z-index: 0; }
+      #tone {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: rgba(26, 26, 46, 0.18);
+        pointer-events: none;
+      }
+      #word-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px;
+        pointer-events: none;
+      }
+      #hero-word {
+        color: #ede9fe;
+        font-size: 238px;
+        font-weight: 800;
+        line-height: 0.86;
+        letter-spacing: -0.045em;
+        text-align: center;
+        text-transform: uppercase;
+        white-space: nowrap;
+        text-shadow:
+          0 8px 30px rgba(124, 58, 237, 0.1),
+          0 0 28px rgba(124, 58, 237, 0.4);
+        will-change: transform, opacity, filter;
+      }
+      #subject-wrap {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+      }
+      #subject-video { background: transparent; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <video
+        id="background-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="0"
+      ></video>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-hero-word"
+        class="clip"
+        src="assets/sfx/simple high pop.mp3"
+        preload="auto"
+        data-start="0.72"
+        data-duration="1.08"
+        data-track-index="3"
+        data-volume="0.14"
+      ></audio>
+
+      <div id="tone"></div>
+      <div id="word-wrap" data-layout-allow-occlusion data-layout-allow-overflow>
+        <div id="hero-word">BREAKTHROUGH</div>
+      </div>
+      <div id="subject-wrap">
+        <video
+          id="subject-video"
+          class="clip"
+          src="assets/placeholder-cutout.webm"
+          poster="assets/talking-head-cutout.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="1"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#hero-word", { opacity: 0, scale: 0.72, y: 42, filter: "blur(14px)" });
+
+      tl.to("#hero-word", { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out" }, 0.72);
+      tl.to("#hero-word", { scale: 1.035, duration: 2.4, ease: "sine.inOut" }, 1.62);
+      tl.to("#hero-word", { opacity: 0, scale: 1.12, y: -30, filter: "blur(8px)", duration: 0.54, ease: "power3.in" }, 4.72);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

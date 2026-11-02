@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Chat Recall List Mock — Serif Headline — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP: light graphic — serif headline + chat-window mock ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* REPLACE: HEADLINE text + the italic .accent word */
+      #headline {
+        position: absolute;
+        left: 0;
+        top: 150px;
+        width: 100%;
+        text-align: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 66px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: #16151a;
+      }
+
+      #headline .accent {
+        color: #7c3aed;
+        font-style: italic;
+      }
+
+      /* REPLACE: reposition/resize the mock window, or swap its copy/colors */
+      #chat-mock {
+        position: absolute;
+        left: 100px;
+        top: 280px;
+        width: 880px;
+        height: 460px;
+        background: #ffffff;
+        border: 3px solid #16151a;
+        border-radius: 28px;
+        box-shadow: 10px 12px 0 0 #16151a;
+        padding: 28px 32px;
+      }
+
+      #chat-mock-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e6e6e6;
+      }
+
+      .traffic-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      #chat-mock-title {
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: #3a383f;
+        margin-left: 8px;
+      }
+
+      #chat-mock-bubble {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      #chat-mock-bubble span {
+        background: #16151a;
+        color: #ffffff;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 16px 28px;
+      }
+
+      #chat-mock-list {
+        margin-top: 18px;
+        background: #eeeeee;
+        border-radius: 18px;
+        padding: 20px 28px;
+      }
+
+      .recall-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1c1b20;
+      }
+
+      .recall-row + .recall-row {
+        margin-top: 14px;
+      }
+
+      .recall-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      /* ── BOTTOM: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="chat-recall-list-9x16"
+      data-start="0"
+      data-duration="5.2"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <svg id="dot-grid" width="1080" height="864"></svg>
+
+        <div id="headline">Here's how to do <span class="accent">both</span></div>
+
+        <div id="chat-mock">
+          <div id="chat-mock-header">
+            <span class="traffic-dot" style="background:#ff5f57"></span>
+            <span class="traffic-dot" style="background:#febc2e"></span>
+            <span class="traffic-dot" style="background:#28c840"></span>
+            <span id="chat-mock-title">ChatGPT</span>
+          </div>
+          <div id="chat-mock-bubble"><span>List everything you remember about me</span></div>
+          <div id="chat-mock-list">
+            <div class="recall-row"><span class="recall-dot" style="background:#f2a900"></span>Runs a small business</div>
+            <div class="recall-row"><span class="recall-dot" style="background:#e6484b"></span>Has two kids</div>
+            <div class="recall-row"><span class="recall-dot" style="background:#2ecc71"></span>Plays tennis</div>
+            <div class="recall-row"><span class="recall-dot" style="background:#4c8dff"></span>Planning a house move</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="5.2"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      // Dot grid matching the Off-White Dot Grid template, sized for the 1080×864 top half
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const GRAPHIC_HEIGHT = 864;
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         The graphic covers the top 864px of the canvas; the footage shows through the
+         1080×1056 window below it while the graphic is on screen.
+         SPLIT_SCALE must stay at 1. SPLIT_SHIFT must stay within 0…864.
+         Read real values with: python3 scripts/face-frame.py <video> --window 864:1920
+         then add ~100–150px to the shift it returns — confirm on a real frame.
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      // Headline — fades/rises in first
+      gsap.set("#headline", { opacity: 0, y: 26 });
+      tl.to("#headline", { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 0.4);
+
+      // Chat mock — the whole card pops in, then its contents reveal in sequence
+      gsap.set("#chat-mock", { opacity: 0, y: 34, scale: 0.94, transformOrigin: "50% 50%" });
+      tl.to("#chat-mock", { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "expo.out" }, 0.66);
+
+      gsap.set("#chat-mock-header", { opacity: 0, y: 10 });
+      gsap.set("#chat-mock-bubble span", { opacity: 0, x: 40 });
+      const recallRows = gsap.utils.toArray(".recall-row");
+      gsap.set(recallRows, { opacity: 0, y: 16 });
+
+      tl.to("#chat-mock-header", { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 0.98);
+      tl.to("#chat-mock-bubble span", { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 1.1);
+
+      const ROW_START = 1.42;
+      const ROW_STAGGER = 0.1;
+      recallRows.forEach((el, i) => {
+        tl.to(el, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, ROW_START + i * ROW_STAGGER);
+      });
+
+      const contentReadyAt = ROW_START + (recallRows.length - 1) * ROW_STAGGER + 0.4;
+
+      // Hold
+      const HOLD = 1.1;
+      const EXIT_START = contentReadyAt + HOLD;
+
+      // Exit — mock card and headline fade/settle out together before the panel slides away
+      tl.to("#chat-mock", { opacity: 0, y: -20, scale: 0.96, duration: 0.4, ease: "power2.in" }, EXIT_START);
+      tl.to("#headline", { opacity: 0, y: -18, duration: 0.35, ease: "power2.in" }, EXIT_START + 0.08);
+
+      const exitContentEnd = EXIT_START + 0.4;
+
+      // Graphic zone slides back up and out, revealing the talking head full-screen again
+      const zoneExitStart = exitContentEnd + 0.3;
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+
+      window.__timelines["chat-recall-list-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

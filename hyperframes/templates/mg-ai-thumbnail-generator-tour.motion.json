@@ -1,0 +1,18 @@
+{
+  "duration": 8.5,
+  "assertions": [
+    { "kind": "appearsBy", "selector": "#atg-icon-1", "bySec": 0.22 },
+    { "kind": "appearsBy", "selector": "#atg-icon-2", "bySec": 0.42 },
+    { "kind": "appearsBy", "selector": "#atg-icon-3", "bySec": 0.62 },
+    { "kind": "appearsBy", "selector": "#atg-icon-4", "bySec": 0.82 },
+    { "kind": "appearsBy", "selector": "#atg-icon-5", "bySec": 1.02 },
+    { "kind": "appearsBy", "selector": "#atg-eyebrow", "bySec": 2.75 },
+    { "kind": "appearsBy", "selector": "#atg-title", "bySec": 3.25 },
+    { "kind": "before", "a": "#atg-icon-1", "b": "#atg-icon-2" },
+    { "kind": "before", "a": "#atg-icon-2", "b": "#atg-icon-3" },
+    { "kind": "before", "a": "#atg-icon-3", "b": "#atg-icon-4" },
+    { "kind": "before", "a": "#atg-icon-4", "b": "#atg-icon-5" },
+    { "kind": "before", "a": "#atg-icon-5", "b": "#atg-eyebrow" },
+    { "kind": "before", "a": "#atg-eyebrow", "b": "#atg-title" }
+  ]
+}

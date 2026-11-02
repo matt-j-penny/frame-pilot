@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Lower Third Arrow Two-Line — Dot Grid — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP HALF: off-white dot grid + text/arrow/text ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .lower-third {
+        position: absolute;
+        pointer-events: none;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 72px;
+        z-index: 3;
+      }
+
+      .caption-line {
+        display: block;
+        width: 100%;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 76px;
+        font-weight: 700;
+        line-height: 1.06;
+        letter-spacing: -0.015em;
+        text-align: center;
+        color: #111015;
+        text-shadow: 0 2px 2px rgba(17, 16, 21, 0.07);
+      }
+
+      #arrow-icon {
+        margin: 28px 0;
+        transform-origin: top center;
+      }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="lower-third-arrow-two-line-9x16"
+      data-start="0"
+      data-duration="6.2"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <svg id="dot-grid" width="1080" height="864"></svg>
+
+        <!-- REPLACE: Update LINE_1 / LINE_2 in the <script> below -->
+        <div
+          id="lower-third"
+          class="clip lower-third"
+          data-start="0"
+          data-duration="5.4"
+          data-track-index="1"
+        >
+          <span id="caption-line-1" class="caption-line"></span>
+          <svg id="arrow-icon" width="60" height="120" viewBox="0 0 60 120">
+            <line id="arrow-shaft" x1="30" y1="0" x2="30" y2="92" stroke="#111015" stroke-width="8" stroke-linecap="round" />
+            <path id="arrow-head" d="M2 70 L30 100 L58 70" fill="none" stroke="#111015" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span id="caption-line-2" class="caption-line"></span>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6.2"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      // Dot grid matching the Off-White Dot Grid template, sized for the 1080×864 top half
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      // REPLACE: Update the two lines of copy
+      const LINE_1 = "This is the setup";
+      const LINE_2 = "and here's the payoff";
+
+      document.getElementById("caption-line-1").textContent = LINE_1;
+      document.getElementById("caption-line-2").textContent = LINE_2;
+
+      const shaft = document.getElementById("arrow-shaft");
+      const head = document.getElementById("arrow-head");
+      const shaftLength = shaft.getTotalLength();
+      const headLength = head.getTotalLength();
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.74, ease: "expo.out" }, 0.12);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+         through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+         down so the speaker's face lands inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+
+         Then ADD ~100–150px to the shift it returns. The detector's box starts
+         at the eyebrows and excludes hair, so its value clips the top of the
+         head even when it reports faceFullyVisible: true. Confirm on a real
+         frame (npx hyperframes snapshot --at <t>) — too much shift leaves the
+         subject floating, so tune the last ~30px by eye.
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.74, ease: "expo.out" }, 0.12);
+      gsap.set("#lower-third", { autoAlpha: 0, y: 44 });
+      gsap.set("#caption-line-1", { opacity: 0, y: 32, filter: "blur(6px)" });
+      gsap.set("#caption-line-2", { opacity: 0, y: 32, filter: "blur(6px)" });
+      gsap.set("#arrow-icon", { opacity: 0, scaleY: 0 });
+      gsap.set(shaft, { strokeDasharray: shaftLength, strokeDashoffset: shaftLength });
+      gsap.set(head, { strokeDasharray: headLength, strokeDashoffset: headLength, opacity: 0 });
+
+      // Container entrance
+      tl.to("#lower-third", { autoAlpha: 1, y: 0, duration: 0.58, ease: "power2.out" }, 0.24);
+
+      // Line 1
+      tl.to("#caption-line-1", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "power3.out" }, 0.5);
+
+      // Arrow — shaft draws downward, then head draws in
+      tl.to("#arrow-icon", { opacity: 1, scaleY: 1, duration: 0.4, ease: "power2.out" }, 1.1);
+      tl.to(shaft, { strokeDashoffset: 0, duration: 0.4, ease: "power2.inOut" }, 1.1);
+      tl.to(head, { opacity: 1, strokeDashoffset: 0, duration: 0.28, ease: "power2.out" }, 1.45);
+
+      // Line 2
+      tl.to("#caption-line-2", { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "power3.out" }, 1.75);
+
+      // Exit — everything out together
+      const exitStart = 3.9;
+      tl.to(
+        ["#caption-line-1", "#arrow-icon", "#caption-line-2"],
+        { opacity: 0, y: 28, filter: "blur(6px)", duration: 0.42, stagger: 0.04, ease: "power2.in" },
+        exitStart
+      );
+      tl.to("#lower-third", { autoAlpha: 0, y: 32, duration: 0.5, ease: "power2.in" }, exitStart + 0.16);
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.62, ease: "power3.in" }, exitStart + 0.7);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.62, ease: "power3.in" }, exitStart + 0.7);
+
+      window.__timelines["lower-third-arrow-two-line-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

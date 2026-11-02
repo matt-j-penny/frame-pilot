@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <title>Glowing Strategy Motion — Light — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: local("Satoshi");
+        font-style: normal italic;
+        font-weight: 400 700;
+      }
+
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: local("Cabinet Grotesk");
+        font-style: normal italic;
+        font-weight: 700 900;
+      }
+
+      :root {
+        --navy: #f5f0ff;
+        --navy-deep: #ebe3f8;
+        --blue: #bda7dc;
+        --text: #111015;
+        --red: #b01e34;
+        --red-deep: #a61730;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--navy-deep);
+      }
+
+      body { font-family: "Satoshi", "Inter", sans-serif; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP HALF: glowing quote ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        z-index: 2;
+        will-change: transform, opacity;
+        background: var(--navy);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .smudge {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(50px);
+        opacity: 0.44;
+        will-change: transform, opacity;
+      }
+
+      .smudge-one {
+        width: 440px;
+        height: 210px;
+        left: -100px;
+        top: 190px;
+        background: rgba(184, 151, 222, 0.58);
+        transform: rotate(-14deg);
+      }
+
+      .smudge-two {
+        width: 550px;
+        height: 150px;
+        left: 210px;
+        top: 400px;
+        background: rgba(207, 188, 233, 0.54);
+        filter: blur(64px);
+        transform: rotate(4deg);
+      }
+
+      .smudge-three {
+        width: 360px;
+        height: 190px;
+        right: -85px;
+        bottom: 80px;
+        background: rgba(164, 126, 205, 0.46);
+        filter: blur(68px);
+        transform: rotate(-22deg);
+      }
+
+      .smudge-four {
+        width: 320px;
+        height: 160px;
+        left: 45px;
+        bottom: -50px;
+        background: rgba(216, 196, 239, 0.64);
+        filter: blur(66px);
+      }
+
+      .texture {
+        position: absolute;
+        inset: 0;
+        opacity: 0.12;
+        mix-blend-mode: soft-light;
+        background-image:
+          radial-gradient(circle at 18% 31%, rgba(255,255,255,.26) 0 1px, transparent 1.5px),
+          radial-gradient(circle at 76% 69%, rgba(255,255,255,.16) 0 1px, transparent 1.5px);
+        background-size: 19px 23px, 29px 31px;
+      }
+
+      .line-glow {
+        position: absolute;
+        left: 90px;
+        right: 90px;
+        top: 300px;
+        height: 360px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.42);
+        filter: blur(52px);
+        opacity: 0;
+      }
+
+      .scene-content {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 90px 72px;
+        z-index: 3;
+      }
+
+      /* REPLACE: quote copy — one line per .quote-row, keep rows under ~16 characters */
+      .quote {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        color: var(--text);
+        font-family: "Satoshi", "Inter", sans-serif;
+        font-size: 76px;
+        font-style: italic;
+        font-weight: 500;
+        letter-spacing: -0.038em;
+        line-height: 1.14;
+        white-space: nowrap;
+        text-shadow:
+          0 0 8px rgba(255, 255, 255, 0.78),
+          0 0 25px rgba(255, 255, 255, 0.58),
+          0 0 52px rgba(255, 255, 255, 0.38);
+      }
+
+      .quote-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .word {
+        position: relative;
+        display: inline-block;
+        z-index: 2;
+        will-change: transform, opacity, filter;
+      }
+
+      .complete {
+        font-family: "Cabinet Grotesk", "Satoshi", "Inter", sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
+      .strategy-wrap {
+        position: relative;
+        display: inline-block;
+        padding: 15px 20px 16px 16px;
+        margin-top: 6px;
+      }
+
+      .highlight {
+        position: absolute;
+        z-index: 0;
+        left: -6px;
+        right: -14px;
+        top: 4px;
+        bottom: 5px;
+        background: var(--red);
+        box-shadow:
+          0 0 30px rgba(255, 72, 87, 0.86),
+          22px 0 34px rgba(255, 72, 87, 0.55),
+          inset -22px 0 28px rgba(181, 31, 53, 0.28);
+        transform-origin: left center;
+        overflow: hidden;
+      }
+
+      .highlight::before,
+      .highlight::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 153, 145, 0.18);
+        filter: blur(16px);
+        transform: translateX(-28%);
+      }
+
+      .highlight::after {
+        background: rgba(255, 92, 104, 0.08);
+        transform: translateX(67%);
+      }
+
+      .strategy {
+        z-index: 2;
+        color: #ffffff;
+      }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="glowing-strategy-motion-light-9x16" data-start="0" data-duration="6" data-width="1080" data-height="1920" data-fps="30">
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <div id="glowing-strategy-scene" class="clip scene" data-start="0" data-duration="6" data-track-index="1">
+          <div id="smudge-one" class="smudge smudge-one" data-layout-allow-overflow="true"></div>
+          <div id="smudge-two" class="smudge smudge-two"></div>
+          <div id="smudge-three" class="smudge smudge-three" data-layout-allow-overflow="true"></div>
+          <div id="smudge-four" class="smudge smudge-four" data-layout-allow-overflow="true"></div>
+          <div class="texture"></div>
+          <div id="line-glow" class="line-glow"></div>
+
+          <div class="scene-content">
+            <div id="quote" class="quote" aria-label="follow a COMPLETELY different strategy">
+              <span class="quote-row">
+                <span id="word-follow" class="word">follow</span>
+                <span id="word-a" class="word">a</span>
+              </span>
+              <span class="quote-row">
+                <span id="word-completely" class="word complete">COMPLETELY</span>
+              </span>
+              <span class="quote-row">
+                <span id="word-different" class="word">different</span>
+              </span>
+              <span class="quote-row">
+                <span id="strategy-wrap" class="strategy-wrap">
+                  <span id="strategy-highlight" class="highlight"></span>
+                  <span id="word-strategy" class="word strategy">strategy</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.78, ease: "expo.out" }, 0.14);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+         through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+         down so the speaker's face lands inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.78, ease: "expo.out" }, 0.14);
+      const words = [
+        "#word-follow",
+        "#word-a",
+        "#word-completely",
+        "#word-different",
+        "#strategy-wrap"
+      ];
+
+      gsap.set(words, { autoAlpha: 0 });
+      gsap.set("#strategy-highlight", { scaleX: 0, opacity: 0 });
+      gsap.set("#glowing-strategy-scene", { autoAlpha: 1 });
+
+      tl.from("#glowing-strategy-scene", {
+        scale: 1.035,
+        duration: 1.15,
+        ease: "expo.out"
+      }, 0);
+
+      tl.to("#line-glow", {
+        opacity: 0.9,
+        duration: 0.8,
+        ease: "power2.out"
+      }, 0.08);
+
+      tl.to(words, {
+        autoAlpha: 1,
+        duration: 0.42,
+        stagger: 0.12,
+        ease: "power2.out"
+      }, 0.28);
+
+      tl.from(words, {
+        y: 26,
+        x: -14,
+        scale: 0.97,
+        filter: "blur(11px)",
+        duration: 1.34,
+        stagger: 0.12,
+        ease: "expo.out"
+      }, 0.28);
+
+      tl.to("#strategy-highlight", {
+        scaleX: 1,
+        opacity: 1,
+        duration: 0.78,
+        ease: "power3.out"
+      }, 1.02);
+
+      tl.from("#word-strategy", {
+        x: 18,
+        duration: 1.15,
+        ease: "expo.out"
+      }, 1.08);
+
+      tl.to("#smudge-one", {
+        x: 42,
+        y: -14,
+        scale: 1.12,
+        duration: 4.2,
+        ease: "sine.inOut"
+      }, 0.15);
+
+      tl.to("#smudge-two", {
+        x: -38,
+        scale: 1.1,
+        opacity: 0.58,
+        duration: 4.4,
+        ease: "sine.inOut"
+      }, 0.05);
+
+      tl.to("#smudge-three", {
+        x: -27,
+        y: 16,
+        duration: 4.5,
+        ease: "sine.inOut"
+      }, 0.1);
+
+      tl.to("#line-glow", {
+        scale: 1.08,
+        opacity: 0.66,
+        duration: 2.6,
+        ease: "sine.inOut"
+      }, 1.55);
+
+      tl.to("#quote", {
+        y: -7,
+        duration: 2.5,
+        ease: "sine.inOut"
+      }, 1.6);
+
+      tl.to("#quote", {
+        y: -30,
+        scale: 0.985,
+        opacity: 0,
+        duration: 0.62,
+        ease: "power3.in"
+      }, 5.08);
+
+      tl.to("#line-glow", {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.52,
+        ease: "power2.in"
+      }, 5.12);
+
+      tl.to("#glowing-strategy-scene", {
+        autoAlpha: 0,
+        scale: 0.98,
+        duration: 0.48,
+        ease: "power2.in"
+      }, 5.48);
+      tl.to("#graphic-zone", {
+        autoAlpha: 1,
+        y: -864,
+        duration: 0.62,
+        ease: "power3.in"
+      }, 5.24);
+      tl.to("#talking-head video", {
+        y: 0,
+        scale: 1,
+        duration: 0.62,
+        ease: "power3.in"
+      }, 5.24);
+
+      window.__timelines["glowing-strategy-motion-light-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

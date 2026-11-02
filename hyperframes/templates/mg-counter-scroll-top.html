@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@600&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+
+    /* Transparent overlay — layer over source video in parent composition */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .clip { position: absolute; }
+
+    /* REPLACE: adjust top to reposition vertically; stays horizontally centered */
+    .counter-block {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    .counter-window {
+      position: relative;
+      height: 130px;
+      overflow: hidden;
+    }
+
+    .counter-track {
+      display: flex;
+      flex-direction: column;
+      will-change: transform;
+    }
+
+    .counter-step {
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 116px;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    .counter-lbl {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.45);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-counter-scroll-top" data-start="0" data-duration="4" data-width="1920" data-height="1080">
+
+    <div class="counter-block" id="counter-block">
+      <div class="counter-window">
+        <div class="counter-track" id="counter-track"></div>
+      </div>
+      <!-- REPLACE: label text -->
+      <div class="counter-lbl">businesses helped</div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // ── REPLACE these values ──────────────────────────────
+    const TARGET_COUNT   = 2000;   // the number to land on
+    const DISPLAY_SUFFIX = '+';    // appended to the final value only ('', '+', 'k+', etc.)
+    const STEPS          = 7;      // how many numbers scroll past before landing
+    // ─────────────────────────────────────────────────────
+
+    const track    = document.getElementById('counter-track');
+    const ROW_H    = 130;
+
+    for (let i = 0; i < STEPS; i++) {
+      const step = document.createElement('div');
+      step.className = 'counter-step';
+      const isLast = i === STEPS - 1;
+      const value = isLast ? TARGET_COUNT : Math.round(TARGET_COUNT * (i / (STEPS - 1)));
+      step.textContent = value.toLocaleString() + (isLast ? DISPLAY_SUFFIX : '');
+      track.appendChild(step);
+    }
+
+    tl.from('#counter-block', { opacity: 0, y: 20, duration: 0.35, ease: 'power2.out' }, 0);
+    tl.to(track, {
+      y: -ROW_H * (STEPS - 1),
+      duration: 1.1,
+      ease: 'power3.out'
+    }, 0.1);
+
+    tl.to('#counter-block', { opacity: 0, y: -18, scale: 0.92, duration: 0.4, ease: 'power2.in', transformOrigin: 'center center' }, 3.25);
+
+    window.__timelines['mg-counter-scroll-top'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

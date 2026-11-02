@@ -5,7 +5,9 @@ node_modules/
 
 app/uploads/
 app/transcripts/
+app/graphics/
 app/style-runs/
+app/template-runs/
 app/server.log
 jobs/
 styles/

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <title>Aurora Insight List — 9:16 — Light — Headed — Blurred Points</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face { font-family: "Cabinet Grotesk"; src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ink: #100d1b; --paper: #f5f0ff; --purple: #7c3aed; --purple-light: #a78bfa; }
+    html, body { width: 1080px; height: 1920px; overflow: hidden; background: #ebe3f8; }
+    body { color: var(--ink); font-family: Arial, sans-serif; }
+    #aurora-root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+    #scene-shell { position: absolute; top: 0; left: 0; z-index: 2; width: 1080px; height: 864px; overflow: hidden; background: var(--paper); will-change: transform, opacity; }
+    #aurora-scene-inner { position: absolute; inset: 0; overflow: hidden; isolation: isolate; }
+    #depth { position: absolute; inset: 0; z-index: -4; background: radial-gradient(circle at 76% 14%, rgba(124,58,237,.1), transparent 34%), radial-gradient(circle at 17% 38%, rgba(91,33,182,.07), transparent 36%), var(--paper); }
+    #aurora-field { position: absolute; inset: -80px -120px; z-index: -3; opacity: .48; background: radial-gradient(ellipse 52% 43% at 4% 98%, rgba(124,58,237,.55), transparent 78%), radial-gradient(ellipse 56% 41% at 43% 103%, rgba(167,139,250,.4), transparent 80%), radial-gradient(ellipse 54% 40% at 79% 101%, rgba(124,58,237,.42), transparent 81%); will-change: transform, opacity; }
+    #aurora-ribbon { position: absolute; inset: -70px -110px; z-index: -2; opacity: .27; background: radial-gradient(ellipse 48% 30% at 13% 96%, rgba(167,139,250,.4), transparent 78%), radial-gradient(ellipse 52% 29% at 55% 101%, rgba(124,58,237,.3), transparent 80%); will-change: transform, opacity; }
+    .aurora-lobe { position: absolute; bottom: -100px; z-index: -1; height: 260px; border-radius: 50%; opacity: .22; transform-origin: 50% 82%; will-change: transform, opacity; }
+    #aurora-lobe-one { left: -80px; width: 460px; background: radial-gradient(ellipse at 48% 50%, rgba(124,58,237,.5), transparent 74%); }
+    #aurora-lobe-two { left: 280px; bottom: -80px; width: 550px; height: 230px; background: radial-gradient(ellipse at 52% 52%, rgba(167,139,250,.4), transparent 76%); }
+    #aurora-lobe-three { right: -110px; width: 470px; height: 250px; background: radial-gradient(ellipse at 55% 52%, rgba(139,92,246,.42), transparent 76%); }
+    .orb { position: absolute; z-index: -1; border: 1px solid rgba(124,58,237,.16); border-radius: 999px; }
+    #orb-one { top: -150px; right: 130px; width: 260px; height: 260px; }
+    #orb-two { top: -220px; right: 56px; width: 400px; height: 400px; opacity: .55; }
+    .scene-content { display: flex; flex-direction: column; justify-content: center; width: 100%; height: 100%; padding: 84px 72px; }
+    .heading { max-width: 870px; margin-bottom: 56px; font-family: "Cabinet Grotesk", sans-serif; font-size: 76px; font-weight: 800; line-height: 1; letter-spacing: -.045em; text-shadow: 0 10px 28px rgba(124,58,237,.12); }
+    .list { display: flex; flex-direction: column; gap: 34px; width: 100%; }
+    .list-item { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 24px; align-items: center; min-height: 62px; }
+    .icon-token { display: grid; width: 42px; height: 42px; place-items: center; color: var(--purple); }
+    .icon-token svg { width: 34px; height: 34px; fill: currentColor; filter: drop-shadow(0 4px 9px rgba(124,58,237,.22)); }
+    .point-copy { font-family: Arial, sans-serif; font-size: 49px; font-weight: 400; line-height: 1.12; letter-spacing: -.025em; color: rgba(16,13,27,.79); filter: blur(16px); }
+    #talking-head { position: absolute; inset: 0; z-index: 1; overflow: hidden; background: #ece6f6; }
+    #talking-head video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body>
+  <main id="aurora-root" data-composition-id="aurora-insight-list-9x16-light-headed-blurred-points" data-start="0" data-duration="8.6" data-fps="30" data-width="1080" data-height="1920">
+    <div id="scene-shell" class="clip" data-start="0" data-duration="8.6" data-track-index="1" data-layout-allow-overflow>
+      <div id="aurora-scene-inner">
+        <div id="depth" aria-hidden="true"></div><div id="aurora-field" aria-hidden="true" data-layout-allow-overflow></div><div id="aurora-ribbon" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="aurora-lobe" id="aurora-lobe-one" aria-hidden="true"></div><div class="aurora-lobe" id="aurora-lobe-two" aria-hidden="true"></div><div class="aurora-lobe" id="aurora-lobe-three" aria-hidden="true"></div><div class="orb" id="orb-one" aria-hidden="true"></div><div class="orb" id="orb-two" aria-hidden="true"></div>
+        <section class="scene-content">
+          <!-- REPLACE: edit the heading and point text via data-copy values. -->
+          <h1 class="heading" id="heading" data-copy="Three things to look for">Three things to look for</h1>
+          <div class="list">
+            <article class="list-item" id="list-item-1" data-copy="Which ones actually pay"><div class="icon-token" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path></svg></div><p class="point-copy">Which ones actually pay</p></article>
+            <article class="list-item" id="list-item-2" data-copy="Which ones are just noise"><div class="icon-token" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path></svg></div><p class="point-copy">Which ones are just noise</p></article>
+            <article class="list-item" id="list-item-3" data-copy="Which ones waste your time"><div class="icon-token" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path></svg></div><p class="point-copy">Which ones waste your time</p></article>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- REPLACE: swap src/poster for your own talking-head footage. -->
+    <div id="talking-head"><video id="source-video" class="clip" src="assets/placeholder-video.mp4" poster="assets/talking-head-placeholder.png" muted playsinline preload="auto" data-start="0" data-duration="8.6" data-track-index="0"></video></div>
+  </main>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+    gsap.set("#scene-shell", { autoAlpha: 1, y: -864 });
+    tl.to("#scene-shell", { autoAlpha: 1, y: 0, duration: .55, ease: "expo.out" }, .06);
+    const SPLIT_SHIFT = 700;
+    tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: 1, duration: .55, ease: "expo.out" }, .06);
+    tl.fromTo("#aurora-field", { x: -38, y: 20, scale: 1.03, opacity: .38 }, { x: 44, y: -8, scale: 1.09, opacity: .62, duration: 7.3, ease: "sine.inOut" }, 0);
+    tl.fromTo("#aurora-ribbon", { x: 42, y: 16, opacity: .2 }, { x: -34, y: -5, opacity: .42, duration: 7.25, ease: "sine.inOut" }, .05);
+    tl.fromTo(".aurora-lobe", { y: 14, opacity: .14 }, { y: -8, opacity: .33, duration: 7.2, stagger: .05, ease: "sine.inOut" }, 0);
+    tl.fromTo(".orb", { rotation: -7, opacity: .25 }, { rotation: 13, opacity: .66, duration: 7.2, stagger: .05, ease: "sine.inOut" }, 0);
+    tl.fromTo("#heading", { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: .42, ease: "expo.out" }, .34);
+    tl.fromTo(".list-item", { x: -34, y: 18, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: .4, stagger: .1, ease: "expo.out" }, .66);
+    tl.to(".list-item", { x: 22, y: -12, opacity: 0, duration: .35, stagger: .06, ease: "power3.in" }, 7.5);
+    tl.to("#heading", { y: -18, opacity: 0, duration: .32, ease: "power3.in" }, 7.5);
+    tl.to("#scene-shell", { y: -864, duration: .45, ease: "power3.in" }, 7.72);
+    tl.to("#talking-head video", { y: 0, scale: 1, duration: .45, ease: "power3.in" }, 7.72);
+    tl.seek(0);
+    window.__timelines["aurora-insight-list-9x16-light-headed-blurred-points"] = tl;
+  </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

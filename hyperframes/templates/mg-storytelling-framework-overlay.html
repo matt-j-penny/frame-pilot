@@ -1,0 +1,326 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"supportingText","type":"string","label":"Supporting text","default":"every great story uses the exact same"},
+    {"id":"headlineText","type":"string","label":"Solid headline","default":"STORYTELLING"},
+    {"id":"outlineText","type":"string","label":"Outlined headline","default":"FRAMEWORK"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Storytelling Framework Overlay</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 800;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+      }
+
+      :root {
+        --sfo-text: #fafafa;
+        --sfo-glow: rgba(124, 58, 237, 0.2);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      #sfo-root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      #sfo-scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .sfo-scene-content {
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 120px 160px 48px;
+      }
+
+      .sfo-lockup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        max-width: 1600px;
+        color: var(--sfo-text);
+        text-align: center;
+        filter: drop-shadow(0 8px 20px var(--sfo-glow));
+      }
+
+      .sfo-line-mask {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .sfo-supporting-mask {
+        min-height: 60px;
+        margin-bottom: 8px;
+      }
+
+      .sfo-headline-mask {
+        min-height: 184px;
+        padding-bottom: 14px;
+      }
+
+      .sfo-outline-mask {
+        min-height: 184px;
+        margin-top: -52px;
+        padding-bottom: 14px;
+      }
+
+      .sfo-supporting-copy {
+        position: relative;
+        z-index: 3;
+        max-width: 1300px;
+        color: var(--sfo-text);
+        font-family: "Satoshi", sans-serif;
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+        opacity: 0;
+        text-shadow: 0 0 16px var(--sfo-glow);
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+
+      .sfo-headline {
+        position: relative;
+        width: 100%;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 168px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.045em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        will-change: transform, opacity;
+      }
+
+      .sfo-headline-solid {
+        z-index: 2;
+        color: var(--sfo-text);
+        opacity: 0;
+        text-shadow: 0 0 12px var(--sfo-glow);
+      }
+
+      .sfo-headline-outline {
+        z-index: 1;
+        color: transparent;
+        -webkit-text-stroke: 3px var(--sfo-text);
+        opacity: 0;
+        paint-order: stroke fill;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="sfo-root"
+      data-composition-id="mg-storytelling-framework-overlay"
+      data-start="0"
+      data-duration="5.4"
+      data-fps="30"
+      data-width="1920"
+      data-height="1080"
+    >
+      <section
+        id="sfo-scene"
+        class="clip"
+        data-start="0"
+        data-duration="5.4"
+        data-track-index="1"
+        aria-label="Animated storytelling framework text overlay"
+      >
+        <div class="sfo-scene-content">
+          <div id="sfo-lockup" class="sfo-lockup">
+            <div class="sfo-line-mask sfo-supporting-mask" data-layout-allow-overflow>
+              <p
+                id="sfo-supporting"
+                class="sfo-supporting-copy"
+                data-layout-allow-overlap
+              >
+                every great story uses the exact same
+              </p>
+            </div>
+            <div class="sfo-line-mask sfo-headline-mask" data-layout-allow-overflow>
+              <h1 id="sfo-headline" class="sfo-headline sfo-headline-solid">
+                STORYTELLING
+              </h1>
+            </div>
+            <div class="sfo-line-mask sfo-outline-mask" data-layout-allow-overflow>
+              <p
+                id="sfo-outline"
+                class="sfo-headline sfo-headline-outline"
+                aria-hidden="true"
+                data-layout-ignore
+              >
+                FRAMEWORK
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      var sfoVariables = window.__hyperframes?.getVariables?.() ?? {
+        supportingText: "every great story uses the exact same",
+        headlineText: "STORYTELLING",
+        outlineText: "FRAMEWORK",
+      };
+
+      document.querySelector("#sfo-supporting").textContent =
+        sfoVariables.supportingText;
+      document.querySelector("#sfo-headline").textContent =
+        sfoVariables.headlineText;
+      document.querySelector("#sfo-outline").textContent =
+        sfoVariables.outlineText;
+
+      window.__timelines = window.__timelines || {};
+      var sfoTimeline = gsap.timeline({
+        paused: true,
+        defaults: { ease: "power3.out" },
+      });
+
+      sfoTimeline.addLabel("sfo-enter", 0.22);
+
+      // Line 1 — restrained supporting copy lift.
+      sfoTimeline.set(
+        "#sfo-supporting",
+        { opacity: 1, y: 54, scale: 0.96, transformOrigin: "center bottom" },
+        "sfo-enter",
+      );
+      sfoTimeline.to(
+        "#sfo-supporting",
+        { y: 0, scale: 1.025, duration: 0.4, ease: "power3.out" },
+        "sfo-enter",
+      );
+      sfoTimeline.to(
+        "#sfo-supporting",
+        { scale: 1, duration: 0.12, ease: "power2.out" },
+        "sfo-enter+=0.4",
+      );
+
+      // Line 2 — the heaviest line travels further and lands harder.
+      sfoTimeline.set(
+        "#sfo-headline",
+        { opacity: 1, y: 116, scale: 0.94, transformOrigin: "center bottom" },
+        "sfo-enter+=0.38",
+      );
+      sfoTimeline.to(
+        "#sfo-headline",
+        { y: 0, scale: 1.022, duration: 0.52, ease: "expo.out" },
+        "sfo-enter+=0.38",
+      );
+      sfoTimeline.to(
+        "#sfo-headline",
+        { scale: 1, duration: 0.14, ease: "power2.out" },
+        "sfo-enter+=0.9",
+      );
+
+      // Line 3 — outlined payoff follows with a crisp upward snap.
+      sfoTimeline.set(
+        "#sfo-outline",
+        { opacity: 0.76, y: 112, scale: 0.95, transformOrigin: "center top" },
+        "sfo-enter+=0.82",
+      );
+      sfoTimeline.to(
+        "#sfo-outline",
+        { y: 0, scale: 1.02, duration: 0.44, ease: "power4.out" },
+        "sfo-enter+=0.82",
+      );
+      sfoTimeline.to(
+        "#sfo-outline",
+        { scale: 1, duration: 0.14, ease: "power2.out" },
+        "sfo-enter+=1.26",
+      );
+
+      sfoTimeline.addLabel("sfo-exit", 4.42);
+
+      // Reverse cascade — payoff leaves first, then headline, then supporting copy.
+      sfoTimeline.to(
+        "#sfo-outline",
+        { autoAlpha: 0, y: 88, scale: 1.025, duration: 0.38, ease: "power3.in" },
+        "sfo-exit",
+      );
+      sfoTimeline.to(
+        "#sfo-headline",
+        { autoAlpha: 0, y: -86, scale: 0.97, duration: 0.42, ease: "power3.in" },
+        "sfo-exit+=0.13",
+      );
+      sfoTimeline.to(
+        "#sfo-supporting",
+        { autoAlpha: 0, y: -34, duration: 0.32, ease: "power2.in" },
+        "sfo-exit+=0.26",
+      );
+
+      window.__timelines["mg-storytelling-framework-overlay"] = sfoTimeline;
+    </script>
+
+    <!-- hf-autoplay -->
+    <script>
+      (function () {
+        if (window.self === window.top) return;
+        function play() {
+          var timelines = window.__timelines || {};
+          var ids = Object.keys(timelines);
+          if (!ids.length) {
+            setTimeout(play, 150);
+            return;
+          }
+          ids.forEach(function (id) {
+            var timeline = timelines[id];
+            timeline.eventCallback("onComplete", function () {
+              setTimeout(play, 1200);
+            });
+            timeline.restart();
+          });
+        }
+        setTimeout(play, 200);
+      })();
+    </script>
+  </body>
+</html>

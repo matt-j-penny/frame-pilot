@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfdae1"/>
+      <stop offset=".58" stop-color="#f0f1ee"/>
+      <stop offset="1" stop-color="#aaaeb2"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d5d2cc"/>
+      <stop offset="1" stop-color="#777b80"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#sky)"/>
+  <g opacity=".95">
+    <path d="M0 0h172v327H0z" fill="#e7e5df"/>
+    <path d="M45 0h26v327H45zM118 0h22v327h-22z" fill="#24262b"/>
+    <path d="M172 84h179v248H172z" fill="#656b70"/>
+    <path d="M200 112h45v60h-45zM271 112h44v60h-44zM200 205h45v65h-45zM271 205h44v65h-44z" fill="#25282d"/>
+    <path d="M690 30h270v317H690z" fill="#353a3f"/>
+    <path d="M724 68h69v96h-69zM828 68h88v96h-88zM724 205h69v93h-69zM828 205h88v93h-88z" fill="#9da4a8"/>
+  </g>
+  <path d="M0 347 960 298v242H0z" fill="url(#road)"/>
+  <path d="m0 420 960-88v25L0 458z" fill="#f5f2e9" opacity=".74"/>
+  <path d="M408 106c76-21 143 24 148 93l16 227H365l22-224c5-45 1-77 21-96Z" fill="#111319"/>
+  <circle cx="474" cy="102" r="51" fill="#1a1c22"/>
+  <rect x="519" y="252" width="186" height="120" rx="10" fill="#141820" transform="rotate(-5 519 252)"/>
+  <rect x="534" y="266" width="156" height="89" rx="5" fill="#63717d" transform="rotate(-5 534 266)"/>
+  <circle cx="611" cy="309" r="17" fill="#cbd6de" opacity=".78"/>
+  <rect width="960" height="540" fill="#18111f" opacity=".08"/>
+</svg>

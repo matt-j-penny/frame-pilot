@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #subtitle-anchor {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 56px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0 64px;
+      }
+      #pill {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        max-width: calc(1920px - 128px);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        box-shadow:
+          0 0 18px rgba(167, 139, 250, 0.28),
+          0 10px 26px rgba(76, 29, 149, 0.16),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        padding: 28px 36px;
+        will-change: transform, opacity;
+      }
+      #word-container {
+        display: flex;
+        flex-wrap: nowrap;
+        column-gap: 12px;
+        justify-content: center;
+        text-align: center;
+        white-space: nowrap;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 52px;
+        line-height: 1.24;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      .karaoke-word {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.14);
+        will-change: color, text-shadow;
+      }
+
+      /* Page visibility — only active page shown */
+      .subtitle-page { display: none; }
+      .subtitle-page.active { display: contents; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="subtitle-anchor">
+        <div id="pill">
+          <div id="word-container">
+            <!--
+              REPLACE: update SUBTITLE below in the script.
+              Words animate from near-transparent to white one by one.
+              Adjust WORDS_PER_SECOND to match your voiceover pace.
+              Adjust MAX_CHARS_PER_PAGE to control line length.
+            -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ─── REPLACE these values ───────────────────────────────────────────────
+      const SUBTITLE = "This is a glass subtitle template where each word softly animates from transparent to white.";
+      const WORDS_PER_SECOND = 2.7;
+      const MAX_CHARS_PER_PAGE = 40;
+      // ────────────────────────────────────────────────────────────────────────
+
+      function chunkWordsByMaxChars(words, maxChars) {
+        const pages = [];
+        let page = [], len = 0;
+        for (const w of words) {
+          const extra = page.length === 0 ? 0 : 1;
+          if (page.length > 0 && len + extra + w.length > maxChars) {
+            pages.push(page);
+            page = [w];
+            len = w.length;
+          } else {
+            page.push(w);
+            len += extra + w.length;
+          }
+        }
+        if (page.length > 0) pages.push(page);
+        return pages.length > 0 ? pages : [[]];
+      }
+
+      const words = SUBTITLE.trim().split(/\s+/).filter(Boolean);
+      const secPerWord = 1 / WORDS_PER_SECOND;
+      const pageHoldSec = 0.6;
+      const pages = chunkWordsByMaxChars(words, MAX_CHARS_PER_PAGE);
+
+      const container = document.getElementById("word-container");
+
+      // Build DOM: one group per page, each word a span
+      const pageGroups = pages.map((pageWords, pi) => {
+        const group = document.createElement("span");
+        group.className = "subtitle-page" + (pi === 0 ? " active" : "");
+        group.dataset.page = pi;
+
+        const spans = pageWords.map((w) => {
+          const span = document.createElement("span");
+          span.className = "karaoke-word";
+          span.textContent = w;
+          group.appendChild(span);
+          return span;
+        });
+
+        container.appendChild(group);
+        return { group, spans };
+      });
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Panel entrance — spring { damping:20, stiffness:170, mass:0.7 } → power3.out 0.55s
+      gsap.set("#pill", { opacity: 0, y: 30 });
+      tl.to("#pill", { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 0);
+
+      // Build karaoke timing across all pages
+      let cursor = 0.3; // slight offset after panel enters
+
+      pages.forEach((pageWords, pi) => {
+        const pageDuration = pageWords.length * secPerWord + pageHoldSec;
+
+        if (pi > 0) {
+          // Switch to next page: hide previous, show next
+          const prevGroup = pageGroups[pi - 1].group;
+          const currGroup = pageGroups[pi].group;
+          tl.call(() => {
+            prevGroup.classList.remove("active");
+            currGroup.classList.add("active");
+            // Reset words on new page to dim state
+            pageGroups[pi].spans.forEach(s => {
+              gsap.set(s, { color: "rgba(255,255,255,0.14)", textShadow: "none" });
+            });
+          }, null, cursor);
+        }
+
+        // Animate each word on this page
+        pageGroups[pi].spans.forEach((span, wi) => {
+          const wordStart = cursor + wi * secPerWord;
+          const wordDuration = Math.max(0.2, secPerWord * 0.9);
+          tl.to(
+            span,
+            {
+              color: "rgba(255,255,255,1)",
+              textShadow: "0 0 14px rgba(255,255,255,0.35)",
+              duration: wordDuration,
+              ease: "power2.out",
+            },
+            wordStart
+          );
+        });
+
+        cursor += pageDuration;
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <title>Aurora Insight List — 9:16</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #100d1b;
+      --paper: #fafafa;
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #5b21b6;
+    }
+
+    html,
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: var(--ink);
+    }
+
+    body {
+      color: var(--paper);
+      font-family: "Satoshi", sans-serif;
+    }
+
+    #aurora-root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+
+    /* ── TOP HALF: motion graphic ── */
+    #scene-shell {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 864px;
+      overflow: hidden;
+      z-index: 2;
+      will-change: transform, opacity;
+      background: var(--ink);
+    }
+
+    #aurora-scene-inner {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 864px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    #aurora-scene-inner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      opacity: 0.16;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.38'/%3E%3C/svg%3E");
+    }
+
+    #depth {
+      position: absolute;
+      inset: 0;
+      z-index: -4;
+      background:
+        radial-gradient(circle at 76% 14%, rgba(124, 58, 237, 0.12), transparent 34%),
+        radial-gradient(circle at 17% 38%, rgba(91, 33, 182, 0.09), transparent 36%),
+        var(--ink);
+    }
+
+    #aurora-field {
+      position: absolute;
+      inset: -80px -120px;
+      z-index: -3;
+      opacity: 0.55;
+      will-change: transform, opacity;
+      background:
+        radial-gradient(ellipse 52% 43% at 4% 98%, rgba(124, 58, 237, 0.96) 0%, rgba(124, 58, 237, 0.46) 38%, transparent 78%),
+        radial-gradient(ellipse 56% 41% at 43% 103%, rgba(167, 139, 250, 0.64) 0%, rgba(91, 33, 182, 0.38) 40%, transparent 80%),
+        radial-gradient(ellipse 54% 40% at 79% 101%, rgba(124, 58, 237, 0.76) 0%, rgba(59, 130, 246, 0.24) 42%, transparent 81%),
+        radial-gradient(ellipse 42% 38% at 103% 100%, rgba(167, 139, 250, 0.52) 0%, transparent 78%);
+    }
+
+    #aurora-ribbon {
+      position: absolute;
+      z-index: -2;
+      inset: -70px -110px;
+      opacity: 0.26;
+      will-change: transform, opacity;
+      background:
+        radial-gradient(ellipse 48% 30% at 13% 96%, rgba(167, 139, 250, 0.58), transparent 78%),
+        radial-gradient(ellipse 52% 29% at 55% 101%, rgba(124, 58, 237, 0.48), transparent 80%),
+        radial-gradient(ellipse 44% 28% at 91% 97%, rgba(59, 130, 246, 0.22), transparent 78%);
+    }
+
+    .aurora-lobe {
+      position: absolute;
+      bottom: -100px;
+      z-index: -1;
+      height: 260px;
+      border-radius: 50%;
+      opacity: 0.26;
+      pointer-events: none;
+      transform-origin: 50% 82%;
+      will-change: transform, opacity;
+    }
+
+    #aurora-lobe-one {
+      left: -80px;
+      width: 460px;
+      background:
+        radial-gradient(ellipse at 48% 50%, rgba(124, 58, 237, 0.86) 0%, rgba(124, 58, 237, 0.34) 38%, transparent 74%);
+    }
+
+    #aurora-lobe-two {
+      left: 280px;
+      width: 550px;
+      height: 230px;
+      bottom: -80px;
+      background:
+        radial-gradient(ellipse at 52% 52%, rgba(167, 139, 250, 0.68) 0%, rgba(91, 33, 182, 0.30) 42%, transparent 76%);
+    }
+
+    #aurora-lobe-three {
+      right: -110px;
+      width: 470px;
+      height: 250px;
+      background:
+        radial-gradient(ellipse at 55% 52%, rgba(139, 92, 246, 0.74) 0%, rgba(59, 130, 246, 0.22) 42%, transparent 76%);
+    }
+
+    .orb {
+      position: absolute;
+      z-index: -1;
+      border-radius: 999px;
+      border: 1px solid rgba(167, 139, 250, 0.13);
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+
+    #orb-one {
+      width: 260px;
+      height: 260px;
+      top: -150px;
+      right: 130px;
+    }
+
+    #orb-two {
+      width: 400px;
+      height: 400px;
+      top: -220px;
+      right: 56px;
+      opacity: 0.55;
+    }
+
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      padding: 90px 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+    }
+
+    .list-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      align-items: center;
+      gap: 28px;
+      min-height: 68px;
+    }
+
+    .icon-token {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      color: var(--purple-light);
+      opacity: 0;
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+
+    .icon-token svg {
+      position: relative;
+      z-index: 1;
+      width: 46px;
+      height: 46px;
+      overflow: visible;
+      fill: currentColor;
+      stroke: none;
+      filter:
+        drop-shadow(0 0 8px rgba(167, 139, 250, 0.72))
+        drop-shadow(0 0 22px rgba(124, 58, 237, 0.52));
+    }
+
+    .text-stack {
+      display: grid;
+      width: 100%;
+      min-height: 68px;
+      align-items: center;
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 60px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      white-space: normal;
+      text-shadow:
+        0 2px 1px rgba(255, 255, 255, 0.06),
+        0 12px 36px rgba(91, 33, 182, 0.13);
+      will-change: transform, opacity;
+    }
+
+    .typed-line,
+    .gradient-line {
+      display: block;
+      grid-area: 1 / 1;
+      width: 100%;
+      min-height: 68px;
+      white-space: normal;
+    }
+
+    .typed-line {
+      color: var(--paper);
+    }
+
+    .typed-char {
+      opacity: 0;
+      visibility: hidden;
+      filter: blur(6px);
+      will-change: filter, opacity;
+    }
+
+    .gradient-line {
+      opacity: 0;
+      color: transparent;
+      background-image:
+        linear-gradient(
+          105deg,
+          #fafafa 0%,
+          #fafafa 31%,
+          #d8d2e9 43%,
+          #ffffff 50%,
+          #a78bfa 57%,
+          #fafafa 69%,
+          #fafafa 100%
+        );
+      background-size: 300% 100%;
+      background-position: 100% 50%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── BOTTOM HALF: talking head ── */
+    #talking-head {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0a0a0f;
+      z-index: 1;
+    }
+
+    #talking-head video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <main
+    id="aurora-root"
+    data-composition-id="aurora-insight-list-9x16"
+    data-start="0"
+    data-duration="8.6"
+    data-fps="30"
+    data-width="1080"
+    data-height="1920"
+  >
+    <div
+      id="scene-shell"
+      class="clip"
+      data-start="0"
+      data-duration="8.6"
+      data-track-index="1"
+      data-layout-allow-overflow
+    >
+      <div id="aurora-scene-inner">
+        <div id="depth" aria-hidden="true"></div>
+        <div id="aurora-field" aria-hidden="true" data-layout-allow-overflow></div>
+        <div id="aurora-ribbon" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="aurora-lobe" id="aurora-lobe-one" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="aurora-lobe" id="aurora-lobe-two" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="aurora-lobe" id="aurora-lobe-three" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="orb" id="orb-one" aria-hidden="true" data-layout-allow-overflow></div>
+        <div class="orb" id="orb-two" aria-hidden="true" data-layout-allow-overflow></div>
+
+        <section class="scene-content">
+          <div class="list">
+            <!-- REPLACE: edit each data-copy value. The gradient and typed text are generated from it.
+                 Longer points wrap naturally onto a second line. -->
+            <article class="list-item" id="list-item-1" data-copy="Which ones actually pay">
+              <div class="icon-token" id="icon-1" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+                </svg>
+              </div>
+              <p class="text-stack">
+                <span class="typed-line" id="typed-1"></span>
+                <span class="gradient-line" id="gradient-1" data-layout-allow-occlusion></span>
+              </p>
+            </article>
+
+            <article class="list-item" id="list-item-2" data-copy="Which ones are just noise">
+              <div class="icon-token" id="icon-2" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+                </svg>
+              </div>
+              <p class="text-stack">
+                <span class="typed-line" id="typed-2"></span>
+                <span class="gradient-line" id="gradient-2" data-layout-allow-occlusion></span>
+              </p>
+            </article>
+
+            <article class="list-item" id="list-item-3" data-copy="Which ones waste your time">
+              <div class="icon-token" id="icon-3" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                  <path d="M24 1C26.7 14.8 33.2 21.3 47 24C33.2 26.7 26.7 33.2 24 47C21.3 33.2 14.8 26.7 1 24C14.8 21.3 21.3 14.8 24 1Z"></path>
+                </svg>
+              </div>
+              <p class="text-stack">
+                <span class="typed-line" id="typed-3"></span>
+                <span class="gradient-line" id="gradient-3" data-layout-allow-occlusion></span>
+              </p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- REPLACE: swap src/poster for your own talking-head footage -->
+    <div id="talking-head">
+      <video
+        id="source-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="8.6"
+        data-track-index="0"
+      ></video>
+    </div>
+
+    <audio
+      id="typing-sfx-1"
+      class="clip"
+      src="assets/sfx/typing.m4a"
+      preload="auto"
+      data-start="0.75"
+      data-duration="1.25"
+      data-track-index="2"
+      data-volume="0.09"
+    ></audio>
+    <audio
+      id="typing-sfx-2"
+      class="clip"
+      src="assets/sfx/typing.m4a"
+      preload="auto"
+      data-start="2.25"
+      data-duration="1.30"
+      data-track-index="3"
+      data-volume="0.09"
+    ></audio>
+    <audio
+      id="typing-sfx-3"
+      class="clip"
+      src="assets/sfx/typing.m4a"
+      preload="auto"
+      data-start="3.75"
+      data-duration="1.55"
+      data-track-index="4"
+      data-volume="0.09"
+    ></audio>
+  </main>
+
+  <script>
+    const rows = [
+      { item: "#list-item-1", icon: "#icon-1", typed: "#typed-1", gradient: "#gradient-1", iconStart: 0.45, typeStart: 0.75, typeDuration: 1.25 },
+      { item: "#list-item-2", icon: "#icon-2", typed: "#typed-2", gradient: "#gradient-2", iconStart: 1.95, typeStart: 2.25, typeDuration: 1.30 },
+      { item: "#list-item-3", icon: "#icon-3", typed: "#typed-3", gradient: "#gradient-3", iconStart: 3.45, typeStart: 3.75, typeDuration: 1.55 },
+    ];
+
+    rows.forEach((row) => {
+      const item = document.querySelector(row.item);
+      const typed = document.querySelector(row.typed);
+      const gradient = document.querySelector(row.gradient);
+      const copy = item.dataset.copy;
+      item.setAttribute("aria-label", copy);
+      typed.setAttribute("aria-hidden", "true");
+      Array.from(copy).forEach((character) => {
+        const span = document.createElement("span");
+        span.className = "typed-char";
+        span.textContent = character;
+        typed.appendChild(span);
+      });
+      gradient.textContent = copy;
+    });
+
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({
+      paused: true,
+      defaults: { ease: "power3.out" },
+    });
+
+    gsap.set("#scene-shell", { autoAlpha: 1, y: -864 });
+    tl.to(
+      "#scene-shell",
+      { autoAlpha: 1, y: 0, duration: 0.82, ease: "expo.out" },
+      0.14,
+    );
+    /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+       This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+       through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+       down so the speaker's face lands inside that window.
+
+       SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+       inside its 1080px frame and exposes bars down both sides.
+       SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+       the window fully covered — outside it the footage pulls off an edge.
+
+       For real footage, read both values off the actual face position:
+         python3 scripts/face-frame.py <video> --window 864:1920
+       ────────────────────────────────────────────────────────────────── */
+    const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+    const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+    tl.fromTo(
+      "#talking-head video",
+      { y: 0, scale: 1 },
+      { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.82, ease: "expo.out" },
+      0.14,
+    );
+
+    tl.addLabel("ambient-in", 0);
+    tl.fromTo(
+      "#depth",
+      { opacity: 0.62 },
+      { opacity: 1, duration: 1.15, ease: "power2.out" },
+      "ambient-in",
+    );
+    tl.fromTo(
+      "#aurora-field",
+      { x: -44, y: 26, scale: 1.03, rotation: -1.5, opacity: 0.55 },
+      { x: 50, y: -10, scale: 1.1, rotation: 1.2, opacity: 0.96, duration: 7.55, ease: "sine.inOut" },
+      "ambient-in",
+    );
+    tl.fromTo(
+      "#aurora-ribbon",
+      { x: 56, y: 20, scale: 1.03, skewY: -2, opacity: 0.26 },
+      { x: -46, y: -4, scale: 1.09, skewY: 1, opacity: 0.66, duration: 7.4, ease: "sine.inOut" },
+      "ambient-in+=0.1",
+    );
+    tl.fromTo(
+      "#aurora-lobe-one",
+      { x: -24, y: 15, scaleX: 0.96, scaleY: 0.92, opacity: 0.24 },
+      { x: 34, y: -9, scaleX: 1.08, scaleY: 1.04, opacity: 0.52, duration: 7.25, ease: "sine.inOut" },
+      "ambient-in+=0.05",
+    );
+    tl.fromTo(
+      "#aurora-lobe-two",
+      { x: 36, y: 8, scaleX: 1.04, scaleY: 0.94, opacity: 0.22 },
+      { x: -28, y: -14, scaleX: 0.96, scaleY: 1.08, opacity: 0.48, duration: 7.45, ease: "sine.inOut" },
+      "ambient-in+=0.18",
+    );
+    tl.fromTo(
+      "#aurora-lobe-three",
+      { x: 21, y: 19, scaleX: 0.94, scaleY: 0.96, opacity: 0.20 },
+      { x: -39, y: -5, scaleX: 1.08, scaleY: 1.04, opacity: 0.44, duration: 7.15, ease: "sine.inOut" },
+      "ambient-in+=0.28",
+    );
+    tl.fromTo(
+      "#orb-one",
+      { rotation: -8, scale: 0.96, opacity: 0.45 },
+      { rotation: 18, scale: 1.04, opacity: 0.88, duration: 7.3, ease: "sine.inOut" },
+      "ambient-in",
+    );
+    tl.fromTo(
+      "#orb-two",
+      { rotation: 6, scale: 1.03, opacity: 0.22 },
+      { rotation: -14, scale: 0.98, opacity: 0.58, duration: 7.55, ease: "sine.inOut" },
+      "ambient-in",
+    );
+
+    rows.forEach((row) => {
+      const typed = document.querySelector(row.typed);
+      const characters = typed.querySelectorAll(".typed-char");
+      const characterFocus = 0.30;
+      const characterStagger = characters.length > 1
+        ? (row.typeDuration - characterFocus) / (characters.length - 1)
+        : 0;
+      const settleAt = row.typeStart + row.typeDuration;
+
+      tl.set(row.typed, { opacity: 1 }, 0);
+      tl.set(row.gradient, { opacity: 0 }, 0);
+      tl.set(characters, { autoAlpha: 0, filter: "blur(6px)" }, 0);
+      tl.fromTo(
+        row.icon,
+        { x: -80, rotation: -240, scale: 0.34, opacity: 0 },
+        {
+          x: 0,
+          rotation: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.72,
+          ease: "power4.out",
+          immediateRender: false,
+        },
+        row.iconStart,
+      );
+      tl.fromTo(
+        characters,
+        {
+          autoAlpha: 0.58,
+          filter: "blur(6px)",
+        },
+        {
+          autoAlpha: 1,
+          filter: "blur(0px)",
+          duration: characterFocus,
+          ease: "power2.out",
+          stagger: { each: characterStagger },
+          immediateRender: false,
+        },
+        row.typeStart,
+      );
+      tl.fromTo(
+        row.typed,
+        { opacity: 1 },
+        { opacity: 0, duration: 0.18, ease: "power2.in", immediateRender: false },
+        settleAt,
+      );
+      tl.fromTo(
+        row.gradient,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.24, ease: "power2.out", immediateRender: false },
+        settleAt,
+      );
+      tl.fromTo(
+        row.gradient,
+        { backgroundPosition: "100% 50%" },
+        { backgroundPosition: "0% 50%", duration: 1.6, ease: "none", immediateRender: false },
+        settleAt + 0.10,
+      );
+      tl.to(
+        row.icon,
+        { scale: 1.11, duration: 0.16, ease: "power2.out" },
+        settleAt - 0.03,
+      );
+      tl.to(
+        row.icon,
+        { scale: 1, duration: 0.28, ease: "power3.out" },
+        settleAt + 0.13,
+      );
+    });
+
+    tl.addLabel("exit", 7.5);
+    tl.to(
+      ".text-stack",
+      { x: 22, y: -16, opacity: 0, duration: 0.46, stagger: 0.07, ease: "power3.in" },
+      "exit",
+    );
+    tl.to(
+      ".icon-token",
+      { x: 56, rotation: 150, scale: 0.42, opacity: 0, duration: 0.52, stagger: 0.07, ease: "power3.in" },
+      "exit+=0.02",
+    );
+    tl.to(
+      "#aurora-field",
+      { y: 48, scale: 1.13, opacity: 0.2, duration: 0.72, ease: "power2.inOut" },
+      "exit",
+    );
+    tl.to(
+      "#aurora-ribbon",
+      { y: 32, opacity: 0.12, duration: 0.7, ease: "power2.inOut" },
+      "exit",
+    );
+    tl.to(
+      ".aurora-lobe",
+      { y: 40, scaleY: 1.12, opacity: 0.08, duration: 0.72, stagger: 0.04, ease: "power2.inOut" },
+      "exit",
+    );
+    tl.to(
+      ".orb",
+      { opacity: 0.12, duration: 0.52, ease: "power2.in" },
+      "exit+=0.08",
+    );
+    tl.to(
+      "#scene-shell",
+      { autoAlpha: 1, y: -864, duration: 0.68, ease: "power3.in" },
+      7.66,
+    );
+    tl.to(
+      "#talking-head video",
+      { y: 0, scale: 1, duration: 0.68, ease: "power3.in" },
+      7.66,
+    );
+
+    tl.seek(0);
+    window.__timelines["aurora-insight-list-9x16"] = tl;
+  </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

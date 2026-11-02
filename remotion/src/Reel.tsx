@@ -154,6 +154,14 @@ const BeatLayer: React.FC<{ beat: Beat; style: Style; region: Rect; lf: number; 
   // transitions.fade_frames: 0 = hard cut into fullscreen graphics (default: fade over anim_in_frames)
   const fade = style.transitions.fade_frames ?? pacing.anim_in_frames;
   const fadeIn = (keep: boolean) => (keep || fade === 0 ? 1 : interpolate(lf, [0, fade], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }));
+  if (g.type === "template" && g.src) {
+    // pre-rendered HyperFrames template (reel.py template-render): full canvas, alpha kept, its own SFX
+    return (
+      <Sequence from={frame - lf} layout="none">
+        <OffthreadVideo src={staticFile(g.src)} transparent volume={style.audio.sfx_volume} style={{ position: "absolute", inset: 0, width: W, height: H }} />
+      </Sequence>
+    );
+  }
   if (beat.layout === "fullscreen" && g.fill && g.src && g.fit === "width") {
     // landscape clip shown large: full canvas width (slightly overscanned), slow push-in, centred above the captions
     const z = interpolate(lf, [0, dur], g.zoom ?? [1.1, 1.2], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -210,7 +218,7 @@ const BeatLayer: React.FC<{ beat: Beat; style: Style; region: Rect; lf: number; 
       <AbsoluteFill style={{ opacity: beat.transition === "slide" ? 1 : enter, transform: `translateX(${slide}px)` }}>
         <Background style={style} variant={beat.bg} />
         <div style={{ position: "absolute", left: 70, right: safe.right, top: safe.top + 40, bottom: Math.max(safe.bottom + 140, (1 - style.captions.y.fullscreen) * H + 70), display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <GraphicView g={g} style={style} lf={lf} dur={dur} variant="full" />
+          <div style={{ zoom: g.scale ?? 1 }}><GraphicView g={g} style={style} lf={lf} dur={dur} variant="full" /></div>
         </div>
       </AbsoluteFill>
     );
@@ -231,8 +239,8 @@ const BeatLayer: React.FC<{ beat: Beat; style: Style; region: Rect; lf: number; 
   }
   const center = g.position === "center";
   return (
-    <div style={{ position: "absolute", left: 70, right: safe.right, top: g.y != null ? H * g.y : g.position === "bottom" ? H * 0.5 : center ? H * 0.365 : safe.top + 50, display: "flex", justifyContent: "center" }}>
-      <GraphicView g={g} style={style} lf={lf} dur={dur} variant="overlay" />
+    <div style={{ position: "absolute", left: 70, right: safe.right, top: g.y != null ? H * g.y : g.position === "bottom" ? H * 0.5 : center ? H * 0.365 : safe.top + 50, display: "flex", justifyContent: g.align === "left" ? "flex-start" : g.align === "right" ? "flex-end" : "center" }}>
+      <div style={{ zoom: g.scale ?? 1 }}><GraphicView g={g} style={style} lf={lf} dur={dur} variant="overlay" /></div>
     </div>
   );
 };

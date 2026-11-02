@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Hollywood Level History Videos — Grid</title>
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      font-family: "Satoshi", sans-serif;
+    }
+
+    .title-card {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background-color: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .scene-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      padding: 120px 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .headline {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.31em;
+      margin-top: 166px;
+      color: #111111;
+      font-size: 78px;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      white-space: nowrap;
+    }
+
+    .word {
+      display: block;
+      flex: none;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+      transform-origin: 50% 60%;
+      will-change: transform, opacity;
+    }
+
+    .hollywood {
+      color: #04a300;
+      font-weight: 500;
+      font-style: italic;
+      letter-spacing: -0.045em;
+      text-shadow: 0 1px 0 #007d00, 1px 2px 1px rgba(0, 0, 0, 0.22);
+    }
+
+    .history {
+      color: #ee0500;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-shadow: 0 1px 0 #a00000, 1px 2px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .clock {
+      display: block;
+      width: 340px;
+      height: 340px;
+      margin-top: 112px;
+      font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+      font-size: 313px;
+      line-height: 340px;
+      text-align: center;
+      filter: grayscale(1) brightness(1.12) contrast(0.78) drop-shadow(0 10px 8px rgba(124, 58, 237, 0.16));
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="hollywood-history-grid" data-start="0" data-duration="6" data-width="1920" data-height="1080" data-fps="30">
+    <section id="title-card-clip" class="clip" data-start="0" data-duration="6" data-track-index="1" aria-label="Hollywood level history videos title card">
+      <div id="title-card" class="title-card">
+        <div class="scene-content">
+          <h1 class="headline">
+            <span id="word-hollywood" class="word hollywood">hollywood</span>
+            <span id="word-level" class="word">level</span>
+            <span id="word-history" class="word history">history</span>
+            <span id="word-videos" class="word">videos</span>
+          </h1>
+          <div id="clock" class="clock" role="img" aria-label="Clock">🕒</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.fromTo('#word-hollywood',
+      { opacity: 0, x: -34, y: 18, rotation: -3 },
+      { opacity: 1, x: 0, y: 0, rotation: 0, duration: 0.75, ease: 'power3.out' }, 0.3);
+    tl.fromTo('#word-level',
+      { opacity: 0, y: 28 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.55);
+    tl.fromTo('#word-history',
+      { opacity: 0, scale: 1.16 },
+      { opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' }, 0.8);
+    tl.fromTo('#word-videos',
+      { opacity: 0, x: 34, y: 18 },
+      { opacity: 1, x: 0, y: 0, duration: 0.65, ease: 'power2.out' }, 1.05);
+
+    tl.fromTo('#clock',
+      { opacity: 0, y: 70, scale: 0.72, rotation: -10 },
+      { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.95, ease: 'back.out(1.25)' }, 0.65);
+    tl.to('#clock', { scale: 1.035, duration: 0.2, ease: 'power2.out' }, 1.8);
+    tl.to('#clock', { scale: 1, duration: 0.2, ease: 'power2.inOut' }, 2.0);
+
+    tl.to('#clock', { opacity: 0, y: 30, scale: 0.94, duration: 0.6, ease: 'power2.in' }, 4.95);
+    tl.to(['#word-videos', '#word-history', '#word-level', '#word-hollywood'],
+      { opacity: 0, y: -22, duration: 0.48, stagger: 0.08, ease: 'power2.in' }, 5.1);
+    tl.to('#title-card', { opacity: 0, duration: 0.25, ease: 'power1.in' }, 5.75);
+
+    window.__timelines['hollywood-history-grid'] = tl;
+  </script>
+  <!-- hf-autoplay -->
+  <script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback('onComplete',function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

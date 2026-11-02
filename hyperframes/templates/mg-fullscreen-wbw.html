@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .wbw-fs {
+      text-align: center;
+      padding: 40px 100px;
+      max-width: 1680px;
+      will-change: transform, opacity;
+    }
+
+    /* Words wrap naturally across lines */
+    .wbw-line {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: baseline;
+      gap: 0.72em;
+      max-width: 1600px;
+    }
+
+    .wbw-w {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      color: #111111;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      will-change: transform, opacity;
+    }
+
+    /* REPLACE: apply these to individual .wbw-w spans for colour accents */
+    .c-purple { color: #7c3aed; }
+    .c-red    { color: #dc2626; }
+    .c-green  { color: #059669; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-fullscreen-wbw" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+
+    <div class="wbw-fs" id="wbw-fs">
+      <!--
+        REPLACE: words and colour classes.
+        Each .wbw-w span needs a unique id so it can be timed individually.
+        For multi-line statements just keep adding spans — they wrap automatically.
+        Use .c-purple, .c-red, .c-green for accent words.
+      -->
+      <div class="wbw-line">
+        <span class="wbw-w" id="w-01">Most</span>
+        <span class="wbw-w" id="w-02">businesses</span>
+        <span class="wbw-w" id="w-03">are</span>
+        <span class="wbw-w c-purple" id="w-04">underusing</span>
+        <span class="wbw-w" id="w-05">what</span>
+        <span class="wbw-w" id="w-06">they</span>
+        <span class="wbw-w c-purple" id="w-07">already</span>
+        <span class="wbw-w" id="w-08">have.</span>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.set('.wbw-w', { opacity: 0, y: 24 }, 0);
+
+    // REPLACE: timestamps (in seconds) to match transcript word timings
+    tl.to('#w-01', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0.1);
+    tl.to('#w-02', { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 0.2);
+    tl.to('#w-03', { opacity: 1, y: 0, duration: 0.3,  ease: 'power2.out' }, 0.3);
+    tl.to('#w-04', { opacity: 1, y: 0, duration: 0.42, ease: 'power3.out' }, 0.4);
+    tl.to('#w-05', { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 1.2);
+    tl.to('#w-06', { opacity: 1, y: 0, duration: 0.3,  ease: 'power2.out' }, 1.3);
+    tl.to('#w-07', { opacity: 1, y: 0, duration: 0.38, ease: 'power3.out' }, 1.5);
+    tl.to('#w-08', { opacity: 1, y: 0, duration: 0.4,  ease: 'power3.out' }, 1.9);
+
+    // Exit
+    tl.to('#wbw-fs', { opacity: 0, y: -28, scale: 0.96, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 5.1);
+
+    window.__timelines['mg-fullscreen-wbw'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

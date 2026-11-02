@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Story Arc — Static Reference Frame</title>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 800;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+
+      :root {
+        color-scheme: dark;
+        --violet: #7c3aed;
+        --violet-light: #a78bfa;
+        --cyan: #62d8ff;
+        --ink: #080613;
+        --white: #fafafa;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+      }
+
+      .frame {
+        position: relative;
+        width: min(100vw, calc(100vh * 16 / 9));
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background-color: var(--ink);
+        background-image: url("assets/talking-head-placeholder.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        isolation: isolate;
+      }
+
+      .graphic {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        font-family: "Satoshi", sans-serif;
+      }
+
+      .graph-panel {
+        transform-box: fill-box;
+        transform-origin: center;
+        transform: perspective(1400px) rotateX(-2deg) rotateY(5deg) rotateZ(-1.2deg);
+      }
+
+      .subject-cutout {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        pointer-events: none;
+      }
+
+      .story-title {
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 92px;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
+      .callout {
+        font-family: "Satoshi", sans-serif;
+        font-size: 49px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+
+      .phase-label {
+        font-family: "Satoshi", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .micro-label {
+        font-family: "Satoshi", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      class="frame"
+      data-composition-id="story-arc-static-preview"
+      data-width="1920"
+      data-height="1080"
+      aria-label="Static story arc diagram over a talking-head background"
+    >
+      <svg
+        class="graphic"
+        viewBox="0 0 1920 1080"
+        role="img"
+        aria-labelledby="graphic-title graphic-description"
+      >
+        <title id="graphic-title">Story arc diagram and how to say it callout</title>
+        <desc id="graphic-description">
+          A glowing purple panel in the upper left contains a cyan story arc curve,
+          with a thin illuminated line leading to text in the upper right.
+        </desc>
+
+        <defs>
+          <linearGradient id="panel-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#130a29" stop-opacity="0.96" />
+            <stop offset="48%" stop-color="#24103f" stop-opacity="0.94" />
+            <stop offset="100%" stop-color="#48146b" stop-opacity="0.88" />
+          </linearGradient>
+
+          <linearGradient id="panel-edge" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.62" />
+            <stop offset="56%" stop-color="#7c3aed" stop-opacity="0.4" />
+            <stop offset="100%" stop-color="#62d8ff" stop-opacity="0.42" />
+          </linearGradient>
+
+          <linearGradient id="arc-stroke" x1="196" y1="465" x2="719" y2="465">
+            <stop offset="0%" stop-color="#5b21b6" />
+            <stop offset="27%" stop-color="#7c3aed" />
+            <stop offset="52%" stop-color="#8ddfff" />
+            <stop offset="76%" stop-color="#a78bfa" />
+            <stop offset="100%" stop-color="#62d8ff" />
+          </linearGradient>
+
+          <linearGradient id="connector-stroke" x1="775" y1="284" x2="1775" y2="284">
+            <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.36" />
+            <stop offset="18%" stop-color="#77dcff" stop-opacity="0.78" />
+            <stop offset="74%" stop-color="#62d8ff" stop-opacity="0.66" />
+            <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.16" />
+          </linearGradient>
+
+          <pattern id="panel-grid" width="42" height="42" patternUnits="userSpaceOnUse">
+            <path
+              d="M 42 0 L 0 0 0 42"
+              fill="none"
+              stroke="#a78bfa"
+              stroke-width="1"
+              opacity="0.11"
+            />
+          </pattern>
+
+          <filter id="panel-shadow" x="-20%" y="-30%" width="150%" height="170%">
+            <feDropShadow dx="0" dy="22" stdDeviation="32" flood-color="#120322" flood-opacity="0.58" />
+            <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#7c3aed" flood-opacity="0.34" />
+          </filter>
+
+          <filter id="line-glow" x="-30%" y="-80%" width="180%" height="260%">
+            <feGaussianBlur stdDeviation="9" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="soft-text-shadow" x="-20%" y="-60%" width="140%" height="220%">
+            <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#05030c" flood-opacity="0.86" />
+          </filter>
+        </defs>
+
+        <g class="graph-panel">
+          <!-- Upper-left story arc panel -->
+          <g filter="url(#panel-shadow)">
+            <rect x="104" y="76" width="702" height="468" rx="46" fill="url(#panel-fill)" />
+            <rect x="105.5" y="77.5" width="699" height="465" rx="44.5" fill="none" stroke="url(#panel-edge)" stroke-width="3" />
+            <rect x="104" y="76" width="702" height="468" rx="46" fill="url(#panel-grid)" />
+
+            <path
+              d="M 104 122 Q 104 76 150 76 H 714"
+              fill="none"
+              stroke="#a78bfa"
+              stroke-width="7"
+              stroke-linecap="round"
+              opacity="0.56"
+            />
+            <path
+              d="M 768 76 Q 806 76 806 114 V 496"
+              fill="none"
+              stroke="#7c3aed"
+              stroke-width="10"
+              stroke-linecap="round"
+              opacity="0.7"
+            />
+          </g>
+
+          <!-- Axes -->
+          <path d="M 160 477 H 742" fill="none" stroke="#fafafa" stroke-width="4" stroke-linecap="round" opacity="0.7" />
+          <path d="M 160 477 V 154" fill="none" stroke="#fafafa" stroke-width="4" stroke-linecap="round" opacity="0.7" />
+
+          <!-- Guide ticks -->
+          <g stroke="#fafafa" stroke-width="3" opacity="0.52">
+            <path d="M 285 468 V 486" />
+            <path d="M 425 468 V 486" />
+            <path d="M 563 468 V 486" />
+            <path d="M 690 468 V 486" />
+            <path d="M 151 376 H 169" />
+            <path d="M 151 274 H 169" />
+            <path d="M 151 174 H 169" />
+          </g>
+
+          <!-- Arc glow and stroke -->
+          <path
+            d="M 188 452
+               C 258 447, 308 398, 340 326
+               C 370 258, 398 203, 452 190
+               C 506 177, 532 226, 553 282
+               C 577 346, 627 419, 718 452"
+            fill="none"
+            stroke="#62d8ff"
+            stroke-width="18"
+            stroke-linecap="round"
+            opacity="0.2"
+            filter="url(#line-glow)"
+          />
+          <path
+            d="M 188 452
+               C 258 447, 308 398, 340 326
+               C 370 258, 398 203, 452 190
+               C 506 177, 532 226, 553 282
+               C 577 346, 627 419, 718 452"
+            fill="none"
+            stroke="url(#arc-stroke)"
+            stroke-width="7"
+            stroke-linecap="round"
+          />
+
+          <!-- Phase markers -->
+          <g fill="#fafafa" opacity="0.86">
+            <circle cx="188" cy="452" r="6" fill="#7c3aed" />
+            <circle cx="340" cy="326" r="6" fill="#7c3aed" />
+            <circle cx="452" cy="190" r="8" fill="#62d8ff" />
+            <circle cx="553" cy="282" r="6" fill="#a78bfa" />
+            <circle cx="718" cy="452" r="6" fill="#62d8ff" />
+          </g>
+
+          <!-- Diagram copy -->
+          <text x="454" y="358" class="story-title" fill="#fafafa" text-anchor="middle" filter="url(#soft-text-shadow)">
+            STORY ARC
+          </text>
+          <g class="phase-label" fill="#fafafa" opacity="0.72">
+            <text x="202" y="423">SETUP</text>
+            <text x="292" y="255">RISING</text>
+            <text x="292" y="281">ACTION</text>
+            <text x="452" y="146" text-anchor="middle">CLIMAX</text>
+            <text x="578" y="234">FALLING</text>
+            <text x="578" y="260">ACTION</text>
+            <text x="712" y="423" text-anchor="end">RESOLUTION</text>
+          </g>
+        </g>
+
+        <!-- Story path continuing toward the callout -->
+        <path
+          d="M 748 326
+             C 832 326, 861 281, 908 278
+             C 967 274, 985 365, 1038 368
+             C 1097 371, 1110 255, 1176 247
+             C 1256 238, 1321 285, 1408 285
+             H 1782"
+          fill="none"
+          stroke="#62d8ff"
+          stroke-width="16"
+          stroke-linecap="round"
+          opacity="0.16"
+          filter="url(#line-glow)"
+        />
+        <path
+          d="M 748 326
+             C 832 326, 861 281, 908 278
+             C 967 274, 985 365, 1038 368
+             C 1097 371, 1110 255, 1176 247
+             C 1256 238, 1321 285, 1408 285
+             H 1782"
+          fill="none"
+          stroke="url(#connector-stroke)"
+          stroke-width="5"
+          stroke-linecap="round"
+        />
+
+        <g filter="url(#soft-text-shadow)">
+          <text x="1308" y="265" class="callout" fill="#fafafa">how to say it</text>
+          <text x="1310" y="307" class="micro-label" fill="#62d8ff" opacity="0.86">
+            SHAPE THE MESSAGE
+          </text>
+        </g>
+
+        <circle cx="1782" cy="285" r="6" fill="#62d8ff" opacity="0.72" />
+      </svg>
+
+      <img
+        class="subject-cutout"
+        src="assets/talking-head-cutout.png"
+        alt=""
+        aria-hidden="true"
+      />
+    </main>
+  </body>
+</html>

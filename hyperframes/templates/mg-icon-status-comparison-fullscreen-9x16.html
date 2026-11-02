@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Icon Status Comparison — Fullscreen — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #fafafa; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── FULLSCREEN: comparison ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #fafafa;
+        z-index: 2;
+        will-change: transform, opacity;
+        background-image:
+          linear-gradient(rgba(124, 58, 237, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(124, 58, 237, 0.055) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        padding: 90px 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+      }
+
+      .icon-option {
+        position: relative;
+        width: 430px;
+        height: 430px;
+        display: grid;
+        place-items: center;
+        border: 3px solid #ede9fe;
+        border-radius: 60px;
+        background: #ffffff;
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
+        will-change: transform, opacity, filter;
+      }
+
+      .main-icon {
+        width: 240px;
+        height: 240px;
+        object-fit: contain;
+      }
+
+      .status-badge {
+        position: absolute;
+        left: 50%;
+        bottom: -56px;
+        width: 112px;
+        height: 112px;
+        margin-left: -56px;
+        display: grid;
+        place-items: center;
+        border: 9px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 12px 30px rgba(124, 58, 237, 0.18);
+        will-change: transform, opacity;
+      }
+
+      #badge-wrong { background: #ef4444; }
+      #badge-right { background: #10b981; }
+
+      .status-badge svg { width: 56px; height: 56px; overflow: visible; }
+
+      .status-mark {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 12;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="mg-icon-status-comparison-fullscreen-9x16" data-start="0" data-duration="6" data-width="1080" data-height="1920" data-fps="30">
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <div id="scene-content" class="scene-content">
+          <!-- REPLACE: icon src for each side -->
+          <div id="option-wrong" class="icon-option">
+            <img id="icon-wrong" class="main-icon" src="assets/template-icons/code-2-icon.svg" alt="Code icon" />
+            <div id="badge-wrong" class="status-badge">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path id="cross-a" class="status-mark" d="M 16 16 L 48 48" />
+                <path id="cross-b" class="status-mark" d="M 48 16 L 16 48" />
+              </svg>
+            </div>
+          </div>
+          <div id="option-right" class="icon-option">
+            <img id="icon-right" class="main-icon" src="assets/template-icons/automation-icon.svg" alt="Automation icon" />
+            <div id="badge-right" class="status-badge">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path id="tick" class="status-mark" d="M 12 34 L 27 49 L 53 17" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set('#graphic-zone', { autoAlpha: 1, y: -1920 });
+      tl.to('#graphic-zone', { autoAlpha: 1, y: 0, duration: 0.78, ease: 'expo.out' }, 0.14);
+      tl.set('#option-wrong', { opacity: 0, x: -56, scale: 0.88, rotation: -3 }, 0);
+      tl.set('#option-right', { opacity: 0, x: 56, scale: 0.88, rotation: 3 }, 0);
+      tl.set('.main-icon', { opacity: 0, scale: 0.76 }, 0);
+      tl.set('.status-badge', { opacity: 0, scale: 0.45, y: 26 }, 0);
+      tl.set('#cross-a, #cross-b, #tick', { strokeDasharray: 70, strokeDashoffset: 70 }, 0);
+
+      tl.to('#option-wrong', { opacity: 1, x: 0, scale: 1, rotation: 0, duration: 0.72, ease: 'power3.out' }, 0.35);
+      tl.to('#option-right', { opacity: 1, x: 0, scale: 1, rotation: 0, duration: 0.72, ease: 'power3.out' }, 0.52);
+      tl.to('#icon-wrong', { opacity: 1, scale: 1, duration: 0.62, ease: 'back.out(1.4)' }, 0.88);
+      tl.to('#icon-right', { opacity: 1, scale: 1, duration: 0.62, ease: 'back.out(1.4)' }, 1.03);
+      tl.to('#badge-wrong', { opacity: 1, scale: 1, y: 0, duration: 0.52, ease: 'back.out(1.8)' }, 1.58);
+      tl.to('#cross-a, #cross-b', { strokeDashoffset: 0, duration: 0.34, ease: 'power2.out', stagger: 0.12 }, 1.83);
+      tl.to('#badge-right', { opacity: 1, scale: 1, y: 0, duration: 0.52, ease: 'back.out(1.8)' }, 2.18);
+      tl.to('#tick', { strokeDashoffset: 0, duration: 0.48, ease: 'power2.out' }, 2.43);
+      tl.to('.icon-option', { y: -10, duration: 0.72, ease: 'sine.inOut', yoyo: true, repeat: 1, stagger: 0.1 }, 3.15);
+      tl.to('#scene-content', { opacity: 0, y: -30, scale: 1.025, duration: 0.58, ease: 'power3.in' }, 5.18);
+      tl.to('#graphic-zone', { autoAlpha: 1, y: -1920, duration: 0.62, ease: 'power3.in' }, 5.24);
+
+      window.__timelines['mg-icon-status-comparison-fullscreen-9x16'] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

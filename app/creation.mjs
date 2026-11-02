@@ -12,10 +12,16 @@ export function creationSettings(body) {
   }
   if (!Array.isArray(body.references ?? []) || (body.references ?? []).some(p => typeof p !== 'string')) throw new Error('Invalid reference files.');
   if (!Array.isArray(body.transcriptEdits ?? [])) throw new Error('Invalid transcript instructions.');
-  return { editor, aspectRatio, features, inspiration: body.inspiration || null, references: body.references ?? [], transcriptionId: body.transcriptionId || null,
+  const previewIdeas = body.previewIdeas ?? 0;
+  if (![0, 1, 2, 3].includes(previewIdeas)) throw new Error('Choose 1 to 3 ideas per beat.');
+  if (previewIdeas && editor !== 'native') throw new Error('Preview before building works with the Native editor only.');
+  if (previewIdeas && !features.motionGraphics) throw new Error('Turn on Motion graphics to preview them.');
+  return { editor, aspectRatio, features, previewIdeas, inspiration: body.inspiration || null, references: body.references ?? [], transcriptionId: body.transcriptionId || null,
     transcriptEdits: (body.transcriptEdits ?? []).map(edit => {
-      if (!Number.isInteger(edit.from) || !Number.isInteger(edit.to) || edit.from < 0 || edit.to < edit.from || typeof edit.instruction !== 'string' || !edit.instruction.trim()) throw new Error('Select words and describe the change.');
-      return { from: edit.from, to: edit.to, instruction: edit.instruction.trim() };
+      const template = edit.template ?? null;
+      if (template !== null && (typeof template !== 'string' || !/^[\w.-]+$/.test(template))) throw new Error('Invalid template.');
+      if (!Number.isInteger(edit.from) || !Number.isInteger(edit.to) || edit.from < 0 || edit.to < edit.from || typeof (edit.instruction ?? '') !== 'string' || (!template && !edit.instruction?.trim())) throw new Error('Select words and describe the change.');
+      return { from: edit.from, to: edit.to, instruction: (edit.instruction ?? '').trim(), ...(template ? { template } : {}) };
     }) };
 }
 export function settingsPrompt(job) {
@@ -27,6 +33,7 @@ When rough cut is OFF, do not remove fillers, pauses or retakes automatically; e
 Disabled features must not be added. When motion graphics is OFF use talking_head beats, zoom 1 and cut transitions. Enabled features follow the selected style.
 Inspiration video (study pacing and visual treatment; do not use as source footage): ${s.inspiration || 'none'}
 Reference images/videos (inspect and use where relevant): ${JSON.stringify(s.references)}
-Transcript instructions use ORIGINAL source word indices and source times, before rough cuts. Read transcript-edits.json and transcript.json, apply all instructions, and map surviving words through edl.json onto the cut timeline. Do not reinterpret indices as cut-word indices.
+Transcript instructions use ORIGINAL source word indices and source times, before rough cuts. Read transcript-edits.json and transcript.json, apply all instructions, and map surviving words through edl.json onto the cut timeline. Do not reinterpret indices as cut-word indices.${s.transcriptEdits.some(e => e.template) ? `
+Instructions with a "template" must use that HyperFrames template for exactly that passage (even if motion graphics is OFF): see "HyperFrames templates" in references/edit.md. Fill its copy from the instruction, or from the spoken words when the instruction is empty.` : ''}
 ${JSON.stringify(s.transcriptEdits)}`;
 }

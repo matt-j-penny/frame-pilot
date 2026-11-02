@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Talking Head Chest Keyword — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #1a1a2e;
+        font-family: "Satoshi", sans-serif;
+      }
+
+      #video-frame,
+      #source-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #video-frame {
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+
+      #source-video {
+        object-fit: cover;
+        object-position: center;
+        display: block;
+        transform-origin: 50% 48%;
+        will-change: transform;
+      }
+
+      #chest-copy {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        overflow: hidden;
+      }
+
+      .readability-wash {
+        position: absolute;
+        left: 3%;
+        right: 3%;
+        top: 61%;
+        height: 24%;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(10, 9, 18, 0.58) 0%,
+          rgba(10, 9, 18, 0.34) 48%,
+          rgba(10, 9, 18, 0) 78%
+        );
+        filter: blur(12px);
+        will-change: opacity, transform;
+      }
+
+      .scene-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 1206px 72px 324px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        text-align: center;
+      }
+
+      .line-mask {
+        width: 100%;
+        overflow: hidden;
+        padding: 2px 0;
+      }
+
+      #supporting-copy,
+      #tail-copy {
+        display: block;
+        width: 100%;
+        color: #ffffff;
+        font-family: "Satoshi", sans-serif;
+        font-size: 54px;
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        text-shadow:
+          0 3px 4px rgba(10, 9, 18, 0.82),
+          0 10px 28px rgba(10, 9, 18, 0.74);
+        will-change: transform, opacity, filter;
+      }
+
+      .word {
+        display: inline-block;
+        white-space: pre;
+        will-change: transform, opacity, filter;
+      }
+
+      #hero-mask {
+        width: 100%;
+        overflow: visible;
+        padding: 0;
+      }
+
+      #hero-word {
+        position: relative;
+        display: inline-block;
+        max-width: 100%;
+        color: #a78bfa;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 162px;
+        font-weight: 800;
+        font-style: italic;
+        line-height: 0.86;
+        letter-spacing: -0.065em;
+        text-transform: lowercase;
+        white-space: nowrap;
+        -webkit-text-stroke: 2px rgba(26, 26, 46, 0.24);
+        paint-order: stroke fill;
+        text-shadow:
+          0 4px 0 #5b21b6,
+          0 12px 34px rgba(10, 9, 18, 0.82),
+          0 0 40px rgba(124, 58, 237, 0.2);
+        transform-origin: 50% 65%;
+        will-change: transform, opacity, filter;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="talking-head-chest-keyword-9x16"
+      data-start="0"
+      data-duration="3"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="video-frame" data-layout-allow-overflow>
+        <!-- REPLACE: swap src/poster for portrait talking-head footage. -->
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="3"
+          data-track-index="0"
+        ></video>
+      </div>
+
+      <section
+        id="chest-copy"
+        class="clip"
+        data-start="0"
+        data-duration="2.8"
+        data-track-index="1"
+        data-layout-allow-overflow
+      >
+        <div class="readability-wash" aria-hidden="true"></div>
+        <div class="scene-content">
+          <div class="line-mask">
+            <span id="supporting-copy">If you're a beginner</span>
+          </div>
+          <div id="hero-mask">
+            <span id="hero-word">content</span>
+          </div>
+          <div class="line-mask">
+            <span id="tail-copy">creator</span>
+          </div>
+        </div>
+      </section>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="3"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+
+      <audio
+        id="typing-sfx"
+        class="clip"
+        src="assets/sfx/typing.mp3"
+        preload="auto"
+        data-start="0.3"
+        data-duration="0.91"
+        data-track-index="3"
+        data-volume="0.18"
+      ></audio>
+    </main>
+
+    <script>
+      function wrapWords(element) {
+        const words = element.textContent.trim().split(/\s+/);
+        element.textContent = "";
+        return words.map((word, index) => {
+          const span = document.createElement("span");
+          span.className = "word";
+          span.textContent = `${word}${index < words.length - 1 ? " " : ""}`;
+          element.appendChild(span);
+          return span;
+        });
+      }
+
+      const supportingWords = wrapWords(document.getElementById("supporting-copy"));
+      const tailWords = wrapWords(document.getElementById("tail-copy"));
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.to(
+        "#source-video",
+        {
+          keyframes: [
+            { scale: 1.1, duration: 0.5, ease: "expo.out" },
+            { scale: 1.1, duration: 1.35, ease: "none" },
+            { scale: 1, duration: 0.5, ease: "expo.in" },
+          ],
+        },
+        0.3,
+      );
+
+      tl.fromTo(
+        ".readability-wash",
+        { autoAlpha: 0, scaleX: 0.82 },
+        { autoAlpha: 1, scaleX: 1, duration: 0.48, ease: "sine.out" },
+        0.18,
+      );
+      tl.fromTo(
+        supportingWords,
+        { autoAlpha: 0, x: -54, y: 18, filter: "blur(7px)" },
+        {
+          autoAlpha: 1,
+          x: 0,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.3,
+          stagger: 0.07,
+          ease: "power3.out",
+        },
+        0.3,
+      );
+      tl.fromTo(
+        "#hero-word",
+        { autoAlpha: 0, x: 118, scale: 0.86, filter: "blur(10px)" },
+        { autoAlpha: 1, x: 0, scale: 1, filter: "blur(0px)", duration: 0.42, ease: "expo.out" },
+        0.66,
+      );
+      tl.fromTo(
+        tailWords,
+        { autoAlpha: 0, x: 42, y: 22, filter: "blur(5px)" },
+        {
+          autoAlpha: 1,
+          x: 0,
+          y: 0,
+          filter: "blur(0px)",
+          duration: 0.3,
+          stagger: 0.07,
+          ease: "back.out(1.35)",
+        },
+        0.91,
+      );
+
+      tl.addLabel("exit", 2.15);
+      tl.to(
+        tailWords,
+        { autoAlpha: 0, y: 22, filter: "blur(5px)", duration: 0.26, ease: "power2.in" },
+        "exit",
+      );
+      tl.to(
+        "#hero-word",
+        { autoAlpha: 0, x: -86, scale: 0.94, filter: "blur(8px)", duration: 0.38, ease: "expo.in" },
+        "exit+=0.06",
+      );
+      tl.to(
+        supportingWords,
+        { autoAlpha: 0, x: 48, filter: "blur(6px)", duration: 0.3, stagger: 0.035, ease: "power3.in" },
+        "exit+=0.11",
+      );
+      tl.to(
+        ".readability-wash",
+        { autoAlpha: 0, scaleX: 0.9, duration: 0.34, ease: "sine.in" },
+        "exit+=0.2",
+      );
+
+      window.__timelines["talking-head-chest-keyword-9x16"] = tl;
+    </script>
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

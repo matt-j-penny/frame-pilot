@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Donut Chart + Headline — Stacked — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Cabinet Grotesk';
+        src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Satoshi';
+        src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+      }
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #f8f9fb; }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP HALF: donut over headline ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        z-index: 2;
+        will-change: transform, opacity;
+        background: #f8f9fb;
+        background-image:
+          linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      #content {
+        width: 100%;
+        height: 100%;
+        padding: 90px 72px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+        will-change: transform, opacity;
+      }
+
+      #donut-wrap {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        flex: 0 0 400px;
+        display: grid;
+        place-items: center;
+        filter: drop-shadow(0 20px 60px rgba(124, 58, 237, 0.15));
+      }
+      #donut {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        overflow: visible;
+      }
+      .donut-track {
+        fill: none;
+        stroke: #ede9fe;
+        stroke-width: 46;
+      }
+      #donut-progress {
+        fill: none;
+        stroke: #7c3aed;
+        stroke-width: 46;
+        stroke-linecap: round;
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        will-change: stroke-dashoffset;
+      }
+      #percentage {
+        position: relative;
+        z-index: 2;
+        font-family: 'Cabinet Grotesk', sans-serif;
+        font-size: 106px;
+        font-weight: 800;
+        color: #111111;
+        letter-spacing: -0.05em;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* REPLACE: headline words — one .headline-word per line, last line is purple */
+      #headline {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-family: 'Cabinet Grotesk', sans-serif;
+        font-size: 96px;
+        font-weight: 800;
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+        text-align: center;
+        color: #111111;
+      }
+      .headline-word { display: block; will-change: transform, opacity, filter; }
+      .headline-word:last-child { color: #7c3aed; }
+
+      /* ── BOTTOM HALF: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="mg-donut-chart-headline-9x16" data-start="0" data-duration="6" data-width="1080" data-height="1920" data-fps="30">
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <div id="content">
+          <div id="donut-wrap">
+            <svg id="donut" viewBox="0 0 400 400" aria-hidden="true">
+              <circle class="donut-track" cx="200" cy="200" r="150"></circle>
+              <circle id="donut-progress" pathLength="100" cx="200" cy="200" r="150"></circle>
+            </svg>
+            <div id="percentage">0%</div>
+          </div>
+          <div id="headline">
+            <span class="headline-word">WORKFLOWS</span>
+            <span class="headline-word">SUCCEED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const counter = { value: 0 };
+      const percentage = document.getElementById('percentage');
+      gsap.set('#graphic-zone', { autoAlpha: 1, y: -864 });
+      tl.to('#graphic-zone', { autoAlpha: 1, y: 0, duration: 0.78, ease: 'expo.out' }, 0.14);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+         through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+         down so the speaker's face lands inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo('#talking-head video', { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.78, ease: 'expo.out' }, 0.14);
+
+      gsap.set('#donut-wrap', { opacity: 0, scale: 0.86, rotation: -5 });
+      gsap.set('.headline-word', { opacity: 0, y: 42, filter: 'blur(10px)' });
+
+      tl.to('#donut-wrap', { opacity: 1, scale: 1, rotation: 0, duration: 0.68, ease: 'back.out(1.35)' }, 0.18);
+      tl.to('#donut-progress', { strokeDashoffset: 10, duration: 1.3, ease: 'expo.out' }, 0.72);
+      tl.to(counter, {
+        value: 90,
+        duration: 1.3,
+        ease: 'expo.out',
+        onUpdate: () => { percentage.textContent = `${Math.round(counter.value)}%`; },
+      }, 0.72);
+      tl.to('.headline-word', { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.62, stagger: 0.2, ease: 'power3.out' }, 2.05);
+
+      tl.to('#content', { opacity: 0, y: -30, scale: 0.97, duration: 0.5, ease: 'power2.in' }, 5.08);
+      tl.to('#graphic-zone', { autoAlpha: 1, y: -864, duration: 0.62, ease: 'power3.in' }, 5.24);
+      tl.to('#talking-head video', { y: 0, scale: 1, duration: 0.62, ease: 'power3.in' }, 5.24);
+
+      window.__timelines['mg-donut-chart-headline-9x16'] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

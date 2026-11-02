@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Satoshi';
+        src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+        font-family: 'Satoshi', sans-serif;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a2e;
+      }
+      .clip { position: absolute; }
+      #video-frame {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        transform-origin: center top;
+        will-change: transform;
+      }
+      #source-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      #lower-third {
+        pointer-events: none;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 410px;
+        z-index: 3;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0 150px 138px;
+        background: linear-gradient(180deg, rgba(26, 26, 46, 0) 0%, rgba(26, 26, 46, 0.5) 48%, rgba(26, 26, 46, 0.9) 100%);
+      }
+      #callout {
+        width: 100%;
+        max-width: 1480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 34px;
+      }
+      #icon-shell {
+        width: 116px;
+        height: 116px;
+        flex: 0 0 116px;
+        display: grid;
+        place-items: center;
+        border-radius: 24px;
+        background: rgba(124, 58, 237, 0.78);
+        border: 2px solid rgba(255, 255, 255, 0.72);
+        box-shadow:
+          0 8px 30px rgba(124, 58, 237, 0.1),
+          0 0 42px rgba(124, 58, 237, 0.42);
+      }
+      #icon-shell img {
+        width: 68px;
+        height: 68px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
+      #lower-third-text {
+        color: #ffffff;
+        font-size: 82px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        text-align: left;
+        text-shadow:
+          0 2px 4px rgba(26, 26, 46, 0.9),
+          0 8px 30px rgba(124, 58, 237, 0.1),
+          0 0 18px rgba(167, 139, 250, 0.9),
+          0 0 42px rgba(124, 58, 237, 0.56);
+      }
+      .word {
+        display: inline-block;
+        white-space: pre;
+        will-change: transform, opacity, filter;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="video-frame">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="5"
+          data-track-index="0"
+        ></video>
+      </div>
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="5"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-lower-third"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.88"
+        data-duration="0.528"
+        data-track-index="3"
+        data-volume="0.1"
+      ></audio>
+      <audio
+        id="sfx-icon"
+        class="clip"
+        src="assets/sfx/deep roomy pop.mp3"
+        preload="auto"
+        data-start="1.02"
+        data-duration="0.72"
+        data-track-index="4"
+        data-volume="0.08"
+      ></audio>
+      <audio
+        id="sfx-word-reveal"
+        class="clip"
+        src="assets/sfx/typing.m4a"
+        preload="auto"
+        data-start="1.12"
+        data-duration="1.38"
+        data-track-index="5"
+        data-volume="0.08"
+      ></audio>
+      <div id="lower-third" class="clip" data-layout-allow-overflow data-start="0" data-duration="4.25" data-track-index="1">
+        <div id="callout">
+          <div id="icon-shell">
+            <img src="assets/template-icons/lightning-speed-icon.svg" alt="" />
+          </div>
+          <div id="lower-third-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const LOWER_THIRD_TEXT = "Move faster with one clear system";
+      const textElement = document.getElementById("lower-third-text");
+      textElement.innerHTML = LOWER_THIRD_TEXT
+        .split(" ")
+        .map((word, index, words) => `<span class="word">${word}${index < words.length - 1 ? " " : ""}</span>`)
+        .join("");
+      const words = textElement.querySelectorAll(".word");
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#lower-third", { autoAlpha: 0, y: 36 });
+      gsap.set("#icon-shell", { opacity: 0, scale: 0.72, rotation: -8 });
+      gsap.set(words, { opacity: 0, y: 52, filter: "blur(8px)" });
+
+      tl.to("#video-frame", { scale: 1.1, duration: 0.72, ease: "expo.inOut" }, 0.18);
+      tl.to("#lower-third", { autoAlpha: 1, y: 0, duration: 0.52, ease: "power2.out" }, 0.88);
+      tl.to("#icon-shell", { opacity: 1, scale: 1, rotation: 0, duration: 0.58, ease: "back.out(1.4)" }, 1.02);
+      tl.to(words, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.58, stagger: 0.16, ease: "power3.out" }, 1.12);
+
+      tl.to(words, { opacity: 0, y: 28, filter: "blur(5px)", duration: 0.34, stagger: 0.04, ease: "power3.in" }, 3.38);
+      tl.to("#icon-shell", { opacity: 0, scale: 0.82, rotation: 6, duration: 0.32, ease: "power2.in" }, 3.46);
+      tl.to("#lower-third", { autoAlpha: 0, y: 28, duration: 0.46, ease: "power2.in" }, 3.56);
+      tl.to("#video-frame", { scale: 1, duration: 0.72, ease: "expo.inOut" }, 3.42);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

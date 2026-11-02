@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@400&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .stacked-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    /* REPLACE: line text. Apply .c-purple / .c-red / .c-green to the whole line or individual spans. */
+    .stack-line {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 108px;
+      font-weight: 800;
+      color: #111111;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      will-change: transform, opacity;
+    }
+
+    /* The operator line (>, <, =, ≠) — styled differently to stand out */
+    .stack-op {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 88px;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+      will-change: transform, opacity;
+    }
+
+    .c-purple { color: #7c3aed; }
+    .c-red    { color: #dc2626; }
+    .c-green  { color: #059669; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-stacked-comparison" data-start="0" data-duration="6" data-width="1920" data-height="1080">
+
+    <div class="stacked-wrap" id="stacked-wrap">
+      <!--
+        REPLACE: line text.
+        Layout: Line A / Operator / Line B — stacked vertically.
+        Works for: A > B, A < B, A ≠ B, A = B, etc.
+        Delete .stack-op and line-b if you just want a single large statement.
+      -->
+      <div class="stack-line" id="line-a">100% RELIABILITY</div>
+      <div class="stack-op"   id="line-op">&gt;</div>
+      <div class="stack-line" id="line-b">99% INTELLIGENCE</div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Whole block scales in together (punchy reveal)
+    tl.from('#stacked-wrap', { opacity: 0, scale: 0.94, duration: 0.7, ease: 'expo.out', transformOrigin: 'center center' }, 0.1);
+
+    // Exit
+    tl.to('#stacked-wrap', { opacity: 0, y: -28, scale: 0.96, duration: 0.45, ease: 'power2.in', transformOrigin: 'center center' }, 5.1);
+
+    window.__timelines['mg-stacked-comparison'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

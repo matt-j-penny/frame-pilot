@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Stacked Headline + Impact Bar — Dot Grid — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+        font-family: "Satoshi", sans-serif;
+      }
+
+      /* ── TOP HALF: reference-inspired stacked headline ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+      }
+
+      #graphic-inner {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #f5f5f3;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 864px;
+        pointer-events: none;
+        transform-origin: center;
+        will-change: transform, opacity;
+      }
+
+      .scene-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        padding: 56px 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+      }
+
+      .setup-line,
+      .connector-line,
+      .hero-line {
+        width: 100%;
+        color: #1a1a2e;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        will-change: transform, opacity, filter;
+      }
+
+      .setup-line {
+        font-size: 70px;
+        line-height: 0.98;
+      }
+
+      .connector-line {
+        margin-top: 8px;
+        font-size: 52px;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+
+      .hero-line {
+        margin-top: 10px;
+        font-size: 120px;
+        line-height: 0.92;
+        letter-spacing: -0.055em;
+        text-transform: uppercase;
+        font-variant-numeric: tabular-nums;
+      }
+
+      #impact-bar {
+        position: relative;
+        width: calc(100% + 18px);
+        min-height: 130px;
+        margin-top: 24px;
+        border-radius: 24px;
+        background: #1a1a2e;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 44px 30px;
+        box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
+        transform-origin: center;
+        will-change: transform, opacity;
+      }
+
+      #impact-text {
+        color: #ffffff;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 78px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        will-change: transform, opacity, filter;
+      }
+
+      /* ── BOTTOM HALF: independent talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #1a1a2e;
+        z-index: 1;
+      }
+
+      #source-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="stacked-headline-impact-bar-9x16"
+      data-start="0"
+      data-duration="6"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <section
+        id="graphic-zone"
+        class="clip"
+        data-start="0"
+        data-duration="6"
+        data-track-index="1"
+        data-layout-allow-overflow
+      >
+        <div id="graphic-inner" data-layout-allow-overflow>
+          <svg id="dot-grid" width="1080" height="864" aria-hidden="true"></svg>
+
+          <div class="scene-content">
+            <!-- REPLACE: update each text line independently -->
+            <div id="setup-line" class="setup-line">4 Claude Skills</div>
+            <div id="connector-line" class="connector-line">to make your</div>
+            <div id="hero-line" class="hero-line">Resume</div>
+            <div id="impact-bar">
+              <div id="impact-text">unrejectable</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="6"
+          data-track-index="0"
+        ></video>
+      </div>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="6"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+    </main>
+
+    <script>
+      // Classic off-white dot grid used throughout the template library.
+      const grid = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      grid.innerHTML = dots;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.78, ease: "expo.out" }, 0.14);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the
+         canvas; the footage shows through the 1080×1056 window below it.
+         SPLIT_SHIFT slides the footage down so the speaker's face lands
+         inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.78, ease: "expo.out" }, 0.14);
+      tl.fromTo(
+        "#dot-grid",
+        { autoAlpha: 0, scale: 0.96 },
+        { autoAlpha: 1, scale: 1, duration: 0.9, ease: "sine.out" },
+        0.2,
+      );
+      tl.fromTo(
+        "#setup-line",
+        { autoAlpha: 0, x: -72, filter: "blur(8px)" },
+        { autoAlpha: 1, x: 0, filter: "blur(0px)", duration: 0.68, ease: "power3.out" },
+        0.34,
+      );
+      tl.fromTo(
+        "#connector-line",
+        { autoAlpha: 0, x: 64 },
+        { autoAlpha: 1, x: 0, duration: 0.52, ease: "power2.out" },
+        0.56,
+      );
+      tl.fromTo(
+        "#hero-line",
+        { autoAlpha: 0, scale: 0.86, filter: "blur(10px)" },
+        { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.78, ease: "expo.out" },
+        0.74,
+      );
+      tl.fromTo(
+        "#impact-bar",
+        { autoAlpha: 0, y: 66, scaleX: 0.82 },
+        { autoAlpha: 1, y: 0, scaleX: 1, duration: 0.66, ease: "back.out(1.25)" },
+        1.02,
+      );
+      tl.fromTo(
+        "#impact-text",
+        { autoAlpha: 0, y: 20, filter: "blur(7px)" },
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.42, ease: "power4.out" },
+        1.28,
+      );
+
+      tl.addLabel("exit", 5.1);
+      tl.to(
+        "#impact-text",
+        { autoAlpha: 0, y: 16, filter: "blur(6px)", duration: 0.26, ease: "power2.in" },
+        "exit",
+      );
+      tl.to(
+        "#impact-bar",
+        { autoAlpha: 0, y: 38, scaleX: 0.88, duration: 0.38, ease: "power3.in" },
+        "exit+=0.08",
+      );
+      tl.to(
+        "#hero-line, #connector-line, #setup-line",
+        { autoAlpha: 0, y: -24, duration: 0.34, stagger: 0.06, ease: "expo.in" },
+        "exit+=0.12",
+      );
+      tl.to(
+        "#dot-grid",
+        { autoAlpha: 0, scale: 1.025, duration: 0.5, ease: "sine.in" },
+        "exit+=0.22",
+      );
+      tl.to(
+        "#graphic-inner",
+        { autoAlpha: 0, duration: 0.2, ease: "power2.in" },
+        "exit+=0.62",
+      );
+      tl.set(
+        "#impact-text, #impact-bar, #hero-line, #connector-line, #setup-line, #dot-grid, #graphic-inner",
+        { autoAlpha: 0 },
+        "exit+=0.84",
+      );
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.64, ease: "power3.in" }, 5.2);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.64, ease: "power3.in" }, 5.2);
+
+      window.__timelines["stacked-headline-impact-bar-9x16"] = tl;
+    </script>
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

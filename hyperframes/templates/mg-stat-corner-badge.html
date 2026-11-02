@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Cabinet Grotesk';
+      src: url('assets/fonts/CabinetGrotesk-ExtraBold.woff2') format('woff2');
+      font-weight: 800;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Satoshi';
+      src: url('assets/fonts/Satoshi-Bold.woff2') format('woff2');
+      font-weight: 400 600;
+      font-style: normal;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+
+    /* Transparent overlay — layer over source video in parent composition */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .clip { position: absolute; }
+
+    /* REPLACE: change top/right to reposition to a different corner */
+    .badge {
+      position: absolute;
+      top: 120px;
+      right: 120px;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      border-radius: 20px;
+      padding: 44px 54px;
+      min-width: 400px;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.18);
+      will-change: transform, opacity;
+    }
+
+    .stat-num {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 112px;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 32px;
+      font-weight: 400;
+      color: rgba(0,0,0,0.62);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-stat-corner-badge" data-start="0" data-duration="4" data-width="1920" data-height="1080">
+
+    <div class="badge" id="badge">
+      <!-- REPLACE: number and label -->
+      <div class="stat-num">25</div>
+      <div class="stat-label">hours / week saved</div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.from('#badge', { opacity: 0, scale: 0.93, duration: 0.55, ease: 'back.out(1.4)', transformOrigin: 'right top' }, 0);
+    tl.to('#badge',   { opacity: 0, y: -20, scale: 0.96, duration: 0.4, ease: 'power2.in', transformOrigin: 'right top' }, 3.2);
+
+    window.__timelines['mg-stat-corner-badge'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

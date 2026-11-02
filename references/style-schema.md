@@ -103,8 +103,9 @@ Graphic types and fields:
 | `role` | `title` (role), `subtitle` (eyebrow), `icon`, `color` (icon tile), `items` (tasks), `icons` (task icons), `stamp` (text), `tone` (stamp colour), `marks: [stamp, flip row 1, flip row 2, ...]`. Job card slams in, each task flips Human -> AI on its mark (rows without a mark show "Working"), then an ink stamp slams on with shake and shards; fullscreen |
 | `queue` | `title` (header), `icon`/`color` (row 1 tile), `items` (row 1 shown; later rows stay redacted, their word lengths set the bars), `marks: [row 1 done, focus moves to row 2]`. "Who's next" list: row 1 ticks Done and strikes through, the focus ring moves to the locked "Next" row |
 | `timeline` | `clips: [{src}]` (thumbnail stills), `src`/`from` (program-monitor video, e.g. `cut.mp4`), `title`, `label` (agent), `marks: [cursor lands, cut 1, cut 2, ...]`. NLE timeline the AI cursor flies into and razor-cuts; header pill flips "Editing: you" -> agent |
+| `template` | `src` (`assets/tpl-<name>.mov` from `reel.py template-render`). A pre-rendered HyperFrames template played full canvas with its alpha and SFX; see "HyperFrames templates" in `references/edit.md` |
 
-Overlay graphics also take `position: "top" | "center"`. Set `captions: false` on a beat whose graphic already shows the same words. `enter: false` on a graphic skips its entrance (use on the hook so frame 0 is already fully drawn).
+Overlay graphics also take `position: "top" | "center"`, `y` (0-1 top edge) and `align: "left" | "right"` (horizontal placement, e.g. beside a centred speaker on 16:9). Overlay and fullscreen graphics take `scale` (size multiplier, e.g. 1.5 for UI cards on a 1920x1080 canvas). Set `captions: false` on a beat whose graphic already shows the same words. `enter: false` on a graphic skips its entrance (use on the hook so frame 0 is already fully drawn).
 
 Beat plan extras: an SFX entry takes `dur` (seconds; trims a long hit or tail with a short fade). `music` takes `from` (start offset in the track, e.g. to land a downbeat on the first word).
 

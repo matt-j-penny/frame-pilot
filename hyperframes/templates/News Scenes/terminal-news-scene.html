@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        min-width: 100%;
+        min-height: 100%;
+        overflow: hidden;
+        background: #ffffff;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-width: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+      }
+      .scene-content {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 24px 16px 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        align-self: stretch;
+        justify-content: flex-start;
+        box-sizing: border-box;
+      }
+      .terminal {
+        align-self: stretch;
+        width: 100%;
+        max-width: none;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: #000000;
+        border-radius: 16px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+        overflow: hidden;
+        border: 1px solid #d0d0d0;
+        opacity: 0;
+        transform: scale(0.97);
+        transform-origin: top left;
+      }
+      .terminal-header {
+        flex-shrink: 0;
+        background: linear-gradient(#e8e8e8, #d0d0d0);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid #b8b8b8;
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      .btn {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        opacity: 0;
+      }
+      .btn.close {
+        background: #ff5f56;
+      }
+      .btn.minimise {
+        background: #ffbd2e;
+      }
+      .btn.maximise {
+        background: #27c93f;
+      }
+      .terminal-title {
+        flex: 1;
+        text-align: center;
+        font-family: "Satoshi", system-ui, sans-serif;
+        font-size: 26px;
+        font-weight: 600;
+        color: #4a4a4a;
+        margin-right: 56px;
+        opacity: 0;
+      }
+      .terminal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: block;
+        margin: 0;
+        padding: 8px 16px 28px 0;
+        font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+        font-synthesis: weight;
+        color: #00ff41;
+        font-size: 48px;
+        line-height: 1.4;
+        text-align: left;
+        text-indent: 0;
+        direction: ltr;
+        text-shadow: 0 0 2px rgba(0, 255, 65, 0.35);
+        opacity: 0;
+      }
+      .terminal-inner {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+      }
+      .line {
+        display: block;
+        width: 100%;
+        margin: 0 0 0.24em 0;
+        padding: 0;
+        text-align: left !important;
+        text-indent: 0 !important;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .prompt {
+        color: #00ff41;
+      }
+      .output {
+        color: #6cff8a;
+      }
+      .output.headline-line {
+        color: #00ff41;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        font-synthesis: weight;
+      }
+      .output.lede-line {
+        color: #6cff8a;
+        opacity: 0.92;
+        font-weight: 400;
+      }
+      .cursor {
+        display: inline-block;
+        width: 0.32em;
+        min-width: 10px;
+        height: 1.05em;
+        background: #00ff41;
+        vertical-align: -0.12em;
+        margin-left: 0.12em;
+        opacity: 1;
+      }
+      .cursor.is-hidden {
+        visibility: hidden;
+        opacity: 0;
+      }
+      #typed-cmd,
+      #typed-headline,
+      #typed-lede {
+        display: inline;
+      }
+      .ghost-row {
+        min-height: 0;
+      }
+      .line.after-block {
+        margin-top: 0.45em;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="terminal-news-scene"
+      data-start="0"
+      data-duration="14"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="scene-content">
+        <div class="terminal" id="terminal-el">
+          <div class="terminal-header" id="terminal-header-el">
+            <span class="btn close" id="btn-close"></span>
+            <span class="btn minimise" id="btn-min"></span>
+            <span class="btn maximise" id="btn-max"></span>
+            <span class="terminal-title" id="terminal-title-el">newsdesk — zsh — 80×24</span>
+          </div>
+          <div class="terminal-body" id="terminal-body-el">
+            <div class="terminal-inner">
+              <div class="line ghost-row" id="row-command">
+                <span class="prompt">newsdesk@terminal ~ %</span>
+                <span id="typed-cmd"></span><span class="cursor" id="cursor-cmd"></span>
+              </div>
+              <div class="line output headline-line ghost-row" id="row-headline">
+                <span id="typed-headline"></span><span class="cursor is-hidden" id="cursor-headline"></span>
+              </div>
+              <div class="line output lede-line ghost-row" id="row-lede">
+                <span id="typed-lede"></span><span class="cursor is-hidden" id="cursor-lede"></span>
+              </div>
+              <div class="line ghost-row after-block" id="row-idle" style="opacity: 0">
+                <span class="prompt">newsdesk@terminal ~ %</span><span class="cursor is-hidden" id="cursor-idle"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const CMD = "curl -sL breaking.news/api/top";
+      const HEADLINE = "Headline goes here";
+      const LEDE = "Subheadline goes here";
+
+      const CHARS_PER_SEC_CMD = 26;
+      const CHARS_PER_SEC_HEADLINE = 24;
+      const CHARS_PER_SEC_LEDE = 22;
+
+      function typewriterSegment(tl, targetEl, fullText, startAt, charsPerSec) {
+        const dur = Math.max(0.15, fullText.length / charsPerSec);
+        const state = { n: 0 };
+        tl.fromTo(
+          state,
+          { n: 0 },
+          {
+            n: fullText.length,
+            duration: dur,
+            ease: "none",
+            immediateRender: false,
+            onUpdate: () => {
+              targetEl.textContent = fullText.slice(0, Math.round(state.n));
+            },
+            onComplete: () => {
+              targetEl.textContent = fullText;
+            },
+          },
+          startAt
+        );
+        return dur;
+      }
+
+      const DURATION = 14;
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#terminal-el", { transformOrigin: "top left" });
+
+      tl.to(
+        "#terminal-el",
+        {
+          opacity: 1,
+          scale: 1,
+          transformOrigin: "top left",
+          duration: 0.65,
+          ease: "expo.out",
+        },
+        0
+      );
+
+      tl.to(
+        "#terminal-header-el",
+        { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
+        0.12
+      );
+      tl.to(
+        "#btn-close",
+        { opacity: 1, duration: 0.18, ease: "power2.out" },
+        0.22
+      );
+      tl.to("#btn-min", { opacity: 1, duration: 0.18, ease: "power2.out" }, 0.28);
+      tl.to("#btn-max", { opacity: 1, duration: 0.18, ease: "power2.out" }, 0.34);
+      tl.to(
+        "#terminal-title-el",
+        { opacity: 1, duration: 0.35, ease: "power2.out" },
+        0.38
+      );
+      tl.to(
+        "#terminal-body-el",
+        { opacity: 1, duration: 0.4, ease: "power2.out" },
+        0.45
+      );
+
+      let t = 0.95;
+
+      gsap.set("#cursor-headline, #cursor-lede, #cursor-idle", { autoAlpha: 0 });
+      gsap.set("#cursor-cmd", { autoAlpha: 1 });
+
+      const dCmd = typewriterSegment(tl, document.getElementById("typed-cmd"), CMD, t, CHARS_PER_SEC_CMD);
+      t += dCmd;
+      tl.set("#cursor-cmd", { autoAlpha: 0 }, t);
+      tl.set("#cursor-headline", { autoAlpha: 1 }, t);
+
+      const dHead = typewriterSegment(
+        tl,
+        document.getElementById("typed-headline"),
+        HEADLINE,
+        t,
+        CHARS_PER_SEC_HEADLINE
+      );
+      t += dHead;
+      tl.set("#cursor-headline", { autoAlpha: 0 }, t);
+      tl.set("#cursor-lede", { autoAlpha: 1 }, t);
+
+      const dLede = typewriterSegment(
+        tl,
+        document.getElementById("typed-lede"),
+        LEDE,
+        t,
+        CHARS_PER_SEC_LEDE
+      );
+      t += dLede;
+      tl.set("#cursor-lede", { autoAlpha: 0 }, t);
+
+      const tIdle = t + 0.06;
+      tl.to("#row-idle", { opacity: 1, duration: 0.22, ease: "power2.out" }, tIdle - 0.06);
+      tl.set("#cursor-idle", { autoAlpha: 1 }, tIdle);
+
+      const tBlink = tIdle + 0.12;
+      const blinkWindow = Math.max(0.4, DURATION - tBlink);
+      const half = 0.42;
+      const blinks = Math.min(48, Math.max(10, Math.floor(blinkWindow / (half * 2))));
+      tl.fromTo(
+        "#cursor-idle",
+        { autoAlpha: 1 },
+        { autoAlpha: 0, duration: half, ease: "none", repeat: blinks, yoyo: true },
+        tBlink
+      );
+
+      window.__timelines["terminal-news-scene"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

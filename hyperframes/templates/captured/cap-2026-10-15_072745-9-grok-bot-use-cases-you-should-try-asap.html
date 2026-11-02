@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>9 Individual Bots — side panel</title>
+<script src="../vendor/gsap.min.js"></script>
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: #000; }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #1b1b1b; font-family: "Poppins", "Satoshi", sans-serif; }
+
+  .speaker { position: absolute; inset: 0; }
+  .speaker-fill { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, #6b6458 0%, #3b3833 60%, #24221f 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.35); font-size: 32px; letter-spacing: 0.1em; }
+  .speaker-fill video { width: 100%; height: 100%; object-fit: cover; }
+
+  .panel-shell { position: absolute; inset: 0; }
+  .panel { position: absolute; top: 0; right: 0; width: 912px; height: 1080px; overflow: hidden;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 48px),
+      linear-gradient(160deg, #3d0f63 0%, #2e0a4e 55%, #250840 100%); }
+
+  .title { position: absolute; left: 216px; top: 160px; display: flex; align-items: center; }
+  .num { font-size: 210px; font-weight: 500; line-height: 1; color: #fff; text-shadow: 0 0 18px rgba(255,255,255,0.75), 0 0 40px rgba(255,255,255,0.35); }
+  .words { margin-left: 18px; display: flex; flex-direction: column; }
+  .word { font-size: 64px; font-weight: 600; line-height: 1.12; color: #fff; text-shadow: 0 0 14px rgba(255,255,255,0.6); }
+
+  .grid { position: absolute; left: 230px; top: 410px; display: grid; grid-template-columns: repeat(3, 120px); grid-auto-rows: 120px; column-gap: 66px; row-gap: 66px; }
+  .bot { width: 120px; height: 120px; }
+  .bot svg { width: 100%; height: 100%; overflow: visible; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-duration="5.75" data-start="0">
+
+  <div class="speaker">
+    <div class="speaker-fill" id="speakerFill">
+      <video
+        id="source-video"
+        class="clip"
+        src="../assets/placeholder-video.mp4"
+        poster="../assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="5.75"
+        data-track-index="0"
+      ></video>
+    </div>
+  </div>
+
+  <div class="panel-shell clip" data-start="0" data-duration="5.75">
+    <div class="panel" id="panel">
+      <div class="title">
+        <div class="num" id="num">9</div>
+        <div class="words">
+          <div class="word" id="w1">Individual</div>
+          <div class="word" id="w2">bots</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="bot" style="filter: drop-shadow(0 0 14px #ff2a4a)"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="#f2163f"/><rect x="62" y="46" width="7" height="16" rx="3.5" fill="#2a0612"/><rect x="78" y="46" width="7" height="16" rx="3.5" fill="#2a0612"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 6px rgba(200,200,200,0.4))"><svg viewBox="0 0 120 120"><rect x="10" y="10" width="100" height="100" rx="18" fill="#8a8a8a"/><rect x="42" y="64" width="7" height="18" rx="3.5" fill="#1d1d1d"/><rect x="66" y="64" width="7" height="18" rx="3.5" fill="#1d1d1d"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 14px #2dff7a)"><svg viewBox="0 0 120 120"><path d="M22 92 a20 20 0 0 1 -4 -38 a24 24 0 0 1 36 -24 a24 24 0 0 1 40 10 a22 22 0 0 1 8 44 a18 18 0 0 1 -14 8 z" fill="#2cf27a"/><rect x="50" y="52" width="7" height="15" rx="3.5" fill="#06301a"/><rect x="66" y="52" width="7" height="15" rx="3.5" fill="#06301a"/></svg></div>
+
+        <div class="bot" style="filter: drop-shadow(0 0 12px #8a5cff)"><svg viewBox="0 0 120 120"><rect x="12" y="12" width="96" height="96" rx="14" fill="#7b4ff2"/><rect x="66" y="34" width="7" height="16" rx="3.5" fill="#1c0b45"/><rect x="82" y="34" width="7" height="16" rx="3.5" fill="#1c0b45"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 14px #2f7bff)"><svg viewBox="0 0 120 120"><rect x="0" y="30" width="120" height="62" rx="31" fill="#1f6cff"/><rect x="62" y="46" width="7" height="15" rx="3.5" fill="#06173d"/><rect x="80" y="46" width="7" height="15" rx="3.5" fill="#06173d"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 14px #ff2a4a)"><svg viewBox="0 0 120 120"><path d="M60 6 L108 32 L108 88 L60 114 L12 88 L12 32 Z" fill="#ee1238" stroke="#ee1238" stroke-width="10" stroke-linejoin="round"/><rect x="58" y="36" width="7" height="16" rx="3.5" fill="#2a0612"/><rect x="76" y="36" width="7" height="16" rx="3.5" fill="#2a0612"/></svg></div>
+
+        <div class="bot" style="filter: drop-shadow(0 0 16px #2dff6a)"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" fill="#22e650"/><rect x="40" y="40" width="7" height="16" rx="3.5" fill="#063014"/><rect x="58" y="40" width="7" height="16" rx="3.5" fill="#063014"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 16px #3dffa0)"><svg viewBox="0 0 120 120"><path d="M60 6 C96 6 114 34 112 66 C110 98 88 114 60 114 C30 114 8 98 8 64 C8 30 26 6 60 6 Z" fill="#33ef8c"/><rect x="40" y="38" width="7" height="16" rx="3.5" fill="#06301c"/><rect x="58" y="38" width="7" height="16" rx="3.5" fill="#06301c"/></svg></div>
+        <div class="bot" style="filter: drop-shadow(0 0 14px #ff7a1a)"><svg viewBox="0 0 120 120"><path d="M60 4 C74 26 106 52 106 78 A46 40 0 0 1 14 78 C14 52 46 26 60 4 Z" fill="#ff6a12"/><rect x="56" y="68" width="7" height="15" rx="3.5" fill="#3a1300"/><rect x="72" y="68" width="7" height="15" rx="3.5" fill="#3a1300"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  const bots = gsap.utils.toArray(".bot svg");
+
+  gsap.set("#panel", { x: 940 });
+  gsap.set("#num", { autoAlpha: 0, scale: 0.85 });
+  gsap.set(["#w1", "#w2"], { autoAlpha: 0, x: -10, filter: "blur(10px)" });
+  gsap.set(bots, { scale: 0, transformOrigin: "50% 50%" });
+
+  // Panel wipes in from the right, pushing the speaker left
+  tl.to("#panel", { x: 0, duration: 1.3, ease: "power3.inOut" }, 0.1)
+    .to("#speakerFill", { x: -440, duration: 1.3, ease: "power3.inOut" }, 0.1)
+
+    .to("#num", { autoAlpha: 1, scale: 1, duration: 0.35, ease: "power2.out" }, 0.6)
+
+    // Bots pop in row by row
+    .to(bots, { scale: 1, duration: 0.32, ease: "back.out(2)", stagger: 0.075 }, 0.82)
+
+    .to("#w1", { autoAlpha: 1, x: 0, filter: "blur(0px)", duration: 0.35, ease: "power2.out" }, 1.3)
+    .to("#w2", { autoAlpha: 1, x: 0, filter: "blur(0px)", duration: 0.35, ease: "power2.out" }, 1.62)
+
+    // Panel slides back out to the right
+    .to("#panel", { x: 940, duration: 1.35, ease: "power3.inOut" }, 3.9)
+    .to("#speakerFill", { x: 0, duration: 1.35, ease: "power3.inOut" }, 3.9);
+
+  window.__timelines["main"] = tl;
+</script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;if(window.__hyperframes)return;function play(){var rec=window.__timelines||{};var k=Object.keys(rec);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=rec[id];if(!t||typeof t.eventCallback!=="function"||typeof t.restart!=="function")return;t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

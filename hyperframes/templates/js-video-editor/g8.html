@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g8</title>
+<script src="../vendor/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Playfair Display';
+  src:url('assets/PlayfairDisplay-Italic-VF.ttf') format('truetype');
+  font-weight:400 900;font-style:italic;font-display:block;}
+*{margin:0;padding:0;box-sizing:border-box;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:transparent;}
+#block{position:absolute;left:0;top:913px;width:1920px;text-align:center;}
+.line{white-space:nowrap;}
+.w{position:relative;display:inline-block;
+  font-family:Helvetica,'Helvetica Neue',Arial,sans-serif;font-weight:700;color:#eef4ff;
+  opacity:0;will-change:transform,opacity;}
+.w.serif{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-style:italic;}
+.w.red{color:#ff4d5e;}
+/* faint black glow = blurred duplicates of the word behind it (never text-shadow) */
+.w::before,.w::after{content:attr(data-w);position:absolute;left:0;top:0;
+  z-index:-1;color:#000;pointer-events:none;}
+
+.l0 .w{font-size:56.0px;line-height:59px;letter-spacing:-2.5px;
+  margin:0 7px;}
+.l0 .w.serif{font-size:57.8px;letter-spacing:-1.6px;}.l0 .w::before{filter:blur(15px);opacity:1.0;}.l0 .w::after{filter:blur(6px);opacity:0.8;}
+</style></head>
+<body style="margin:0;background:transparent;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080"
+     data-start="0" data-duration="5.1720">
+<div id="block">
+<div class="line l0"><span class="w" data-t="0.0000" data-rise="14" data-w="not">not</span><span class="w" data-t="0.1200" data-rise="14" data-w="relying">relying</span><span class="w" data-t="0.4410" data-rise="14" data-w="upon">upon</span><span class="w" data-t="0.7010" data-rise="14" data-w="AI">AI</span><span class="w" data-t="0.9810" data-rise="14" data-w="to">to</span><span class="w" data-t="1.1210" data-rise="14" data-w="create">create</span><span class="w" data-t="1.8210" data-rise="14" data-w="things">things</span><span class="w" data-t="2.4010" data-rise="14" data-w="which">which</span><span class="w" data-t="2.6210" data-rise="14" data-w="AI">AI</span><span class="w" data-t="2.9020" data-rise="14" data-w="is">is</span><span class="w red" data-t="3.0820" data-rise="14" data-w="not">not</span><span class="w" data-t="3.2620" data-rise="14" data-w="good">good</span><span class="w" data-t="3.4420" data-rise="14" data-w="at">at</span><span class="w" data-t="3.5620" data-rise="14" data-w="creating">creating</span></div>
+</div>
+</div>
+<script>
+// Entrances: rise (default, per-word settle) | pop / punch (the house pop:
+// 0.90 -> 1.10 over 3f, snap to 1.00) | slam (1.16 settling over 7f)
+// | flicker (whole block strobes in on the 7-frame 20%-pulse pattern).
+const DUR = 5.1720, RISE_DUR = 0.55, F = 0.033367;
+const OUT_T = 4.7553, OUT_DUR = 0.35;   // null = the V1 cut is the exit
+const ENTRANCE = "rise", TILT = 0;
+const POP_FROM = 0.9, POP_OVER = 1.1, POP_F = 3,
+      POP_EASE = "power2.out";
+
+const tl = gsap.timeline({paused: true});
+if (TILT) gsap.set('#block', {rotation: TILT});
+const els = [...document.querySelectorAll('.w')];
+if (ENTRANCE === 'flicker') {
+  const t0 = Math.min(...els.map(e => +e.dataset.t));
+  for (const el of els) tl.set(el, {opacity: 1}, 0);
+  tl.set('#block', {opacity: 0}, 0);
+  for (const [f, o] of [[0,.2],[1,0],[3,.2],[4,0],[5,.2],[6,1]])
+    tl.set('#block', {opacity: o}, t0 + f * F);
+} else {
+  for (const el of els) {
+    const t0 = +el.dataset.t;
+    if (ENTRANCE === 'punch') {
+      tl.set(el, {opacity: 1, scale: POP_FROM}, t0);
+      if (POP_OVER > 0) {                       // grow past, then snap back on 1 frame
+        tl.to(el, {scale: POP_OVER, duration: POP_F * F, ease: POP_EASE}, t0);
+        tl.set(el, {scale: 1}, t0 + (POP_F + 1) * F);
+      } else if (POP_F > 0) {                  // settle shape (the old slam)
+        tl.to(el, {scale: 1, duration: POP_F * F, ease: POP_EASE}, t0);
+      } else {
+        tl.set(el, {scale: 1}, t0 + F);
+      }
+    } else {
+      tl.fromTo(el, {y: +el.dataset.rise}, {y: 0, duration: RISE_DUR, ease: 'power3.out'}, t0);
+      tl.set(el, {opacity: 1}, t0);
+    }
+  }
+}
+if (OUT_T !== null) {
+  // riseOut is RELATIVE ('-=') so it rises from wherever the block rests (registry rule)
+  tl.to('#block', {opacity: 0, y: '-=18', duration: OUT_DUR, ease: 'power2.in'}, OUT_T);
+  tl.set('#block', {opacity: 0}, DUR - F);   // hard-kill: the last rendered frame is empty
+}
+tl.set({}, {}, DUR);   // pin the timeline's total duration
+tl.progress(0);
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

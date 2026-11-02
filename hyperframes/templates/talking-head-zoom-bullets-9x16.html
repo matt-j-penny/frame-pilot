@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Talking Head Zoom + Bullet Points — Dot Grid — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 500 700;
+        font-style: normal;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+        font-family: "Satoshi", sans-serif;
+      }
+
+      /* ── TOP 35%: white dot-grid motion graphic ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+      }
+
+      #graphic-inner {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #f5f5f3;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 864px;
+        pointer-events: none;
+      }
+
+      .scene-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        padding: 60px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 26px;
+      }
+
+      #eyebrow {
+        align-self: flex-start;
+        padding: 11px 19px;
+        border-radius: 12px;
+        background: #7c3aed;
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.1);
+        will-change: transform, opacity;
+      }
+
+      #title {
+        max-width: 920px;
+        color: #1a1a2e;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 80px;
+        font-weight: 800;
+        line-height: 1.03;
+        letter-spacing: -0.03em;
+        text-shadow: 0 8px 30px rgba(124, 58, 237, 0.1);
+        will-change: transform, opacity;
+      }
+
+      #rule {
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: #a78bfa;
+        transform-origin: left center;
+        will-change: transform;
+      }
+
+      #bullets {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .bullet {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr);
+        align-items: start;
+        gap: 20px;
+        color: #64648c;
+        font-size: 40px;
+        font-weight: 500;
+        line-height: 1.28;
+        will-change: transform, opacity;
+      }
+
+      .bullet-dot {
+        width: 16px;
+        height: 16px;
+        margin-top: 16px;
+        border-radius: 50%;
+        background: #7c3aed;
+        box-shadow: 0 0 0 7px rgba(124, 58, 237, 0.16);
+      }
+
+      /* ── BOTTOM 65%: talking head, isolated from the graphic ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #video-frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
+        will-change: transform;
+      }
+
+      #source-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="talking-head-zoom-bullets-9x16"
+      data-start="0"
+      data-duration="8"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <section
+        id="graphic-zone"
+        class="clip"
+        data-start="0"
+        data-duration="8"
+        data-track-index="1"
+        data-layout-allow-overflow
+      >
+        <div id="graphic-inner" data-layout-allow-overflow>
+          <svg id="dot-grid" width="1080" height="864" aria-hidden="true"></svg>
+
+          <div class="scene-content">
+            <!-- REPLACE: eyebrow, title, and each bullet point -->
+            <div id="eyebrow">Key takeaways</div>
+            <h1 id="title">Build momentum with three simple moves</h1>
+            <div id="rule"></div>
+            <div id="bullets">
+              <div class="bullet">
+                <span class="bullet-dot" aria-hidden="true"></span>
+                <span>Start with one clear outcome.</span>
+              </div>
+              <div class="bullet">
+                <span class="bullet-dot" aria-hidden="true"></span>
+                <span>Make the next action obvious.</span>
+              </div>
+              <div class="bullet">
+                <span class="bullet-dot" aria-hidden="true"></span>
+                <span>Measure what actually changed.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <div id="video-frame" data-layout-allow-overflow>
+          <video
+            id="source-video"
+            class="clip"
+            src="assets/placeholder-video.mp4"
+            poster="assets/talking-head-placeholder.png"
+            muted
+            playsinline
+            preload="auto"
+            data-start="0"
+            data-duration="8"
+            data-track-index="0"
+          ></video>
+        </div>
+      </div>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="8"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-camera-push"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.3"
+        data-duration="0.528"
+        data-track-index="3"
+        data-volume="0.1"
+      ></audio>
+      <audio
+        id="sfx-eyebrow"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="1.08"
+        data-duration="0.313469"
+        data-track-index="4"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-title"
+        class="clip"
+        src="assets/sfx/simple high pop.mp3"
+        preload="auto"
+        data-start="1.25"
+        data-duration="1.08"
+        data-track-index="5"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-rule"
+        class="clip"
+        src="assets/sfx/single mouse click.mp3"
+        preload="auto"
+        data-start="1.62"
+        data-duration="0.365688"
+        data-track-index="6"
+        data-volume="0.05"
+      ></audio>
+      <audio
+        id="sfx-bullet-1"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="1.86"
+        data-duration="0.313469"
+        data-track-index="7"
+        data-volume="0.06"
+      ></audio>
+      <audio
+        id="sfx-bullet-2"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="2.06"
+        data-duration="0.313469"
+        data-track-index="8"
+        data-volume="0.06"
+      ></audio>
+      <audio
+        id="sfx-bullet-3"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="2.26"
+        data-duration="0.313469"
+        data-track-index="9"
+        data-volume="0.06"
+      ></audio>
+    </main>
+
+    <script>
+      // Classic off-white dot grid, cropped to the 1080×864 graphic region.
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.82, ease: "expo.out" }, 0.14);
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         This is a 45/55 split: the graphic covers the top 864px of the
+         canvas and the footage shows through the 1080×1056 window below it.
+         SPLIT_SHIFT slides the footage down so the speaker's face lands
+         inside that window.
+
+         SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+         inside its 1080px frame and exposes bars down both sides.
+         SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+         the window fully covered — outside it the footage pulls off an edge.
+
+         For real footage, read both values off the actual face position:
+           python3 scripts/face-frame.py <video> --window 864:1920
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#video-frame", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.82, ease: "expo.out" }, 0.14);
+      gsap.set("#eyebrow", { autoAlpha: 0, x: 28 });
+      gsap.set("#title", { autoAlpha: 0, x: 44 });
+      gsap.set("#rule", { scaleX: 0 });
+      gsap.set(".bullet", { autoAlpha: 0, x: 36 });
+
+      tl.to("#eyebrow", { autoAlpha: 1, x: 0, duration: 0.38, ease: "power2.out" }, 1.08);
+      tl.to("#title", { autoAlpha: 1, x: 0, duration: 0.64, ease: "power3.out" }, 1.25);
+      tl.to("#rule", { scaleX: 1, duration: 0.5, ease: "expo.out" }, 1.62);
+      tl.to(".bullet", { autoAlpha: 1, x: 0, duration: 0.48, stagger: 0.2, ease: "back.out(1.25)" }, 1.86);
+
+      tl.addLabel("exit", 6.5);
+      tl.to(".bullet", { autoAlpha: 0, x: 28, duration: 0.3, stagger: 0.06, ease: "power2.in" }, "exit");
+      tl.to("#title, #eyebrow", { autoAlpha: 0, x: 32, duration: 0.36, ease: "power3.in" }, "exit+=0.12");
+      tl.to("#rule", { scaleX: 0, duration: 0.3, ease: "power2.in" }, "exit+=0.2");
+      tl.to("#graphic-inner", { autoAlpha: 0, y: -18, duration: 0.55, ease: "power2.in" }, "exit+=0.6");
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.66, ease: "power3.in" }, 7.12);
+      tl.to("#video-frame", { y: 0, scale: 1, duration: 0.66, ease: "power3.in" }, 7.12);
+
+      window.__timelines["talking-head-zoom-bullets-9x16"] = tl;
+    </script>
+    <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+  </body>
+</html>

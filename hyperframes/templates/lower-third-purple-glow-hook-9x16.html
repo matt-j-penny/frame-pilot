@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Lower Third Purple Glow Hook — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05030a;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05030a;
+      }
+
+      #source-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+      }
+
+      /* Untimed wrapper keeps the video lifecycle framework-owned while the camera push stays seek-safe. */
+      #video-frame {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        transform-origin: 50% 39%;
+        will-change: transform;
+      }
+
+      #overlay {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 2;
+      }
+
+      #overlay-inner {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        will-change: transform, opacity;
+      }
+
+      #bottom-scrim {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 780px;
+        background:
+          radial-gradient(circle at 50% 38%, rgba(124, 58, 237, 0.22), transparent 48%),
+          linear-gradient(
+            180deg,
+            rgba(5, 3, 10, 0) 0%,
+            rgba(5, 3, 10, 0.45) 31%,
+            rgba(5, 3, 10, 0.92) 100%
+          );
+      }
+
+      #caption-stage {
+        position: absolute;
+        left: 44px;
+        right: 44px;
+        bottom: 0;
+        height: 720px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        /* 15% of the 1920px portrait canvas higher than the original lockup. */
+        padding-bottom: 406px;
+        text-align: center;
+      }
+
+      #copy-lockup {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 100%;
+        will-change: transform, opacity;
+      }
+
+      #support-line {
+        color: #ffffff;
+        font-family: "Satoshi", sans-serif;
+        font-size: 76px;
+        font-weight: 700;
+        line-height: 1.06;
+        letter-spacing: -0.025em;
+        white-space: nowrap;
+        text-shadow:
+          0 3px 5px rgba(0, 0, 0, 0.84),
+          0 12px 28px rgba(0, 0, 0, 0.72);
+        will-change: transform, opacity, filter;
+      }
+
+      #hero-word-shell {
+        position: relative;
+        display: block;
+        margin-top: 8px;
+        line-height: 0.88;
+        width: 100%;
+        overflow: visible;
+        text-align: center;
+        will-change: transform, opacity;
+      }
+
+      /* The halo is anchored to the hero-word shell, so it travels with FLOP. */
+      #purple-halo {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -360px;
+        margin-top: -124px;
+        width: 720px;
+        height: 248px;
+        border-radius: 50%;
+        background: radial-gradient(
+          ellipse,
+          rgba(168, 85, 247, 0.46) 0%,
+          rgba(124, 58, 237, 0.22) 42%,
+          rgba(124, 58, 237, 0) 74%
+        );
+        filter: blur(26px);
+        opacity: 0;
+        z-index: 0;
+        will-change: transform, opacity;
+      }
+
+      #hero-word-glow,
+      #hero-word {
+        display: block;
+        width: 100%;
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 300px;
+        font-weight: 800;
+        letter-spacing: -0.075em;
+        line-height: 0.88;
+        text-transform: uppercase;
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      #hero-word-glow {
+        position: absolute;
+        inset: 0;
+        color: #a855f7;
+        opacity: 0;
+        filter: blur(24px);
+        z-index: 1;
+        will-change: transform, opacity, filter;
+      }
+
+      #hero-word {
+        position: relative;
+        color: transparent;
+        background: linear-gradient(180deg, #d8b4fe 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        z-index: 2;
+        filter: drop-shadow(0 7px 0 rgba(34, 10, 62, 0.72))
+          drop-shadow(0 16px 32px rgba(18, 5, 30, 0.82));
+        will-change: transform, opacity, filter;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="lower-third-purple-glow-hook-9x16"
+      data-start="0"
+      data-duration="5.2"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- REPLACE: swap src/poster for your own portrait talking-head footage. -->
+      <div id="video-frame">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="5.2"
+          data-track-index="0"
+        ></video>
+      </div>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="5.2"
+        data-track-index="3"
+        data-volume="1"
+      ></audio>
+
+      <audio
+        id="sfx-text-in"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.24"
+        data-duration="0.528"
+        data-track-index="4"
+        data-volume="1"
+      ></audio>
+
+      <audio
+        id="sfx-text-out"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="4.45"
+        data-duration="0.528"
+        data-track-index="5"
+        data-volume="1"
+      ></audio>
+
+      <section
+        id="overlay"
+        class="clip"
+        data-start="0"
+        data-duration="5.2"
+        data-track-index="1"
+      >
+        <div id="overlay-inner">
+          <div id="bottom-scrim"></div>
+
+          <div id="caption-stage">
+            <div id="copy-lockup">
+              <!-- REPLACE: change the supporting line; keep it short for portrait readability. -->
+              <div id="support-line">Why Your Videos</div>
+              <div id="hero-word-shell">
+                <!-- REPLACE: change both instances when replacing the hero word. -->
+                <div id="purple-halo" aria-hidden="true"></div>
+                <div id="hero-word-glow" aria-hidden="true">FLOP</div>
+                <div id="hero-word">FLOP</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#video-frame", { scale: 1 });
+      gsap.set("#overlay-inner", { autoAlpha: 0, y: 54 });
+      gsap.set("#copy-lockup", { autoAlpha: 0, y: 34 });
+      gsap.set("#support-line", { opacity: 0, x: -150, y: 8, filter: "blur(6px)" });
+      gsap.set("#hero-word-shell", { opacity: 0, x: 150, y: 24, scale: 0.92 });
+      gsap.set("#hero-word-glow", { opacity: 0, scale: 0.82 });
+
+      // Short-form pacing: fast arrivals with a small overlap between the two text voices.
+      tl.to("#video-frame", { scale: 1.11, duration: 4.22, ease: "power1.inOut" }, 0.16);
+      tl.to("#overlay-inner", { autoAlpha: 1, y: 0, duration: 0.42, ease: "expo.out" }, 0.10);
+      tl.to("#copy-lockup", { autoAlpha: 1, y: 0, duration: 0.38, ease: "expo.out" }, 0.16);
+      tl.to(
+        "#support-line",
+        { opacity: 1, x: 0, y: 0, filter: "blur(0px)", duration: 0.42, ease: "expo.out" },
+        0.24,
+      );
+      tl.to(
+        "#hero-word-shell",
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.52, ease: "expo.out" },
+        0.39,
+      );
+      tl.to(
+        "#hero-word-glow",
+        { opacity: 0.72, scale: 1, duration: 0.44, ease: "power2.out" },
+        0.43,
+      );
+
+      // Finite ambient drift keeps the halo alive without introducing a repeating clock.
+      tl.to("#purple-halo", { autoAlpha: 0.96, x: 18, y: -8, duration: 1.15, ease: "power2.inOut" }, 0.62);
+      tl.to("#purple-halo", { x: -16, y: 6, duration: 1.5, ease: "power2.inOut" }, 1.77);
+      tl.to("#purple-halo", { x: 8, y: -4, duration: 1.2, ease: "power2.inOut" }, 3.27);
+
+      // Coordinated animated exit; the overlay never relies on a hard timed cut.
+      // Match the main hero-word exit exactly: same start beat and 0.40s duration.
+      tl.to("#video-frame", { scale: 1, duration: 0.40, ease: "expo.out" }, 4.45);
+      tl.to("#hero-word-glow", { opacity: 0, scale: 0.96, duration: 0.34, ease: "power2.in" }, 4.45);
+      tl.to("#hero-word-shell", { opacity: 0, x: 90, y: 34, scale: 0.98, duration: 0.40, ease: "power2.in" }, 4.45);
+      tl.to("#support-line", { opacity: 0, x: -90, y: 20, filter: "blur(5px)", duration: 0.34, ease: "power2.in" }, 4.45);
+      tl.to("#copy-lockup", { autoAlpha: 0, y: 26, duration: 0.38, ease: "power2.in" }, 4.55);
+      tl.to("#overlay-inner", { autoAlpha: 0, y: 42, duration: 0.42, ease: "power2.in" }, 4.65);
+
+      window.__timelines["lower-third-purple-glow-hook-9x16"] = tl;
+    </script>
+    <!-- hf-autoplay: lets the static Template Library preview the finite timeline. -->
+    <script>
+      (function () {
+        if (window.self === window.top) return;
+        function play() {
+          const timelines = window.__timelines || {};
+          const keys = Object.keys(timelines);
+          if (!keys.length) {
+            setTimeout(play, 150);
+            return;
+          }
+          keys.forEach(function (id) {
+            const timeline = timelines[id];
+            timeline.eventCallback("onComplete", function () {
+              setTimeout(play, 1200);
+            });
+            timeline.restart();
+          });
+        }
+        setTimeout(play, 200);
+      }());
+    </script>
+  </body>
+</html>

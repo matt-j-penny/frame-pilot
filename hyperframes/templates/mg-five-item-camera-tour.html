@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Five-Item Camera Tour</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --text-secondary: #64648c;
+      --text-muted: #9494b8;
+      --accent: #7c3aed;
+      --accent-light: #a78bfa;
+      --accent-lighter: #ede9fe;
+      --accent-dark: #5b21b6;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: "Satoshi", sans-serif;
+      color: var(--text);
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+    }
+
+    .scene-shell {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--bg);
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+
+    .grid-background {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26, 26, 46, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 46, 0.055) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .accent-glow {
+      position: absolute;
+      width: 760px;
+      height: 560px;
+      left: 580px;
+      top: 250px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0) 70%);
+      filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .camera {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      padding: 76px 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .title-block {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    .title {
+      position: relative;
+      z-index: 1;
+      max-width: 1460px;
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 76px;
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.035em;
+      color: var(--accent);
+    }
+
+    .title-blur {
+      position: absolute;
+      inset: -18px;
+      z-index: 2;
+      border-radius: 24px;
+      background: rgba(250, 250, 250, 0.5);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .items-grid {
+      width: 100%;
+      margin-top: 72px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 36px 40px;
+    }
+
+    .item-card {
+      position: relative;
+      grid-column: span 2;
+      height: 240px;
+      overflow: hidden;
+      border: 1px solid rgba(124, 58, 237, 0.13);
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow:
+        0 20px 60px rgba(124, 58, 237, 0.12),
+        0 8px 30px rgba(124, 58, 237, 0.08);
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+
+    #item-4 {
+      grid-column: 2 / span 2;
+    }
+
+    #item-5 {
+      grid-column: 4 / span 2;
+    }
+
+    .focus-ring {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      border: 5px solid var(--accent);
+      border-radius: 24px;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .card-blur {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: 24px;
+      background: rgba(250, 250, 250, 0.1);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    .accent-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: var(--accent);
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      padding: 34px 38px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-topline {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .item-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 58px;
+      height: 38px;
+      border-radius: 999px;
+      background: var(--accent-lighter);
+      color: var(--accent-dark);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .item-title {
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.025em;
+    }
+
+    .item-description {
+      max-width: 420px;
+      color: var(--text-secondary);
+      font-size: 26px;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-five-item-camera-tour" data-start="0" data-duration="13" data-width="1920" data-height="1080" data-fps="30">
+    <section id="tour-clip" class="clip" data-start="0" data-duration="13" data-track-index="1" aria-label="Five-item camera tour">
+      <div id="scene-shell" class="scene-shell">
+        <div class="grid-background"></div>
+        <div id="accent-glow" class="accent-glow" data-layout-ignore="true"></div>
+
+        <div id="camera" class="camera" data-layout-allow-overflow="true">
+          <div class="scene-content">
+            <!-- REPLACE: main title -->
+            <header id="title-block" class="title-block" data-layout-allow-overflow="true">
+              <h1 class="title">Five stages of growth</h1>
+              <div id="title-blur" class="title-blur"></div>
+            </header>
+
+            <div class="items-grid">
+              <!-- REPLACE: item number, title, and description on each card. Keep five cards for the 3 + 2 layout and camera path. -->
+              <article id="item-1" class="item-card" data-layout-allow-overflow="true">
+                <div class="focus-ring"></div>
+                <div class="card-blur"></div>
+                <div class="accent-bar"></div>
+                <div class="card-inner">
+                  <div class="card-topline">
+                    <span class="item-number">01</span>
+                  </div>
+                  <h2 class="item-title">Discover</h2>
+                  <p class="item-description">Find the clearest opportunity.</p>
+                </div>
+              </article>
+
+              <article id="item-2" class="item-card" data-layout-allow-overflow="true">
+                <div class="focus-ring"></div>
+                <div class="card-blur"></div>
+                <div class="accent-bar"></div>
+                <div class="card-inner">
+                  <div class="card-topline">
+                    <span class="item-number">02</span>
+                  </div>
+                  <h2 class="item-title">Plan</h2>
+                  <p class="item-description">Turn the opportunity into a path.</p>
+                </div>
+              </article>
+
+              <article id="item-3" class="item-card" data-layout-allow-overflow="true">
+                <div class="focus-ring"></div>
+                <div class="card-blur"></div>
+                <div class="accent-bar"></div>
+                <div class="card-inner">
+                  <div class="card-topline">
+                    <span class="item-number">03</span>
+                  </div>
+                  <h2 class="item-title">Build</h2>
+                  <p class="item-description">Create the smallest useful version.</p>
+                </div>
+              </article>
+
+              <article id="item-4" class="item-card" data-layout-allow-overflow="true">
+                <div class="focus-ring"></div>
+                <div class="card-blur"></div>
+                <div class="accent-bar"></div>
+                <div class="card-inner">
+                  <div class="card-topline">
+                    <span class="item-number">04</span>
+                  </div>
+                  <h2 class="item-title">Launch</h2>
+                  <p class="item-description">Put the work in front of people.</p>
+                </div>
+              </article>
+
+              <article id="item-5" class="item-card" data-layout-allow-overflow="true">
+                <div class="focus-ring"></div>
+                <div class="card-blur"></div>
+                <div class="accent-bar"></div>
+                <div class="card-inner">
+                  <div class="card-topline">
+                    <span class="item-number">05</span>
+                  </div>
+                  <h2 class="item-title">Improve</h2>
+                  <p class="item-description">Use feedback to sharpen the result.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const tl = gsap.timeline({ paused: true });
+    const cards = ["#item-1", "#item-2", "#item-3", "#item-4", "#item-5"];
+    const cardCenters = Object.fromEntries(cards.map((selector) => {
+      const bounds = document.querySelector(selector).getBoundingClientRect();
+      return [selector, {
+        x: bounds.left + bounds.width / 2,
+        y: bounds.top + bounds.height / 2
+      }];
+    }));
+    const focusScale = 1.92;
+
+    const cameraPosition = (selector) => ({
+      x: 960 - cardCenters[selector].x * focusScale,
+      y: 540 - cardCenters[selector].y * focusScale,
+      scale: focusScale
+    });
+
+    const focusCard = (selector, previousSelector, time) => {
+      const otherCards = cards.filter((card) => card !== selector);
+
+      tl.to("#camera", {
+        ...cameraPosition(selector),
+        duration: 0.88,
+        ease: "expo.inOut"
+      }, time);
+
+      if (previousSelector) {
+        tl.to(previousSelector, {
+          opacity: 0.24,
+          scale: 1,
+          duration: 0.38,
+          ease: "power2.inOut"
+        }, time);
+        tl.to(`${previousSelector} .focus-ring`, {
+          opacity: 0,
+          scale: 0.985,
+          duration: 0.3,
+          ease: "power2.in"
+        }, time);
+        tl.to(`${previousSelector} .card-blur`, {
+          opacity: 1,
+          duration: 0.38,
+          ease: "power2.inOut"
+        }, time);
+      } else {
+        tl.to(otherCards, {
+          opacity: 0.24,
+          duration: 0.46,
+          ease: "power2.inOut"
+        }, time);
+        tl.to(otherCards.map((card) => `${card} .card-blur`), {
+          opacity: 1,
+          duration: 0.46,
+          ease: "power2.inOut"
+        }, time);
+        tl.to("#title-blur", {
+          opacity: 1,
+          duration: 0.46,
+          ease: "power2.inOut"
+        }, time);
+        tl.to("#title-block", {
+          opacity: 0.18,
+          duration: 0.46,
+          ease: "power2.inOut"
+        }, time);
+      }
+
+      tl.to(selector, {
+        opacity: 1,
+        scale: 1.025,
+        duration: 0.48,
+        ease: "power3.out"
+      }, time + 0.22);
+      tl.to(`${selector} .card-blur`, {
+        opacity: 0,
+        duration: 0.4,
+        ease: "power3.out"
+      }, time + 0.12);
+      tl.to(`${selector} .focus-ring`, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: "power3.out"
+      }, time + 0.28);
+    };
+
+    gsap.set("#title-block", { opacity: 0, y: -26 });
+    gsap.set(cards, { opacity: 0, y: 42, scale: 0.92 });
+    gsap.set(".focus-ring", { opacity: 0, scale: 0.985 });
+    gsap.set([".card-blur", "#title-blur"], { opacity: 0 });
+
+    tl.to("#title-block", {
+      opacity: 1,
+      y: 0,
+      duration: 0.72,
+      ease: "power3.out"
+    }, 0.12);
+
+    cards.forEach((selector, index) => {
+      tl.to(selector, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.62,
+        ease: "back.out(1.35)"
+      }, 0.5 + index * 0.16);
+    });
+
+    tl.to("#accent-glow", {
+      scale: 1.08,
+      opacity: 0.76,
+      duration: 5.6,
+      ease: "sine.inOut"
+    }, 0.2);
+
+    focusCard("#item-1", null, 2.5);
+    focusCard("#item-2", "#item-1", 4.05);
+    focusCard("#item-3", "#item-2", 5.6);
+    focusCard("#item-4", "#item-3", 7.15);
+    focusCard("#item-5", "#item-4", 8.7);
+
+    tl.to("#item-5 .focus-ring", {
+      opacity: 0,
+      scale: 0.985,
+      duration: 0.34,
+      ease: "power2.in"
+    }, 10.25);
+    tl.to(cards, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.62,
+      ease: "power3.out"
+    }, 10.25);
+    tl.to("#title-block", {
+      opacity: 1,
+      duration: 0.62,
+      ease: "power3.out"
+    }, 10.25);
+    tl.to([".card-blur", "#title-blur"], {
+      opacity: 0,
+      duration: 0.55,
+      ease: "power3.out"
+    }, 10.25);
+    tl.to("#camera", {
+      x: 0,
+      y: 0,
+      scale: 1,
+      duration: 1,
+      ease: "expo.inOut"
+    }, 10.25);
+
+    tl.to("#scene-shell", {
+      opacity: 0,
+      y: -18,
+      scale: 0.985,
+      duration: 0.58,
+      ease: "power2.in"
+    }, 12.3);
+
+    window.__timelines["mg-five-item-camera-tour"] = tl;
+  </script>
+
+  <!-- hf-autoplay -->
+  <script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

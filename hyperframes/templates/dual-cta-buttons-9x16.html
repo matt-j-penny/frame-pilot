@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Dual CTA Buttons — Serif Headline — 9:16</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #f5f5f3;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+
+      /* ── TOP: light graphic — serif headline + two CTA cards ── */
+      #graphic-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 864px;
+        overflow: hidden;
+        background: #f5f5f3;
+        z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      #dot-grid {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* REPLACE: HEADLINE text + the italic .accent word */
+      #headline {
+        position: absolute;
+        left: 0;
+        top: 210px;
+        width: 100%;
+        text-align: center;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 66px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: #16151a;
+      }
+
+      #headline .accent {
+        color: #e0982a;
+        font-style: italic;
+      }
+
+      /* REPLACE: reposition/resize the two CTA cards, or swap their copy/colors */
+      .cta-card {
+        position: absolute;
+        top: 420px;
+        width: 460px;
+        height: 180px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 32px;
+      }
+
+      .cta-text {
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1.18;
+      }
+
+      #cta-primary {
+        left: 60px;
+        background: #f5a623;
+        border: 4px solid #16151a;
+        box-shadow: 9px 10px 0 0 #16151a;
+      }
+
+      #cta-primary .cta-text {
+        color: #16151a;
+      }
+
+      #cta-secondary {
+        left: 560px;
+        background: #fbfaf7;
+        border: 2px solid #d9d6d0;
+        box-shadow: 0 8px 18px rgba(17, 16, 21, 0.06);
+      }
+
+      #cta-secondary .cta-text {
+        color: #706e73;
+      }
+
+      /* ── BOTTOM: talking head ── */
+      #talking-head {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0a0a0f;
+        z-index: 1;
+      }
+
+      #talking-head video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="dual-cta-buttons-9x16"
+      data-start="0"
+      data-duration="4.8"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="graphic-zone" data-layout-allow-overflow>
+        <svg id="dot-grid" width="1080" height="864"></svg>
+
+        <div id="headline">Here's how to do <span class="accent">both</span></div>
+
+        <div id="cta-primary" class="cta-card">
+          <span class="cta-text">See what it<br />knows</span>
+        </div>
+        <div id="cta-secondary" class="cta-card">
+          <span class="cta-text">Stop it<br />remembering</span>
+        </div>
+      </div>
+
+      <!-- REPLACE: swap src/poster for your own talking-head footage -->
+      <div id="talking-head">
+        <video
+          id="source-video"
+          class="clip"
+          src="assets/placeholder-video.mp4"
+          poster="assets/talking-head-placeholder.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="4.8"
+          data-track-index="0"
+        ></video>
+      </div>
+    </div>
+
+    <script>
+      // Dot grid matching the Off-White Dot Grid template, sized for the 1080×864 top half
+      const svg = document.getElementById("dot-grid");
+      const DOT_SPACING = 40;
+      const DOT_RADIUS = 2;
+      const cols = Math.ceil(1080 / DOT_SPACING) + 1;
+      const rows = Math.ceil(864 / DOT_SPACING) + 1;
+      let dots = "";
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          dots += `<circle cx="${col * DOT_SPACING}" cy="${row * DOT_SPACING}" r="${DOT_RADIUS}" fill="#cccccc" opacity="0.5"/>`;
+        }
+      }
+      svg.innerHTML = dots;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const GRAPHIC_HEIGHT = 864;
+
+      gsap.set("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT });
+      tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+         The graphic covers the top 864px of the canvas; the footage shows through the
+         1080×1056 window below it while the graphic is on screen.
+         SPLIT_SCALE must stay at 1. SPLIT_SHIFT must stay within 0…864.
+         Read real values with: python3 scripts/face-frame.py <video> --window 864:1920
+         then add ~100–150px to the shift it returns — confirm on a real frame.
+         ────────────────────────────────────────────────────────────────── */
+      const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+      const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+      tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.74, ease: "expo.out" }, 0.12);
+
+      // Headline — fades/rises in first
+      gsap.set("#headline", { opacity: 0, y: 26 });
+      tl.to("#headline", { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 0.4);
+
+      // CTA cards — pop in staggered, like a card dropping into place
+      const ctas = ["#cta-primary", "#cta-secondary"];
+      const ctaEls = ctas.map((sel) => document.querySelector(sel));
+
+      gsap.set(ctaEls, { opacity: 0, y: 34, scale: 0.94, transformOrigin: "50% 50%" });
+
+      const CTA_START = 0.68;
+      const CTA_STAGGER = 0.12;
+      const CTA_DUR = 0.55;
+
+      ctaEls.forEach((el, i) => {
+        tl.to(el, { opacity: 1, y: 0, scale: 1, duration: CTA_DUR, ease: "expo.out" }, CTA_START + i * CTA_STAGGER);
+      });
+
+      const contentReadyAt = CTA_START + (ctaEls.length - 1) * CTA_STAGGER + CTA_DUR;
+
+      // Hold
+      const HOLD = 1.1;
+      const EXIT_START = contentReadyAt + HOLD;
+
+      // Exit — cards out first, then headline, before the panel slides away
+      ctaEls.forEach((el, i) => {
+        tl.to(el, { opacity: 0, y: -20, scale: 0.94, duration: 0.35, ease: "power2.in" }, EXIT_START + i * 0.06);
+      });
+      tl.to("#headline", { opacity: 0, y: -18, duration: 0.35, ease: "power2.in" }, EXIT_START + 0.12);
+
+      const exitContentEnd = EXIT_START + (ctaEls.length - 1) * 0.06 + 0.35;
+
+      // Graphic zone slides back up and out, revealing the talking head full-screen again
+      const zoneExitStart = exitContentEnd + 0.3;
+      tl.to("#graphic-zone", { autoAlpha: 1, y: -GRAPHIC_HEIGHT, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+      tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.62, ease: "power3.in" }, zoneExitStart);
+
+      window.__timelines["dual-cta-buttons-9x16"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

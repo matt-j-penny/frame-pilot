@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g2: PILLAR 1 · The Right Model (lower-third · overlay)</title>
+<script src="../vendor/gsap.min.js"></script>
+<script src="hf-anim.js"></script>
+<style>
+/* g2 · timeline 7.04 -> 9.70 (DUR 2.66) · alpha overlay · lower-third x120 y780 w900 h170 */
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Black.otf') format('opentype');font-weight:900;}
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Bold.otf') format('opentype');font-weight:700;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--royal:#1e48ff;--txt:#e8f0ff;--muted:#8fa6d4;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Inter',sans-serif;}
+#float{position:absolute;inset:0;will-change:transform;}
+.panel{position:absolute;left:120px;top:780px;width:900px;height:170px;
+  background:linear-gradient(160deg,#12224e 0%,#0a1435 100%);
+  border:2px solid rgba(96,146,255,0.42);border-radius:22px;
+  box-shadow:0 26px 60px rgba(2,7,24,0.72), 0 0 0 1px rgba(6,13,36,0.85),
+             inset 0 2px 0 rgba(140,180,255,0.22);opacity:0;}
+#tracker{position:absolute;left:40px;top:60px;width:56px;height:50px;}
+.bar{position:absolute;top:10px;width:12px;height:30px;border-radius:4px;}
+.bar.on{background:var(--royal);box-shadow:0 0 12px rgba(30,72,255,0.65), 0 0 24px rgba(30,72,255,0.30);}
+.bar.off{background:rgba(143,166,212,0.28);}
+#b1{left:0;} #b2{left:22px;} #b3{left:44px;}
+.eyebrow{position:absolute;left:118px;top:36px;font-weight:700;font-size:23px;
+  letter-spacing:3.4px;text-transform:uppercase;color:var(--muted);}
+.head{position:absolute;left:118px;top:78px;font-weight:900;font-size:54px;
+  letter-spacing:-1.6px;color:var(--txt);line-height:1;}
+.head .r{color:var(--royal);}
+</style></head>
+<body style="margin:0;background:transparent;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="2.6600">
+<div id="float">
+  <div class="panel" id="panel">
+    <div id="tracker">
+      <div class="bar on" id="b1"></div><div class="bar off" id="b2"></div><div class="bar off" id="b3"></div>
+    </div>
+    <div class="eyebrow">Pillar 1</div>
+    <div class="head">The Right <span class="r">Model</span></div>
+  </div>
+</div>
+</div>
+<script>
+const DUR = 2.66;
+const H = HF.init({fps: 50/1, dur: DUR});
+const {tl, F, riseIn, float} = H;
+float('#float', 0, DUR, 'subtle');
+tl.set('#panel', {opacity: 1}, 0);
+tl.fromTo('#panel', {x: -940}, {x: 0, duration: 0.75, ease: 'power2.out'}, 0);
+tl.to('#panel', {x: -940, duration: 0.38, ease: 'power3.inOut'}, DUR - 0.38 - F);
+tl.set('#panel', {opacity: 0}, DUR - F);
+H.finish();
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

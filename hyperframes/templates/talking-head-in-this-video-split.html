@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Talking Head + In This Video Split</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-weight: 500 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f8f9fb;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #f8f9fb;
+        background-image:
+          linear-gradient(rgba(26, 26, 46, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(26, 26, 46, 0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+        color: #17121f;
+        font-family: "Satoshi", Arial, sans-serif;
+      }
+
+      .clip {
+        position: absolute;
+      }
+
+      .video-glow {
+        position: absolute;
+        top: 130px;
+        left: 124px;
+        z-index: 1;
+        width: 520px;
+        height: 888px;
+        border-radius: 52px;
+        background: rgba(124, 58, 237, 0.16);
+        filter: blur(34px);
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .source-video {
+        --clip-left: 0px;
+        --clip-right: 0px;
+        --clip-radius: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        width: 1920px;
+        height: 1080px;
+        object-fit: cover;
+        object-position: center center;
+        background: #1a1a2e;
+        clip-path: inset(0 var(--clip-right) 0 var(--clip-left) round var(--clip-radius));
+        transform-origin: 0 0;
+        will-change: transform, clip-path;
+      }
+
+      .video-frame-shell {
+        position: absolute;
+        top: 96px;
+        left: 96px;
+        z-index: 3;
+        width: 520px;
+        height: 888px;
+        border: 2px solid rgba(124, 58, 237, 0.22);
+        border-radius: 44px;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow:
+          0 36px 80px rgba(33, 18, 56, 0.18),
+          0 14px 34px rgba(33, 18, 56, 0.12),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+        will-change: transform, opacity;
+      }
+
+      .video-frame-shell::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(180deg, transparent 62%, rgba(17, 17, 24, 0.18) 100%),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 18%);
+      }
+
+      .content-shell {
+        position: absolute;
+        top: 0;
+        right: 96px;
+        left: 708px;
+        z-index: 4;
+        height: 1080px;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+      }
+
+      .content-column {
+        width: 100%;
+        min-width: 0;
+        padding: 12px 18px 12px 0;
+      }
+
+      .section-kicker {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 22px;
+        color: #7c3aed;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .section-kicker::before {
+        content: "";
+        width: 52px;
+        height: 4px;
+        border-radius: 999px;
+        background: #7c3aed;
+      }
+
+      .title {
+        max-width: 980px;
+        font-family: "Cabinet Grotesk", "Satoshi", Arial, sans-serif;
+        font-size: 104px;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        line-height: 0.92;
+        text-wrap: balance;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .title-accent {
+        color: #7c3aed;
+      }
+
+      .title-rule {
+        width: 100%;
+        height: 2px;
+        margin: 42px 0 38px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, rgba(124, 58, 237, 0.55), rgba(124, 58, 237, 0.06));
+        opacity: 0;
+        transform-origin: left center;
+        will-change: transform, opacity;
+      }
+
+      .point-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .point {
+        display: grid;
+        grid-template-columns: 70px minmax(0, 1fr);
+        gap: 24px;
+        align-items: center;
+        min-height: 112px;
+        padding: 22px 28px 22px 22px;
+        border: 1px solid rgba(124, 58, 237, 0.14);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.74);
+        box-shadow:
+          0 12px 34px rgba(33, 18, 56, 0.06),
+          inset 0 1px 0 rgba(255, 255, 255, 0.92);
+        opacity: 0;
+        transform-origin: left center;
+        will-change: transform, opacity;
+      }
+
+      .point-number {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, 0.12);
+        border: 1px solid rgba(124, 58, 237, 0.24);
+        color: #7c3aed;
+        font-size: 25px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .point-copy {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .point-title {
+        font-family: "Cabinet Grotesk", "Satoshi", Arial, sans-serif;
+        color: #17121f;
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        line-height: 1.08;
+      }
+
+      .point-description {
+        color: rgba(23, 18, 31, 0.58);
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 1.24;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="talking-head-in-this-video-split"
+      data-start="0"
+      data-duration="9.2"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="video-glow" class="video-glow" aria-hidden="true"></div>
+
+      <!-- REPLACE: swap the video src, poster, and object-position for the presenter. -->
+      <video
+        id="source-video"
+        class="clip source-video"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="9.2"
+        data-track-index="0"
+      ></video>
+
+      <div id="video-frame-shell" class="video-frame-shell" aria-hidden="true"></div>
+
+      <div class="content-shell">
+        <section class="content-column" aria-labelledby="title">
+          <!-- REPLACE: title copy. -->
+          <h1 class="title" id="title">In this <span class="title-accent">video</span></h1>
+          <div class="title-rule" aria-hidden="true"></div>
+
+          <ol class="point-list">
+            <!-- REPLACE: point titles. Add or remove complete .point rows as needed. -->
+            <li class="point" id="point-1">
+              <span class="point-number">01</span>
+              <span class="point-copy">
+                <span class="point-title">The problem we’re solving</span>
+              </span>
+            </li>
+            <li class="point" id="point-2">
+              <span class="point-number">02</span>
+              <span class="point-copy">
+                <span class="point-title">The framework that makes it simple</span>
+              </span>
+            </li>
+            <li class="point" id="point-3">
+              <span class="point-number">03</span>
+              <span class="point-copy">
+                <span class="point-title">The first action to take today</span>
+              </span>
+            </li>
+          </ol>
+        </section>
+      </div>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="9.2"
+        data-track-index="1"
+        data-volume="1"
+      ></audio>
+      <audio
+        id="sfx-split-in"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.8"
+        data-duration="0.528"
+        data-track-index="2"
+        data-volume="0.12"
+      ></audio>
+      <audio
+        id="sfx-title"
+        class="clip"
+        src="assets/sfx/simple high pop.mp3"
+        preload="auto"
+        data-start="1.9"
+        data-duration="1.08"
+        data-track-index="3"
+        data-volume="0.08"
+      ></audio>
+      <audio
+        id="sfx-rule"
+        class="clip"
+        src="assets/sfx/single mouse click.mp3"
+        preload="auto"
+        data-start="2.38"
+        data-duration="0.365688"
+        data-track-index="4"
+        data-volume="0.06"
+      ></audio>
+      <audio
+        id="sfx-point-1"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="2.75"
+        data-duration="0.313469"
+        data-track-index="5"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-point-2"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="3.45"
+        data-duration="0.313469"
+        data-track-index="6"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-point-3"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="4.15"
+        data-duration="0.313469"
+        data-track-index="7"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-point-whoosh-1"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="2.75"
+        data-duration="0.528"
+        data-track-index="9"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-point-whoosh-2"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="3.45"
+        data-duration="0.528"
+        data-track-index="10"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-point-whoosh-3"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="4.15"
+        data-duration="0.528"
+        data-track-index="11"
+        data-volume="0.07"
+      ></audio>
+      <audio
+        id="sfx-split-out"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="7.82"
+        data-duration="0.528"
+        data-track-index="8"
+        data-volume="0.12"
+      ></audio>
+    </main>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const splitVideoPose = {
+        x: -433.333,
+        y: 96,
+        scale: 0.822222,
+        "--clip-left": "643.784px",
+        "--clip-right": "643.784px",
+        "--clip-radius": "53.514px",
+      };
+
+      const fullscreenVideoPose = {
+        x: 0,
+        y: 0,
+        scale: 1,
+        "--clip-left": "0px",
+        "--clip-right": "0px",
+        "--clip-radius": "0px",
+      };
+
+      const tl = gsap.timeline({ paused: true });
+      tl.addLabel("split", 0.8);
+      tl.addLabel("content", 1.9);
+      tl.addLabel("outro", 7.15);
+      tl.addLabel("fullscreen", 7.82);
+
+      tl.fromTo(
+        "#source-video",
+        fullscreenVideoPose,
+        {
+          ...splitVideoPose,
+          duration: 0.95,
+          ease: "expo.inOut",
+        },
+        "split",
+      );
+      tl.fromTo(
+        "#video-glow",
+        { opacity: 0, scale: 0.96 },
+        { opacity: 1, scale: 1, duration: 0.37, ease: "power2.out" },
+        "split+=0.58",
+      );
+      tl.fromTo(
+        "#video-frame-shell",
+        { opacity: 0, scale: 0.98 },
+        { opacity: 1, scale: 1, duration: 0.27, ease: "power2.out" },
+        "split+=0.68",
+      );
+
+      tl.fromTo(
+        "#title",
+        { opacity: 0, x: 44, y: 12 },
+        { opacity: 1, x: 0, y: 0, duration: 0.58, ease: "power3.out" },
+        "content",
+      );
+      tl.fromTo(
+        ".title-rule",
+        { opacity: 0, scaleX: 0 },
+        { opacity: 1, scaleX: 1, duration: 0.45, ease: "expo.out" },
+        2.38,
+      );
+      tl.fromTo(
+        "#point-1",
+        { opacity: 0, x: 46, y: 16, scale: 0.98 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.52, ease: "power3.out" },
+        2.75,
+      );
+      tl.fromTo(
+        "#point-2",
+        { opacity: 0, x: 46, y: 16, scale: 0.98 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.52, ease: "power3.out" },
+        3.45,
+      );
+      tl.fromTo(
+        "#point-3",
+        { opacity: 0, x: 46, y: 16, scale: 0.98 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.52, ease: "power3.out" },
+        4.15,
+      );
+
+      tl.to("#point-3", { opacity: 0, x: 34, duration: 0.28, ease: "power2.in" }, "outro");
+      tl.to("#point-2", { opacity: 0, x: 34, duration: 0.28, ease: "power2.in" }, "outro+=0.15");
+      tl.to("#point-1", { opacity: 0, x: 34, duration: 0.28, ease: "power2.in" }, "outro+=0.3");
+      tl.to(".title-rule", { opacity: 0, scaleX: 0, duration: 0.3, ease: "power2.in" }, "outro+=0.4");
+      tl.to("#title", { opacity: 0, x: 34, duration: 0.36, ease: "power3.in" }, "outro+=0.43");
+      tl.set(".title-rule", { opacity: 0, scaleX: 0 }, "fullscreen");
+      tl.to(
+        "#video-frame-shell",
+        { opacity: 0, scale: 0.98, duration: 0.3, ease: "power2.in" },
+        "fullscreen",
+      );
+      tl.to("#video-glow", { opacity: 0, scale: 0.96, duration: 0.3, ease: "power2.in" }, "fullscreen");
+      tl.to(
+        "#source-video",
+        {
+          ...fullscreenVideoPose,
+          duration: 0.98,
+          ease: "expo.inOut",
+          immediateRender: false,
+        },
+        "fullscreen",
+      );
+
+      window.__timelines["talking-head-in-this-video-split"] = tl;
+    </script>
+    <!-- hf-autoplay -->
+    <script>
+      (function () {
+        if (window.self === window.top) return;
+        function play() {
+          var timelines = window.__timelines || {};
+          var ids = Object.keys(timelines);
+          if (!ids.length) {
+            setTimeout(play, 150);
+            return;
+          }
+          ids.forEach(function (id) {
+            var timeline = timelines[id];
+            timeline.eventCallback("onComplete", function () {
+              setTimeout(play, 1200);
+            });
+            timeline.restart();
+          });
+        }
+        setTimeout(play, 200);
+      })();
+    </script>
+  </body>
+</html>

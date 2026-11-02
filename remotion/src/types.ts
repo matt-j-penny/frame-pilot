@@ -43,7 +43,7 @@ export type Style = {
 export type Graphic = {
   type: "text" | "stat" | "list" | "logo" | "image" | "screenshot" | "icon" | "quote" | "compare"
     | "notifications" | "checklist" | "chat" | "chips" | "phone" | "title" | "videogrid"
-    | "repo" | "editor" | "desktop" | "comment" | "badge" | "aiedit" | "code" | "role" | "queue" | "timeline";
+    | "repo" | "editor" | "desktop" | "comment" | "badge" | "aiedit" | "code" | "role" | "queue" | "timeline" | "template";
   marks?: number[];
   h?: number;
   y?: number;
@@ -78,6 +78,8 @@ export type Graphic = {
   left?: { label: string; value?: string };
   right?: { label: string; value?: string };
   position?: "top" | "center";
+  align?: "left" | "right";
+  scale?: number;
 };
 
 export type UICard = { icon?: string; title: string; subtitle?: string; value?: string; meta?: string; color?: string };

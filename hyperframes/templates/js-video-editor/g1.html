@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g1: hook — "3 PILLARS" (punch-cut · bg-dark · full-screen)</title>
+<script src="../vendor/gsap.min.js"></script>
+<script src="hf-anim.js"></script>
+<style>
+/* g1 · timeline 3.36 -> 6.90 (DUR 3.54) · full-screen bg-dark (STEP_FPS=12 + glow)
+   Hook: hero numeral "3" + "PILLARS" headline + 3-pillar-column prop row (the tracker
+   motif reused smaller in g2/g5/g10, fully lit at the g15 recap) + caption. */
+@font-face{font-family:'Playfair Display';
+  src:url('assets/fonts/PlayfairDisplay-Italic-VF.ttf') format('truetype');
+  font-weight:400 900;font-style:italic;font-display:block;}
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Black.otf') format('opentype');font-weight:900;}
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Bold.otf') format('opentype');font-weight:700;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--royal:#1e48ff;--sky:#57c9f0;--txt:#e8f0ff;--muted:#8fa6d4;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;}
+/* the locked bg-dark field (backgrounds/README.md) */
+#base{position:absolute;inset:0;background:radial-gradient(ellipse 130% 100% at 50% 40%,
+  #060c1d 0%, #030713 55%, #010308 100%);}
+#grid{position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg, rgba(74,124,255,0.09) 0 2px, transparent 2px 100px),
+  repeating-linear-gradient(90deg, rgba(74,124,255,0.09) 0 2px, transparent 2px 100px);}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 105% 90% at 50% 50%,
+  rgba(2,5,16,0) 52%, rgba(2,5,16,0.30) 80%, rgba(2,5,16,0.55) 100%);}
+
+/* move-2: a full-screen sits a tad smaller, a touch low — on #content AND #bloom together */
+#contentWrap,#bloomWrap{position:absolute;inset:0;transform:translateY(40px) scale(0.92);transform-origin:50% 50%;}
+#bloomWrap{filter:brightness(1.45) contrast(1.12) blur(30px);mix-blend-mode:screen;opacity:0.26;pointer-events:none;}
+
+#hero3{position:absolute;left:0;top:40px;width:1920px;text-align:center;
+  font-family:'Playfair Display',Georgia,serif;font-weight:700;font-style:italic;
+  font-size:440px;line-height:440px;letter-spacing:-6px;color:var(--txt);opacity:0;}
+#headline{position:absolute;left:0;top:470px;width:1920px;text-align:center;
+  font-family:'Inter',sans-serif;font-weight:900;font-size:150px;line-height:150px;
+  letter-spacing:-4px;color:var(--txt);opacity:0;text-transform:uppercase;}
+#pillars{position:absolute;left:815px;top:660px;width:290px;height:150px;}
+.col{position:absolute;top:0;width:70px;height:150px;border-radius:10px;
+  background:linear-gradient(180deg,#3d69ff 0%,var(--royal) 100%);opacity:0;
+  box-shadow:0 0 24px rgba(30,72,255,0.60), 0 0 48px rgba(30,72,255,0.28);}
+#col1{left:0;} #col2{left:110px;} #col3{left:220px;}
+#cap{position:absolute;left:0;top:870px;width:1920px;text-align:center;}
+.w{position:relative;display:inline-block;margin:0 10px;
+  font-family:Helvetica,'Helvetica Neue',Arial,sans-serif;font-weight:700;
+  font-size:64px;line-height:70px;letter-spacing:-2.4px;color:var(--txt);opacity:0;}
+.w.serif{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-style:italic;
+  font-size:66px;letter-spacing:-1.8px;}
+</style></head>
+<body style="margin:0;background:#000;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="3.5400">
+<div id="base"></div><div id="grid"></div><div id="vig"></div>
+<div id="contentWrap">
+  <div id="content">
+    <div id="hero3">3</div>
+    <div id="headline">Pillars</div>
+    <div id="pillars">
+      <div class="col" id="col1"></div>
+      <div class="col" id="col2"></div>
+      <div class="col" id="col3"></div>
+    </div>
+    <div id="cap">
+      <span class="w" data-t="0.00">to</span><span class="w" data-t="0.10">creating</span><span class="w" data-t="0.24">great</span><span class="w" data-t="0.36">motion</span><span class="w serif" data-t="0.48">graphics</span>
+    </div>
+  </div>
+</div>
+<div id="bloomWrap"></div>
+</div>
+<script>
+const DUR = 3.54;
+const H = HF.init({fps: 50/1, dur: DUR, stepFps: 12});
+const {tl, F, pop, slam, riseIn} = H;
+
+// build the #bloom glow layer in JS from #content's innerHTML (the locked pattern)
+const bloomWrap = document.getElementById('bloomWrap');
+bloomWrap.innerHTML = '<div id="bloom">' + document.getElementById('content').innerHTML + '</div>';
+
+// every selector below drives BOTH layers so the glow stays frame-exact with the content
+const pair = id => '#' + id + ', #bloom #' + id;
+
+slam(pair('hero3'), 0.05);
+riseIn(pair('headline'), 0.55, 26);
+pop(pair('col1'), 0.90); pop(pair('col2'), 1.23); pop(pair('col3'), 1.56);
+for (const el of document.querySelectorAll('#cap .w')) {
+  const t = 1.95 + (+el.dataset.t);
+  riseIn('#cap .w[data-t="' + el.dataset.t + '"], #bloom #cap .w[data-t="' + el.dataset.t + '"]', t, 22);
+}
+H.finish();
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

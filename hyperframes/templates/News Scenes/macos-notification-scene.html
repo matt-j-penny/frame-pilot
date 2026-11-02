@@ -1,0 +1,252 @@
+<!-- hyperframes-registry-item: macos-notification-scene -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=block"
+      rel="stylesheet"
+    />
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        background: transparent;
+        overflow: hidden;
+      }
+      body {
+        width: 1920px;
+        height: 1080px;
+        font-family: "Inter", sans-serif;
+      }
+
+      #root {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        position: relative;
+        background: #ffffff;
+      }
+
+      #root .camera-pan {
+        width: 1920px;
+        height: 1080px;
+        position: relative;
+        will-change: transform;
+      }
+
+      #root .camera-layer {
+        width: 1920px;
+        height: 1080px;
+        position: relative;
+        background: #ffffff;
+        will-change: transform;
+      }
+
+      #root .notification-card {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        width: 380px;
+        background: rgba(30, 30, 30, 0.82);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      #root .app-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+
+      #root .app-icon svg {
+        width: 36px;
+        height: 36px;
+        display: block;
+      }
+
+      #root .notification-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      #root .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2px;
+      }
+
+      #root .app-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      #root .time-label {
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      #root .notification-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #ffffff;
+        line-height: 1.3;
+        margin-bottom: 2px;
+      }
+
+      #root .notification-body {
+        font-size: 13px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="macos-notification-scene"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="5"
+    >
+      <div id="camera-pan" class="camera-pan">
+        <div id="camera" class="camera-layer">
+          <div
+            id="notification"
+            class="clip notification-card"
+            data-start="0"
+            data-duration="5"
+            data-track-index="0"
+          >
+            <div class="app-icon">
+              <svg
+                viewBox="0 0 30 30"
+                width="36"
+                height="36"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="macos-news-scene-icon-grad"
+                    x1="0"
+                    y1="0"
+                    x2="30"
+                    y2="30"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop offset="0%" stop-color="#c084fc" />
+                    <stop offset="100%" stop-color="#6366f1" />
+                  </linearGradient>
+                </defs>
+                <path
+                  fill="url(#macos-news-scene-icon-grad)"
+                  d="M27.02,14.981l-1.824-1.812l0.856-2.424c0.435-1.227,0.209-2.566-0.603-3.583c-0.812-1.018-2.069-1.531-3.358-1.384l-2.554,0.296l-1.36-2.182C17.488,2.79,16.301,2.13,15,2.13s-2.488,0.659-3.177,1.763l-1.36,2.182L7.909,5.778C6.622,5.632,5.362,6.146,4.551,7.163c-0.812,1.017-1.037,2.356-0.603,3.583l0.856,2.424L2.98,14.981C2.058,15.897,1.68,17.202,1.97,18.47c0.289,1.269,1.196,2.279,2.425,2.705l2.43,0.841l0.279,2.557c0.142,1.293,0.926,2.402,2.097,2.966c1.174,0.565,2.53,0.486,3.628-0.21L15,25.953l2.172,1.375c0.613,0.387,1.305,0.583,2.001,0.583c0.553,0,1.107-0.124,1.627-0.374c1.171-0.564,1.955-1.673,2.097-2.966l0.279-2.556l2.43-0.841c1.229-0.425,2.136-1.436,2.425-2.705C28.32,17.202,27.942,15.897,27.02,14.981z M22.321,7.765c0.618-0.069,1.182,0.165,1.564,0.645c0.384,0.48,0.486,1.089,0.281,1.668l-0.635,1.794c-1.453-1.074-2.488-2.359-3.136-3.884L22.321,7.765z M21.112,20.361c-2.394,0.292-4.452,1.287-6.144,2.965c-1.849-1.716-3.919-2.715-6.175-2.98c0.062-2.519-0.437-4.741-1.486-6.63c1.847-1.349,3.27-3.141,4.242-5.347c2.273,0.659,4.567,0.664,6.841,0.017c0.812,2.121,2.235,3.901,4.244,5.312C21.375,15.692,20.864,17.925,21.112,20.361z M15,4.13c0.615,0,1.154,0.299,1.479,0.821l0.998,1.601c-1.659,0.416-3.297,0.416-4.955,0l0.998-1.601C13.846,4.43,14.385,4.13,15,4.13z M6.114,8.41c0.383-0.481,0.947-0.715,1.564-0.645L9.52,7.979c-0.755,1.567-1.769,2.844-3.063,3.863l-0.624-1.764C5.628,9.499,5.73,8.89,6.114,8.41z M3.919,18.025c-0.137-0.6,0.035-1.192,0.472-1.625l1.351-1.342c0.691,1.393,1.044,3.009,1.05,4.83l-1.743-0.603C4.468,19.084,4.056,18.625,3.919,18.025z M11.758,25.638c-0.521,0.329-1.136,0.365-1.689,0.098s-0.91-0.771-0.977-1.381l-0.215-1.971c1.632,0.254,3.125,0.985,4.516,2.219L11.758,25.638z M19.932,25.736c-0.554,0.268-1.169,0.231-1.689-0.098l-1.679-1.063c1.283-1.21,2.789-1.934,4.56-2.192l-0.215,1.971C20.842,24.966,20.485,25.47,19.932,25.736z M26.081,18.025c-0.137,0.6-0.549,1.059-1.13,1.26l-1.864,0.645c-0.145-1.81,0.221-3.44,1.108-4.935l1.415,1.405C26.046,16.833,26.218,17.426,26.081,18.025z"
+                />
+              </svg>
+            </div>
+            <div class="notification-content">
+              <div class="notification-header">
+                <span class="app-name">Matt Penny</span>
+                <span class="time-label">now</span>
+              </div>
+              <div class="notification-title">Headline goes here</div>
+              <div class="notification-body">
+                The sub headline goes here, etc., etc., etc.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      var tl = gsap.timeline({ paused: true });
+      var pan = document.getElementById("camera-pan");
+      var camera = document.getElementById("camera");
+      var notification = document.getElementById("notification");
+
+      var cx = notification.offsetLeft + notification.offsetWidth / 2;
+      var cy = notification.offsetTop + notification.offsetHeight / 2;
+
+      var margin = 48;
+      var fullZoom = (1920 - margin) / 380;
+      var slideX = 420 / fullZoom;
+
+      var panX = 960 - cx;
+      var panY = 540 - cy;
+
+      gsap.set(pan, { x: panX, y: panY });
+      gsap.set(camera, {
+        scale: 0.36,
+        transformOrigin: cx + "px " + cy + "px",
+      });
+
+      gsap.set(notification, { x: slideX, opacity: 0 });
+
+      tl.to(
+        camera,
+        {
+          scale: fullZoom,
+          duration: 0.45,
+          ease: "power4.in",
+        },
+        0,
+      );
+
+      tl.to(
+        notification,
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.5,
+          ease: "power3.out",
+        },
+        0.4,
+      );
+
+      tl.to(
+        notification,
+        {
+          x: slideX,
+          opacity: 0,
+          duration: 0.3,
+          ease: "power3.in",
+        },
+        4.2,
+      );
+
+      window.__timelines["macos-notification-scene"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

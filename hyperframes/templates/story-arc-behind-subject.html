@@ -1,0 +1,747 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"storyTitle","type":"string","label":"Graph title","default":"STORY ARC"},
+    {"id":"calloutText","type":"string","label":"Right-side headline","default":"how to say it"},
+    {"id":"calloutKicker","type":"string","label":"Right-side kicker","default":"SHAPE THE MESSAGE"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Story Arc Behind Subject</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cabinet Grotesk";
+        src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 800;
+        font-display: block;
+      }
+
+      @font-face {
+        font-family: "Satoshi";
+        src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 700;
+        font-display: block;
+      }
+
+      :root {
+        --violet: #7c3aed;
+        --violet-light: #a78bfa;
+        --cyan: #62d8ff;
+        --ink: #080613;
+        --white: #fafafa;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      .clip {
+        position: absolute;
+      }
+
+      #background-video,
+      #subject-video {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      #background-video {
+        z-index: 0;
+      }
+
+      #graphic-layer {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      #graphic-svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        font-family: "Satoshi", sans-serif;
+      }
+
+      #graph-panel,
+      #graph-panel-wrap,
+      #callout-group {
+        transform-box: fill-box;
+        transform-origin: center;
+        will-change: transform, opacity;
+      }
+
+      #connector-line,
+      #connector-glow,
+      #arc-line,
+      #arc-glow,
+      #panel-outline,
+      #panel-top-edge,
+      #panel-side-edge {
+        will-change: stroke-dashoffset, opacity;
+      }
+
+      .story-title {
+        font-family: "Cabinet Grotesk", sans-serif;
+        font-size: 92px;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
+      .callout {
+        font-family: "Satoshi", sans-serif;
+        font-size: 49px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+
+      .phase-label {
+        font-family: "Satoshi", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .micro-label {
+        font-family: "Satoshi", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      #subject-wrap {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      #subject-video {
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <main
+      id="root"
+      data-composition-id="story-arc-behind-subject"
+      data-start="0"
+      data-duration="7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- REPLACE: source video on both the muted video and audio elements. -->
+      <video
+        id="background-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="7"
+        data-track-index="0"
+      ></video>
+
+      <audio
+        id="source-audio"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        preload="auto"
+        data-start="0"
+        data-duration="7"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+
+      <audio
+        id="sfx-panel-whoosh"
+        class="clip"
+        src="assets/sfx/subtle woosh.mp3"
+        preload="auto"
+        data-start="0.24"
+        data-duration="0.528"
+        data-track-index="3"
+        data-volume="0.1"
+      ></audio>
+
+      <audio
+        id="sfx-panel-outline-click"
+        class="clip"
+        src="assets/sfx/single mouse click.mp3"
+        preload="auto"
+        data-start="0.42"
+        data-duration="0.365688"
+        data-track-index="6"
+        data-volume="0.05"
+      ></audio>
+
+      <audio
+        id="sfx-title-pop"
+        class="clip"
+        src="assets/sfx/deep roomy pop.mp3"
+        preload="auto"
+        data-start="1.66"
+        data-duration="0.72"
+        data-track-index="4"
+        data-volume="0.06"
+      ></audio>
+
+      <audio
+        id="sfx-callout-blip"
+        class="clip"
+        src="assets/sfx/notification blip.mp3"
+        preload="auto"
+        data-start="2.98"
+        data-duration="0.313469"
+        data-track-index="5"
+        data-volume="0.08"
+      ></audio>
+
+      <div
+        id="graphic-layer"
+        data-layout-allow-occlusion
+        aria-label="Animated story arc diagram and message callout behind the presenter"
+      >
+        <svg
+          id="graphic-svg"
+          viewBox="0 0 1920 1080"
+          role="img"
+          aria-labelledby="graphic-title graphic-description"
+        >
+          <title id="graphic-title">Story arc diagram and how to say it callout</title>
+          <desc id="graphic-description">
+            A glowing purple story arc panel appears at upper left before a cyan
+            route travels behind the presenter to a right-side message.
+          </desc>
+
+          <defs>
+            <linearGradient id="panel-fill" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#130a29" stop-opacity="0.96" />
+              <stop offset="48%" stop-color="#24103f" stop-opacity="0.94" />
+              <stop offset="100%" stop-color="#48146b" stop-opacity="0.88" />
+            </linearGradient>
+
+            <linearGradient id="panel-edge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.62" />
+              <stop offset="56%" stop-color="#7c3aed" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#62d8ff" stop-opacity="0.42" />
+            </linearGradient>
+
+            <linearGradient id="arc-stroke" x1="196" y1="465" x2="719" y2="465">
+              <stop offset="0%" stop-color="#5b21b6" />
+              <stop offset="27%" stop-color="#7c3aed" />
+              <stop offset="52%" stop-color="#8ddfff" />
+              <stop offset="76%" stop-color="#a78bfa" />
+              <stop offset="100%" stop-color="#62d8ff" />
+            </linearGradient>
+
+            <linearGradient id="connector-stroke" x1="775" y1="284" x2="1775" y2="284">
+              <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.36" />
+              <stop offset="18%" stop-color="#77dcff" stop-opacity="0.78" />
+              <stop offset="74%" stop-color="#62d8ff" stop-opacity="0.66" />
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.16" />
+            </linearGradient>
+
+            <pattern id="panel-grid" width="42" height="42" patternUnits="userSpaceOnUse">
+              <path
+                d="M 42 0 L 0 0 0 42"
+                fill="none"
+                stroke="#a78bfa"
+                stroke-width="1"
+                opacity="0.11"
+              />
+            </pattern>
+
+            <filter id="panel-shadow" x="-20%" y="-30%" width="150%" height="170%">
+              <feDropShadow dx="0" dy="22" stdDeviation="32" flood-color="#120322" flood-opacity="0.58" />
+              <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#7c3aed" flood-opacity="0.34" />
+            </filter>
+
+            <filter id="line-glow" x="-30%" y="-80%" width="180%" height="260%">
+              <feGaussianBlur stdDeviation="9" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            <filter id="soft-text-shadow" x="-20%" y="-60%" width="140%" height="220%">
+              <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#05030c" flood-opacity="0.86" />
+            </filter>
+          </defs>
+
+          <g id="graph-panel-wrap">
+            <g id="graph-panel">
+              <g id="panel-shell" filter="url(#panel-shadow)">
+                <rect x="104" y="76" width="702" height="468" rx="46" fill="url(#panel-fill)" />
+                <rect
+                  id="panel-outline"
+                  x="105.5"
+                  y="77.5"
+                  width="699"
+                  height="465"
+                  rx="44.5"
+                  fill="none"
+                  stroke="url(#panel-edge)"
+                  stroke-width="3"
+                  pathLength="100"
+                />
+                <rect id="panel-grid-fill" x="104" y="76" width="702" height="468" rx="46" fill="url(#panel-grid)" />
+
+                <path
+                  id="panel-top-edge"
+                  d="M 104 122 Q 104 76 150 76 H 714"
+                  fill="none"
+                  stroke="#a78bfa"
+                  stroke-width="7"
+                  stroke-linecap="round"
+                  opacity="0.56"
+                  pathLength="100"
+                />
+                <path
+                  id="panel-side-edge"
+                  d="M 768 76 Q 806 76 806 114 V 496"
+                  fill="none"
+                  stroke="#7c3aed"
+                  stroke-width="10"
+                  stroke-linecap="round"
+                  opacity="0.7"
+                  pathLength="100"
+                />
+              </g>
+
+              <g id="axis-group">
+                <path id="axis-x" d="M 160 477 H 742" fill="none" stroke="#fafafa" stroke-width="4" stroke-linecap="round" opacity="0.7" />
+                <path id="axis-y" d="M 160 477 V 154" fill="none" stroke="#fafafa" stroke-width="4" stroke-linecap="round" opacity="0.7" />
+
+                <g id="guide-ticks" stroke="#fafafa" stroke-width="3" opacity="0.52">
+                  <path d="M 285 468 V 486" />
+                  <path d="M 425 468 V 486" />
+                  <path d="M 563 468 V 486" />
+                  <path d="M 690 468 V 486" />
+                  <path d="M 151 376 H 169" />
+                  <path d="M 151 274 H 169" />
+                  <path d="M 151 174 H 169" />
+                </g>
+              </g>
+
+              <path
+                id="arc-glow"
+                d="M 188 452
+                   C 258 447, 308 398, 340 326
+                   C 370 258, 398 203, 452 190
+                   C 506 177, 532 226, 553 282
+                   C 577 346, 627 419, 718 452"
+                fill="none"
+                stroke="#62d8ff"
+                stroke-width="18"
+                stroke-linecap="round"
+                opacity="0.2"
+                filter="url(#line-glow)"
+                pathLength="100"
+              />
+              <path
+                id="arc-line"
+                d="M 188 452
+                   C 258 447, 308 398, 340 326
+                   C 370 258, 398 203, 452 190
+                   C 506 177, 532 226, 553 282
+                   C 577 346, 627 419, 718 452"
+                fill="none"
+                stroke="url(#arc-stroke)"
+                stroke-width="7"
+                stroke-linecap="round"
+                pathLength="100"
+              />
+
+              <g id="phase-markers">
+                <circle class="phase-marker" cx="188" cy="452" r="6" fill="#7c3aed" />
+                <circle class="phase-marker" cx="340" cy="326" r="6" fill="#7c3aed" />
+                <circle class="phase-marker" cx="452" cy="190" r="8" fill="#62d8ff" />
+                <circle class="phase-marker" cx="553" cy="282" r="6" fill="#a78bfa" />
+                <circle class="phase-marker" cx="718" cy="452" r="6" fill="#62d8ff" />
+              </g>
+
+              <!-- REPLACE: graph title through the storyTitle composition variable. -->
+              <text
+                id="story-title"
+                x="454"
+                y="358"
+                class="story-title"
+                fill="#fafafa"
+                text-anchor="middle"
+                filter="url(#soft-text-shadow)"
+                data-layout-allow-overlap
+              >
+                STORY ARC
+              </text>
+
+              <g
+                id="phase-labels"
+                class="phase-label"
+                fill="#fafafa"
+                opacity="0.72"
+                data-layout-allow-overlap
+              >
+                <text class="phase-label-item" x="202" y="423">SETUP</text>
+                <text class="phase-label-item" x="292" y="255">RISING</text>
+                <text class="phase-label-item" x="292" y="281">ACTION</text>
+                <text class="phase-label-item" x="452" y="146" text-anchor="middle">CLIMAX</text>
+                <text class="phase-label-item" x="578" y="234">FALLING</text>
+                <text class="phase-label-item" x="578" y="260">ACTION</text>
+                <text class="phase-label-item" x="712" y="423" text-anchor="end">RESOLUTION</text>
+              </g>
+            </g>
+          </g>
+
+          <g id="connector-group">
+            <path
+              id="connector-glow"
+              d="M 748 326
+                 C 832 326, 861 281, 908 278
+                 C 967 274, 985 365, 1038 368
+                 C 1097 371, 1110 255, 1176 247
+                 C 1256 238, 1321 285, 1408 285
+                 H 1782"
+              fill="none"
+              stroke="#62d8ff"
+              stroke-width="16"
+              stroke-linecap="round"
+              opacity="0.16"
+              filter="url(#line-glow)"
+              pathLength="100"
+            />
+            <path
+              id="connector-line"
+              d="M 748 326
+                 C 832 326, 861 281, 908 278
+                 C 967 274, 985 365, 1038 368
+                 C 1097 371, 1110 255, 1176 247
+                 C 1256 238, 1321 285, 1408 285
+                 H 1782"
+              fill="none"
+              stroke="url(#connector-stroke)"
+              stroke-width="5"
+              stroke-linecap="round"
+              pathLength="100"
+            />
+          </g>
+
+          <g id="callout-group" filter="url(#soft-text-shadow)">
+            <!-- REPLACE: right-side copy through calloutText and calloutKicker. -->
+            <text id="callout-title" x="1308" y="265" class="callout" fill="#fafafa">how to say it</text>
+            <text id="callout-kicker" x="1310" y="307" class="micro-label" fill="#62d8ff" opacity="0.86">
+              SHAPE THE MESSAGE
+            </text>
+          </g>
+
+          <circle id="connector-endpoint" cx="1782" cy="285" r="6" fill="#62d8ff" opacity="0.72" />
+        </svg>
+      </div>
+
+      <div id="subject-wrap">
+        <!-- REPLACE: generated transparent cutout video. -->
+        <video
+          id="subject-video"
+          class="clip"
+          src="assets/placeholder-cutout.webm"
+          poster="assets/talking-head-cutout.png"
+          muted
+          playsinline
+          preload="auto"
+          data-start="0"
+          data-duration="7"
+          data-track-index="1"
+        ></video>
+      </div>
+    </main>
+
+    <script>
+      var storyArcVariables = window.__hyperframes?.getVariables?.() ?? {
+        storyTitle: "STORY ARC",
+        calloutText: "how to say it",
+        calloutKicker: "SHAPE THE MESSAGE",
+      };
+
+      document.querySelector("#story-title").textContent = storyArcVariables.storyTitle;
+      document.querySelector("#callout-title").textContent = storyArcVariables.calloutText;
+      document.querySelector("#callout-kicker").textContent = storyArcVariables.calloutKicker;
+
+      window.__timelines = window.__timelines || {};
+
+      gsap.set("#graph-panel", {
+        transformPerspective: 1400,
+        rotationX: -2,
+        rotationY: 5,
+        rotation: -1.2,
+        transformOrigin: "center center",
+      });
+
+      var storyArcTimeline = gsap.timeline({ paused: true });
+
+      storyArcTimeline.addLabel("left-enter", 0.24);
+
+      storyArcTimeline.fromTo(
+        "#graph-panel-wrap",
+        { opacity: 0, x: -150, y: 34, scale: 0.86 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 0.88, ease: "expo.out" },
+        "left-enter",
+      );
+
+      storyArcTimeline.fromTo(
+        "#panel-grid-fill",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.72, ease: "sine.out" },
+        "left-enter+=0.28",
+      );
+
+      storyArcTimeline.fromTo(
+        "#panel-outline, #panel-top-edge, #panel-side-edge",
+        { strokeDasharray: 100, strokeDashoffset: 100 },
+        {
+          strokeDashoffset: 0,
+          duration: 0.82,
+          ease: "power2.out",
+          stagger: 0.08,
+        },
+        "left-enter+=0.18",
+      );
+
+      storyArcTimeline.fromTo(
+        "#axis-x",
+        { opacity: 0, scaleX: 0, transformOrigin: "left center" },
+        { opacity: 0.7, scaleX: 1, duration: 0.58, ease: "power3.out" },
+        "left-enter+=0.48",
+      );
+
+      storyArcTimeline.fromTo(
+        "#axis-y",
+        { opacity: 0, scaleY: 0, transformOrigin: "center bottom" },
+        { opacity: 0.7, scaleY: 1, duration: 0.64, ease: "back.out(1.2)" },
+        "left-enter+=0.58",
+      );
+
+      storyArcTimeline.fromTo(
+        "#guide-ticks",
+        { opacity: 0 },
+        { opacity: 0.52, duration: 0.32, ease: "power1.out" },
+        "left-enter+=0.88",
+      );
+
+      storyArcTimeline.fromTo(
+        "#arc-glow, #arc-line",
+        { strokeDasharray: 100, strokeDashoffset: 100 },
+        {
+          strokeDashoffset: 0,
+          duration: 1.02,
+          ease: "power2.inOut",
+          stagger: 0.04,
+        },
+        "left-enter+=0.72",
+      );
+
+      storyArcTimeline.fromTo(
+        ".phase-marker",
+        { opacity: 0, scale: 0, transformOrigin: "center center" },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.28,
+          ease: "back.out(1.8)",
+          stagger: 0.08,
+        },
+        "left-enter+=1.18",
+      );
+
+      storyArcTimeline.fromTo(
+        ".phase-label-item",
+        { opacity: 0, y: 13 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.36,
+          ease: "circ.out",
+          stagger: 0.055,
+        },
+        "left-enter+=1.02",
+      );
+
+      storyArcTimeline.fromTo(
+        "#story-title",
+        { opacity: 0, scale: 0.82, y: 18, transformOrigin: "center center" },
+        { opacity: 1, scale: 1, y: 0, duration: 0.54, ease: "back.out(1.35)" },
+        "left-enter+=1.42",
+      );
+
+      storyArcTimeline.addLabel("right-enter", 2.32);
+
+      storyArcTimeline.fromTo(
+        "#connector-glow, #connector-line",
+        { strokeDasharray: 100, strokeDashoffset: 100 },
+        {
+          strokeDashoffset: 0,
+          duration: 1.08,
+          ease: "power3.inOut",
+          stagger: 0.04,
+        },
+        "right-enter",
+      );
+
+      storyArcTimeline.fromTo(
+        "#callout-title",
+        { opacity: 0, x: 82, filter: "blur(8px)" },
+        {
+          opacity: 1,
+          x: 0,
+          filter: "blur(0px)",
+          duration: 0.62,
+          ease: "expo.out",
+        },
+        "right-enter+=0.66",
+      );
+
+      storyArcTimeline.fromTo(
+        "#callout-kicker",
+        { opacity: 0, y: 24 },
+        {
+          opacity: 0.86,
+          y: 0,
+          duration: 0.46,
+          ease: "power3.out",
+        },
+        "right-enter+=0.86",
+      );
+
+      storyArcTimeline.fromTo(
+        "#connector-endpoint",
+        { opacity: 0, scale: 0, transformOrigin: "center center" },
+        { opacity: 0.72, scale: 1, duration: 0.34, ease: "elastic.out(1, 0.5)" },
+        "right-enter+=0.92",
+      );
+
+      storyArcTimeline.to(
+        "#graph-panel",
+        {
+          y: -6,
+          rotationY: 3.8,
+          rotation: -0.35,
+          duration: 1.15,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+        },
+        3.62,
+      );
+
+      storyArcTimeline.to(
+        "#connector-glow",
+        {
+          opacity: 0.24,
+          duration: 0.82,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+        },
+        3.82,
+      );
+
+      storyArcTimeline.addLabel("exit", 5.72);
+
+      storyArcTimeline.to(
+        "#callout-group, #connector-endpoint",
+        { opacity: 0, x: 64, duration: 0.38, ease: "power3.in" },
+        "exit",
+      );
+
+      storyArcTimeline.to(
+        "#connector-glow, #connector-line",
+        {
+          strokeDashoffset: -100,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.in",
+        },
+        "exit+=0.08",
+      );
+
+      storyArcTimeline.to(
+        "#graph-panel-wrap",
+        {
+          opacity: 0,
+          x: -118,
+          y: -18,
+          scale: 0.93,
+          duration: 0.58,
+          ease: "power4.in",
+        },
+        "exit+=0.28",
+      );
+
+      storyArcTimeline.set("#graphic-layer", { opacity: 0 }, "exit+=0.9");
+
+      window.__timelines["story-arc-behind-subject"] = storyArcTimeline;
+    </script>
+
+    <!-- hf-autoplay -->
+    <script>
+      (function () {
+        if (window.self === window.top) return;
+
+        function play() {
+          var timelines = window.__timelines || {};
+          var ids = Object.keys(timelines);
+
+          if (!ids.length) {
+            setTimeout(play, 150);
+            return;
+          }
+
+          ids.forEach(function (id) {
+            var timeline = timelines[id];
+            timeline.eventCallback("onComplete", function () {
+              setTimeout(play, 1200);
+            });
+            timeline.restart();
+          });
+        }
+
+        setTimeout(play, 200);
+      })();
+    </script>
+  </body>
+</html>

@@ -9,6 +9,7 @@
   reel.py sentences <job>                         numbered sentences + retake/low-confidence hints
   reel.py cut <job> [--gap 0.4] [--pad 0.12]      fillers/pauses/cuts.json -> edl.json, cut-log.md, public/cut.mp4
   reel.py render <job> [--preview]                beat-plan.json -> props.json -> output/final.mp4
+  reel.py storyboard <job>                        stills of every beat + alternatives -> preview/preview.json
   reel.py verify <job> [--file final.mp4]         frames, contact sheets, loudness, spec check -> verify/
   reel.py search <query>                          Brave image search (needs BRAVE_API_KEY)
   reel.py fetch <job> <url> <name>                download an image to public/assets, log source
@@ -34,7 +35,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FILLERS = {"um", "uh", "uhm", "umm", "uhh", "ah", "er", "erm", "hmm", "mm", "mhm"}
 AUDIO_EXT = {".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac", ".aif", ".aiff"}
 LAYOUTS = {"talking_head", "split", "fullscreen", "overlay"}
-GRAPHICS = {"text", "stat", "list", "logo", "image", "screenshot", "icon", "quote", "compare", "notifications", "checklist", "chat", "chips", "phone", "title", "videogrid", "repo", "editor", "desktop", "comment", "badge", "code", "role", "queue", "timeline"}
+GRAPHICS = {"text", "stat", "list", "logo", "image", "screenshot", "icon", "quote", "compare", "notifications", "checklist", "chat", "chips", "phone", "title", "videogrid", "repo", "editor", "desktop", "comment", "badge", "code", "role", "queue", "timeline", "template"}
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 
@@ -464,7 +465,7 @@ def validate_plan(job, plan, style, duration):
         tag = f"beat {b.get('id', i)}"
         if b["layout"] not in LAYOUTS:
             errs.append(f"{tag}: unknown layout {b['layout']}")
-        elif b["layout"] not in allowed:
+        elif b["layout"] not in allowed and (b.get("graphic") or {}).get("type") != "template":
             errs.append(f"{tag}: layout {b['layout']} not allowed by style")
         if b["end"] <= b["start"]:
             errs.append(f"{tag}: end <= start")
@@ -499,28 +500,38 @@ def finish(raw, final, lufs):
         "-movflags", "+faststart", final)
 
 
-def cmd_render(a):
-    job = job_dir(a.job)
+def delegate(job, body):
     # A sandboxed agent delegates browser launch to the local editor server.
     service = os.environ.get("REEL_RENDER_SERVICE_URL")
-    if service:
-        req = urllib.request.Request(f"{service}/api/jobs/{job.name}/render",
-            data=json.dumps({"preview": bool(a.preview)}).encode(),
-            headers={"Content-Type": "application/json", "Authorization": "Bearer " + os.environ.get("REEL_RENDER_TOKEN", "")})
+    if not service:
+        return False
+    req = urllib.request.Request(f"{service}/api/jobs/{job.name}/render", data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json", "Authorization": "Bearer " + os.environ.get("REEL_RENDER_TOKEN", "")})
+    try:
+        with urllib.request.urlopen(req, timeout=1800) as response:
+            result = json.load(response)
+        print(json.dumps(result))
+    except urllib.error.HTTPError as error:
         try:
-            with urllib.request.urlopen(req, timeout=1800) as response:
-                result = json.load(response)
-            print(json.dumps(result))
-        except urllib.error.HTTPError as error:
-            try:
-                message = json.load(error).get("error", "Render service failed")
-            except (ValueError, OSError):
-                message = "Render service failed"
-            die(message, "Check the local editor server render output and retry render.")
-        return
-    style = rj(job / "style.json")
-    plan = rj(job / "beat-plan.json")
-    tc = rj(job / "transcript-cut.json")
+            message = json.load(error).get("error", "Render service failed")
+        except (ValueError, OSError):
+            message = "Render service failed"
+        die(message, "Check the local editor server render output and retry.")
+    return True
+
+
+def pick_idea(beat, k):
+    """Beat with preview idea k applied (0 = the beat's own fields, k = alternatives[k-1])."""
+    out = {key: v for key, v in beat.items() if key != "alternatives"}
+    if k:
+        out.update(beat["alternatives"][k - 1])
+    out.pop("label", None)
+    return out
+
+
+def build_props(job, plan, style, tc):
+    style = json.loads(json.dumps(style))
+    plan = json.loads(json.dumps(plan))
     settings = rj(job / "ui.json") if (job / "ui.json").exists() else {}
     features = settings.get("features", {})
     if features.get("subtitles") is False:
@@ -535,13 +546,23 @@ def cmd_render(a):
             beat.pop("graphic", None)
     errs = validate_plan(job, plan, style, tc["duration"])
     if errs:
-        die("beat-plan.json invalid:\n  " + "\n  ".join(errs), "Fix beat-plan.json and re-run render.")
+        die("beat-plan.json invalid:\n  " + "\n  ".join(errs), "Fix beat-plan.json and re-run.")
     for b in plan["beats"]:
         for s in b.get("sfx", []):
             shutil.copy2(ROOT / "sfx" / s["file"], job / "public" / "sfx" / s["file"])
     if plan.get("music"):
         shutil.copy2(ROOT / "music" / plan["music"]["file"], job / "public" / "music" / plan["music"]["file"])
-    props = {"style": style, "beats": plan["beats"], "music": plan.get("music"), "words": tc["words"], "duration": tc["duration"]}
+    return {"style": style, "beats": plan["beats"], "music": plan.get("music"), "words": tc["words"], "duration": tc["duration"]}
+
+
+def cmd_render(a):
+    job = job_dir(a.job)
+    if delegate(job, {"preview": bool(a.preview)}):
+        return
+    plan = rj(job / "beat-plan.json")
+    if any(b.get("alternatives") for b in plan["beats"]):
+        die("beat-plan.json still has preview alternatives", "Merge the chosen ideas into each beat and remove `alternatives` first.")
+    props = build_props(job, plan, rj(job / "style.json"), rj(job / "transcript-cut.json"))
     wj(job / "props.json", props)
     raw = job / "output" / ("preview.mp4" if a.preview else "raw.mp4")
     cmd = ["npx", "remotion", "render", "src/index.ts", "Reel", str(raw), f"--props={job / 'props.json'}",
@@ -555,8 +576,199 @@ def cmd_render(a):
         print(json.dumps({"preview": str(raw)}))
         return
     final = job / "output" / "final.mp4"
-    finish(raw, final, style["audio"].get("lufs", -14))
+    finish(raw, final, props["style"]["audio"].get("lufs", -14))
     print(json.dumps({"final": str(final)}))
+
+
+def cmd_storyboard(a):
+    """Static stills of every beat (and every alternative idea) -> preview/preview.json for the UI to choose from."""
+    job = job_dir(a.job)
+    if delegate(job, {"stills": True}):
+        return
+    plan, style, tc = rj(job / "beat-plan.json"), rj(job / "style.json"), rj(job / "transcript-cut.json")
+    beats = plan["beats"]
+    ideas = 1 + max(len(b.get("alternatives", [])) for b in beats)
+    out = job / "preview"
+    shutil.rmtree(out, ignore_errors=True)
+    out.mkdir()
+    fps, last = style["canvas"]["fps"], max(0, round(tc["duration"] * style["canvas"]["fps"]) - 1)
+    # ponytail: one still at 75% through each beat, after entrances settle; a burst per beat if one frame misleads
+    frame = lambda b: min(last, round((b["start"] + 0.75 * (b["end"] - b["start"])) * fps))
+    spec, board = [], [{"id": b["id"], "start": b["start"], "end": b["end"], "text": b.get("text", ""), "ideas": []} for b in beats]
+    for k in range(ideas):
+        variant = {**plan, "beats": [pick_idea(b, k if k <= len(b.get("alternatives", [])) else 0) for b in beats]}
+        frames = []
+        for i, b in enumerate(beats):
+            if k > len(b.get("alternatives", [])):
+                continue
+            idea, still = ({**b, **b["alternatives"][k - 1]} if k else b), f"preview/b{b['id']}-{k + 1}.jpg"
+            frames.append({"frame": frame(b), "out": str(job / still)})
+            board[i]["ideas"].append({"label": idea.get("label", ""), "layout": idea["layout"], "type": (idea.get("graphic") or {}).get("type"), "still": still})
+        spec.append({"props": build_props(job, variant, style, tc), "frames": frames})
+    wj(out / "spec.json", spec)
+    r = subprocess.run(["node", "stills.mjs", str(job / "public"), str(out / "spec.json")], cwd=ROOT / "remotion")
+    if r.returncode:
+        die("Still render failed", "Read the error above and fix beat-plan.json.")
+    (out / "spec.json").unlink()
+    wj(out / "preview.json", {"ideas": ideas, "beats": board})
+    print(json.dumps({"preview": str(out / "preview.json"), "stills": sum(len(b["ideas"]) for b in board)}))
+
+
+def cmd_graphics(a):
+    """One still of every built-in graphic type in a style -> <out>/<type>.jpg, for the UI's Graphics library."""
+    d = find_style(a.style) or die(f"unknown style '{a.style}'")
+    style, lib = load_style(d), rj(ROOT / "app" / "graphics-library.json")
+    style["captions"]["enabled"] = False
+    if a.aspect == "16:9":
+        style["canvas"].update(width=1920, height=1080)
+        style["safe_zone"] = {"top": 60, "bottom": 100, "right": 80}
+    out = Path(a.out).resolve()
+    shutil.rmtree(out, ignore_errors=True)
+    pub = out / "public"
+    (pub / "style").mkdir(parents=True)
+    if (d / "assets").exists():
+        shutil.copytree(d / "assets", pub / "style", dirs_exist_ok=True)
+    w, h = style["canvas"]["width"], style["canvas"]["height"]
+    run("ffmpeg", "-v", "error", "-f", "lavfi", "-i", f"gradients=s={w}x{h}:d=5:speed=0.02:c0=0x3b4a6b:c1=0x8a7fb8", "-pix_fmt", "yuv420p", pub / "sample.mp4")
+    run("ffmpeg", "-v", "error", "-ss", "1", "-i", pub / "sample.mp4", "-frames:v", "1", pub / "sample.png")
+    shutil.copy2(pub / "sample.mp4", pub / "cut.mp4")
+    (pub / "assets").mkdir()
+    for n in (1, 3, 6):  # editor and timeline scenes read these
+        run("ffmpeg", "-v", "error", "-ss", str(n / 2), "-i", pub / "sample.mp4", "-frames:v", "1", pub / "assets" / f"still_{n}.jpg")
+    fps, length = style["canvas"]["fps"], 3
+    beats = [{"id": i + 1, "start": i * length, "end": (i + 1) * length - 0.0001, "text": "", "layout": g.get("layout", "fullscreen"),
+              "transition": "cut", "graphic": g["graphic"], "captions": False} for i, g in enumerate(lib)]
+    props = {"style": style, "beats": beats, "words": [], "music": None, "duration": len(beats) * length}
+    # ponytail: still 2.6s into each 3s beat, after entrances and marks settle
+    frames = [{"frame": round((b["start"] + 2.6) * fps), "out": str(out / f"{g['type']}.jpg")} for b, g in zip(beats, lib)]
+    wj(out / "spec.json", [{"props": props, "frames": frames}])
+    r = subprocess.run(["node", "stills.mjs", str(pub), str(out / "spec.json")], cwd=ROOT / "remotion")
+    shutil.rmtree(pub)
+    if r.returncode:
+        die("Still render failed", "Read the error above.")
+    print(json.dumps({"stills": len(frames), "out": str(out)}))
+
+
+HF = ROOT / "hyperframes"
+HF_CLI = ["npx", "--yes", "hyperframes@0.6.70"]
+
+
+def hf_templates():
+    """Every HyperFrames template Frame Pilot knows: imported, captured and user-made. Paths are relative to hyperframes/."""
+    index = rj(HF / "templates" / "templates.json") if (HF / "templates" / "templates.json").exists() else {}
+    out = [{**t, "path": "templates/" + t["path"].removeprefix("templates/")} for k in ("templates", "mg-templates") for t in index.get(k, [])]
+    for name, extra in (("captured-templates.json", {"captured": True}), ("custom-templates.json", {"custom": True})):
+        for t in (rj(HF / name) if (HF / name).exists() else []):
+            out.append({**t, **extra, "description": t.get("description") or t.get("desc", ""),
+                        "path": "templates/" + t["path"].removeprefix("Assets/").removeprefix("templates/")})
+    return out
+
+
+def cmd_template(a):
+    """Copy a HyperFrames template into <job>/hf/<name>/ for one moment of the cut, ready for its copy to be edited."""
+    job = job_dir(a.job)
+    t = next((t for t in hf_templates() if t["id"] == a.template), None) or die(f"unknown template {a.template}", "List them in hyperframes/templates/templates.json or custom-templates.json.")
+    canvas = rj(job / "style.json")["canvas"]
+    tech = t.get("technical") or {}
+    if ((tech.get("height", 1080) > tech.get("width", 1920)) != (canvas["height"] > canvas["width"])):
+        die(f"template {a.template} is {tech.get('width')}x{tech.get('height')} but this job is {canvas['width']}x{canvas['height']}", "Pick a template made for this format.")
+    if not re.fullmatch(r"[a-z0-9-]+", a.name):
+        die("name must be lowercase letters, digits and dashes")
+    src, d, dur = HF / t["path"], job / "hf" / a.name, round(a.end - a.start, 3)
+    shutil.rmtree(d, ignore_errors=True)
+    (d / "assets").mkdir(parents=True)
+    html = src.read_text()
+    html = re.sub(r"assets/placeholder-video\.mp4", "assets/footage.mp4", html)
+    html = re.sub(r"\s+poster=([\"'])assets/talking-head-(placeholder|cutout)\.png\1", "", html)
+    html = re.sub(r"\s*<img\b[^>]*\bdata-preview-only\b[^>]*/?>", "", html)
+    html = re.sub(r"([\"'(])(?:\.\./)+Icons/", r"\1assets/icons/", html)
+    html = re.sub(r"([\"'(])(?:\.\./)*vendor/gsap\.min\.js", r"\1vendor/gsap.min.js", html)
+    html = re.sub(r"(?:\.\./)+assets/", "assets/", html)
+    html = re.sub(r"\s*<audio\b[^>]*\bsrc=[\"']assets/footage\.mp4[\"'][^>]*>\s*</audio>", "", html)  # dialogue comes from the main track
+    html = re.sub(r"\s*<!--\s*hf-autoplay\s*-->\s*<script\b[^>]*>[\s\S]*?</script>", "", html)
+    html = re.sub(r"(<[^>]*\bdata-composition-id=[\"'][^\"']+[\"'][^>]*\bdata-duration=[\"'])[\d.]+", rf"\g<1>{dur}", html)
+    html = re.sub(r"(<video\b[^>]*\bsrc=[\"']assets/footage\.mp4[\"'][^>]*\bdata-duration=[\"'])[\d.]+", rf"\g<1>{dur}", html)
+    (d / "index.html").write_text(html)
+    shutil.copytree(HF / "templates" / "vendor", d / "vendor")
+    asset_dirs = [(HF / "templates" / "assets", d / "assets"), (HF / "Icons", d / "assets" / "icons")]
+    if "News Scenes" in t["path"]:
+        asset_dirs.append((HF / "templates" / "News Scenes" / "assets", d / "assets"))
+    for s_dir, d_dir in asset_dirs:
+        if s_dir.exists():
+            shutil.copytree(s_dir, d_dir, dirs_exist_ok=True, copy_function=os.link)
+    if "assets/footage.mp4" in html:
+        (d / "assets" / "footage.mp4").unlink(missing_ok=True)
+        w, h = tech.get("width", canvas["width"]), tech.get("height", canvas["height"])
+        run("ffmpeg", "-v", "error", "-y", "-ss", a.start, "-t", dur, "-i", job / "public" / "cut.mp4", "-an",
+            "-vf", f"scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h}", "-c:v", "libx264", "-crf", "16", "-pix_fmt", "yuv420p", "-r", "30", d / "assets" / "footage.mp4")
+    (d / "TEMPLATE.md").write_text("\n".join([
+        f"# {a.name} · {t['name']} ({t['id']})", "",
+        f"Plays {a.start}s -> {a.end}s of the cut ({dur}s). {t.get('description', '')}", "",
+        "Edit ONLY these slots in index.html; keep structure, CSS and GSAP as shipped:", *[f"- {r}" for r in t.get("replace") or ["on-screen copy"]], "",
+        f"Retime entrance/exit so everything has animated out by {dur}s. assets/footage.mp4 (if used) is already this moment of the cut.",
+        f"Then: reel.py template-render <job> {a.name}, and use graphic {{\"type\": \"template\", \"src\": \"assets/tpl-{a.name}.mov\"}} on a beat spanning exactly {a.start}-{a.end}.",
+        "Layout: \"overlay\" if the template is transparent over the speaker (lower thirds, captions), \"fullscreen\" if it fills the frame.",
+    ]))
+    print(json.dumps({"dir": str(d), "duration": dur, "template": t["id"]}))
+
+
+def cmd_template_render(a):
+    """Render <job>/hf/<name>/ to public/assets/tpl-<name>.mov (ProRes 4444, alpha kept) for a `template` graphic."""
+    job = job_dir(a.job)
+    if delegate(job, {"template": a.name}):
+        return
+    d, out = job / "hf" / a.name, job / "public" / "assets" / f"tpl-{a.name}.mov"
+    if not (d / "index.html").is_file():
+        die(f"no prepared template {a.name}", f"Run reel.py template <job> <template-id> {a.name} <start> <end> first.")
+    r = subprocess.run([*HF_CLI, "render", str(d), "--format", "mov", "--quality", "high", "-o", str(out)], cwd=d)
+    if r.returncode or not out.is_file():
+        die("HyperFrames render failed", f"Run `npx hyperframes lint` in {d} and fix index.html.")
+    print(json.dumps({"src": f"assets/tpl-{a.name}.mov"}))
+
+
+GSAP_CDN = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+
+
+def cmd_hf_import(a):
+    """Copy HyperFrames templates (and the files they reference outside the folder) into hyperframes/, so they work without the source."""
+    src, dst = Path(a.source).expanduser() / "Assets", ROOT / "hyperframes"
+    if not (src / "templates" / "templates.json").is_file():
+        die(f"no templates.json under {src / 'templates'}", "Pass the Hyperframes project folder, e.g. ~/Documents/CC/Hyperframes.")
+    index = dst / "templates" / "templates.json"
+    old = rj(index) if index.exists() else {}
+    # ponytail: copies over existing files and never deletes, so templates removed from the source stay here
+    shutil.copytree(src / "templates", dst / "templates", dirs_exist_ok=True)
+    new = rj(index)
+    for k, rows in old.items():
+        if isinstance(rows, list) and isinstance(new.get(k), list):
+            ids = {t.get("id") for t in new[k]}
+            new[k] += [t for t in rows if t.get("id") not in ids]
+    wj(index, new)
+    pages = [f for f in (dst / "templates").rglob("*.html")]
+    outside = set()
+    for f in pages:
+        for ref in re.findall(r"[\"'(](\.\./[^\"')]+)", f.read_text(errors="ignore")):
+            target = (f.parent / ref).resolve()
+            if not target.is_relative_to(dst / "templates"):
+                outside.add(target.relative_to(dst.resolve()))
+    for rel in outside:
+        if (src / rel).is_file():
+            (dst / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src / rel, dst / rel)
+    vendor = dst / "templates" / "vendor" / "gsap.min.js"
+    if not vendor.exists():
+        vendor.parent.mkdir(exist_ok=True)
+        with urllib.request.urlopen(GSAP_CDN, context=https_context()) as r:
+            vendor.write_bytes(r.read())
+    for f in pages:
+        t = f.read_text(errors="ignore")
+        if GSAP_CDN in t:
+            f.write_text(t.replace(GSAP_CDN, os.path.relpath(vendor, f.parent)))
+    captured = Path(a.source).expanduser() / "captures" / "captured-templates.json"
+    if captured.is_file():
+        old = {t["id"]: t for t in (rj(dst / "captured-templates.json") if (dst / "captured-templates.json").exists() else [])}
+        wj(dst / "captured-templates.json", list({**old, **{t["id"]: t for t in rj(captured)}}.values()))
+    print(json.dumps({"pages": len(pages), "outside_files": len(outside), "dir": str(dst)}))
 
 
 # ---------- verify ----------
@@ -712,6 +924,11 @@ def main():
     x.add_argument("--av-offset", type=float, default=0.0, help="seconds the source picture lags its audio (fixes lip sync)")
     x.add_argument("--eq", default="", help="ffmpeg eq params for the speaker, e.g. brightness=0.05:gamma=1.1"); x.set_defaults(f=cmd_cut)
     x = sp.add_parser("render"); x.add_argument("job"); x.add_argument("--preview", action="store_true"); x.set_defaults(f=cmd_render)
+    x = sp.add_parser("storyboard"); x.add_argument("job"); x.set_defaults(f=cmd_storyboard)
+    x = sp.add_parser("graphics"); x.add_argument("style"); x.add_argument("out"); x.add_argument("--aspect", choices=["9:16", "16:9"], default="9:16"); x.set_defaults(f=cmd_graphics)
+    x = sp.add_parser("template"); x.add_argument("job"); x.add_argument("template"); x.add_argument("name"); x.add_argument("start", type=float); x.add_argument("end", type=float); x.set_defaults(f=cmd_template)
+    x = sp.add_parser("template-render"); x.add_argument("job"); x.add_argument("name"); x.set_defaults(f=cmd_template_render)
+    x = sp.add_parser("hf-import"); x.add_argument("source", nargs="?", default=str(ROOT.parent / "Hyperframes")); x.set_defaults(f=cmd_hf_import)
     x = sp.add_parser("verify"); x.add_argument("job"); x.add_argument("--file", default="final.mp4"); x.add_argument("--every", type=float, default=1.5); x.set_defaults(f=cmd_verify)
     x = sp.add_parser("search"); x.add_argument("query"); x.add_argument("--count", type=int, default=8); x.set_defaults(f=cmd_search)
     x = sp.add_parser("fetch"); x.add_argument("job"); x.add_argument("url"); x.add_argument("name"); x.set_defaults(f=cmd_fetch)

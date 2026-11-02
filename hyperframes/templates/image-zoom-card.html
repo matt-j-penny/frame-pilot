@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #image-frame {
+        position: absolute;
+        inset: 0;
+        transform-origin: center center;
+        overflow: hidden;
+        will-change: transform, border-radius, box-shadow;
+      }
+      #image-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="image-frame">
+        <!-- REPLACE: swap src with your image path -->
+        <img src="assets/images/zoom-card-source.png" alt="" />
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Frame-to-seconds map from Remotion source (at 30fps):
+      // [0:full, 0.8s:zoomed, 4.2s:zoomed, 6.2s:full, 7s:full]
+      // Easing: bezier(0.22, 1, 0.36, 1) ≈ power3.out
+
+      // Set initial state — full frame, no radius, no shadow
+      gsap.set("#image-frame", { scale: 1, borderRadius: 0, boxShadow: "0 24px 64px rgba(15,23,42,0)" });
+
+      // Zoom out + corner radius + shadow
+      tl.to(
+        "#image-frame",
+        {
+          scale: 0.86,
+          borderRadius: 34,
+          boxShadow: "0 24px 64px rgba(15,23,42,0.24)",
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        0
+      );
+
+      // Hold at zoomed state — implicit from 0.8s to 6.2s
+
+      // Zoom back to fullscreen
+      tl.to(
+        "#image-frame",
+        {
+          scale: 1,
+          borderRadius: 0,
+          boxShadow: "0 24px 64px rgba(15,23,42,0)",
+          duration: 0.8,
+          ease: "power3.out",
+        },
+        6.2
+      );
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

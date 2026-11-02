@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <title>Google Typing Zoom Motion — 9:16</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    :root {
+      --field: #ffffff;
+      --paper: #ffffff;
+      --ink: #202124;
+      --muted: #5f6368;
+      --line: #dfe1e5;
+      --blue: #4285f4;
+      --red: #ea4335;
+      --yellow: #bc8d04;
+      --green: #34a853;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      margin: 0;
+      overflow: hidden;
+      background: var(--field);
+      color: var(--ink);
+      font-family: "Inter", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+
+    /* The source template's top 45% graphic / bottom 55% talking-head split. */
+    #graphic-zone {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 864px;
+      overflow: hidden;
+      z-index: 2;
+      will-change: transform, opacity;
+      background: var(--field);
+    }
+
+    #stage {
+      position: absolute;
+      left: -228px;
+      top: 0;
+      width: 1536px;
+      height: 864px;
+      overflow: hidden;
+      background: var(--field);
+    }
+
+    .scene-bg { position: absolute; inset: 0; background: var(--field); }
+    #ui-clip { position: absolute; inset: 0; overflow: hidden; }
+    #world {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    .google-brand {
+      position: absolute;
+      top: 104px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 96px;
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -8px;
+      white-space: nowrap;
+    }
+
+    .google-brand span:last-child { padding-right: 8px; }
+    .g-blue { color: var(--blue); }
+    .g-red { color: var(--red); }
+    .g-yellow { color: var(--yellow); }
+    .g-green { color: var(--green); }
+
+    .workspace {
+      position: absolute;
+      left: 348px;
+      top: 254px;
+      width: 840px;
+    }
+
+    .composer {
+      position: relative;
+      height: 92px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 46px;
+      background: var(--paper);
+      box-shadow: 0 2px 8px rgba(60, 64, 67, .14);
+    }
+
+    .prompt-viewport {
+      position: absolute;
+      top: 34px;
+      left: 72px;
+      right: 272px;
+      height: 29px;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 21px;
+      line-height: 1.08;
+      letter-spacing: -.3px;
+    }
+
+    #placeholder { position: absolute; inset: 0 auto auto 0; color: var(--muted); }
+    #typed-line {
+      position: relative;
+      display: inline-block;
+      height: 24px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .word { display: inline-block; transform-origin: 50% 60%; }
+    .char { display: inline-block; opacity: 0; }
+    .space { width: .31em; }
+    #caret {
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 2px;
+      height: .95em;
+      border-radius: 2px;
+      background: var(--blue);
+      opacity: 0;
+      transform-origin: 50% 50%;
+    }
+
+    .plus {
+      position: absolute;
+      left: 25px;
+      top: 27px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: #202124;
+      font: 300 36px/1 "Inter", sans-serif;
+    }
+
+    .search-controls {
+      position: absolute;
+      top: 18px;
+      right: 15px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: #202124;
+    }
+
+    .mic {
+      position: relative;
+      width: 13px;
+      height: 22px;
+      border: 3px solid #202124;
+      border-radius: 10px;
+    }
+    .mic::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 9px;
+      width: 21px;
+      height: 13px;
+      border: 2px solid #202124;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+    }
+    .mic::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 21px;
+      width: 2px;
+      height: 7px;
+      background: #202124;
+      box-shadow: -5px 6px 0 -1px #202124, 5px 6px 0 -1px #202124;
+    }
+
+    .lens {
+      position: relative;
+      width: 24px;
+      height: 21px;
+      border: 3px solid #202124;
+      border-radius: 6px;
+    }
+    .lens::before, .lens::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-color: #202124;
+      border-style: solid;
+    }
+    .lens::before { left: -6px; top: -6px; border-width: 3px 0 0 3px; }
+    .lens::after { right: -6px; bottom: -6px; border-width: 0 3px 3px 0; }
+    .lens-dot {
+      position: absolute;
+      left: 7px;
+      top: 6px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #202124;
+    }
+
+    .ai-mode {
+      height: 56px;
+      padding: 0 18px;
+      border-radius: 28px;
+      background: #f1f3f4;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 19px;
+      white-space: nowrap;
+    }
+    .sparkle { color: #202124; font-size: 23px; line-height: 1; }
+
+    .quick-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 38px;
+    }
+    .quick-actions button {
+      height: 52px;
+      padding: 0 22px;
+      border: 1px solid #f8f9fa;
+      border-radius: 7px;
+      background: #f8f9fa;
+      color: #3c4043;
+      font: 19px/1 "Inter", sans-serif;
+      white-space: nowrap;
+    }
+    .language {
+      margin-top: 68px;
+      text-align: center;
+      color: #2a2c2f;
+      font-size: 17px;
+    }
+    .language span { color: #13097c; margin-left: 5px; }
+
+    #talking-head {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0a0a0f;
+      z-index: 1;
+    }
+    #talking-head video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div data-hf-id="hf-qyaw" id="root" data-composition-id="google-typing-zoom-motion-9x16" data-start="0" data-duration="8" data-fps="30" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-d9eb" id="graphic-zone" data-layout-allow-overflow="">
+      <div data-hf-id="hf-1rt5" id="stage">
+        <div data-hf-id="hf-8rns" class="scene-bg"></div>
+        <div data-hf-id="hf-nnpt" id="ui-clip" class="clip" data-start="0" data-duration="8" data-track-index="1" data-layout-allow-overflow="true">
+          <main data-hf-id="hf-mnin" id="world">
+            <div data-hf-id="hf-c0w9" class="google-brand" aria-label="Google">
+              <span data-hf-id="hf-k59m" class="g-blue">G</span><span data-hf-id="hf-yoef" class="g-red">o</span><span data-hf-id="hf-sqrm" class="g-yellow">o</span><span data-hf-id="hf-wv2i" class="g-blue">g</span><span data-hf-id="hf-ofhm" class="g-green">l</span><span data-hf-id="hf-128l" class="g-red">e</span>
+            </div>
+
+            <section data-hf-id="hf-x4px" class="workspace" aria-label="Google search">
+              <div data-hf-id="hf-cydq" class="composer">
+                <button data-hf-id="hf-uzw8" class="plus" aria-label="Add">+</button>
+                <div data-hf-id="hf-t17h" class="prompt-viewport">
+                  <div data-hf-id="hf-959w" id="placeholder"></div>
+                  <div data-hf-id="hf-1fv3" id="typed-line" aria-label="Plan a bold launch for tomorrow" data-layout-allow-occlusion=""></div>
+                  <span data-hf-id="hf-9blk" id="caret" aria-hidden="true"></span>
+                </div>
+                <div data-hf-id="hf-angg" class="search-controls" aria-label="Search controls">
+                  <span data-hf-id="hf-ydpc" class="mic" aria-label="Search by voice"></span>
+                  <span data-hf-id="hf-haho" class="lens" aria-label="Search by image"><span data-hf-id="hf-jspb" class="lens-dot"></span></span>
+                  <span data-hf-id="hf-mdei" class="ai-mode"><span data-hf-id="hf-b5ku" class="sparkle">✧</span>AI Mode</span>
+                </div>
+              </div>
+
+              <nav data-hf-id="hf-98ax" class="quick-actions" aria-label="Search actions">
+                <button data-hf-id="hf-swra">Google Search</button>
+                <button data-hf-id="hf-374s">I'm Feeling Lucky</button>
+              </nav>
+              <div data-hf-id="hf-zlk5" class="language" data-layout-allow-occlusion="">Google offered in:<span data-hf-id="hf-15xh">български</span></div>
+            </section>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-khk9" id="talking-head" data-layout-allow-overflow="">
+      <video data-hf-id="hf-q8l2" id="source-video" class="clip" src="assets/placeholder-video.mp4" poster="assets/talking-head-placeholder.png" muted playsinline preload="auto" data-start="0" data-duration="8" data-track-index="0"></video>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const copy = "Plan a bold launch for tomorrow";
+    const words = copy.split(" ");
+    const typedLine = document.getElementById("typed-line");
+    const chars = [];
+    let globalIndex = 0;
+
+    words.forEach((word, wordIndex) => {
+      const wordSpan = document.createElement("span");
+      wordSpan.className = "word";
+      wordSpan.id = `word-${word.toLowerCase()}`;
+      for (const letter of word) {
+        const char = document.createElement("span");
+        char.className = "char";
+        char.textContent = letter;
+        char.dataset.index = String(globalIndex++);
+        wordSpan.appendChild(char);
+        chars.push(char);
+      }
+      typedLine.appendChild(wordSpan);
+      if (wordIndex < words.length - 1) {
+        const space = document.createElement("span");
+        space.className = "char space";
+        space.innerHTML = "&nbsp;";
+        space.dataset.index = String(globalIndex++);
+        typedLine.appendChild(space);
+        chars.push(space);
+      }
+    });
+
+    const caret = document.getElementById("caret");
+    const origin = typedLine.getBoundingClientRect().left;
+    const caretPositions = [0];
+    chars.forEach((char) => caretPositions.push(char.getBoundingClientRect().right - origin + 3));
+
+    const tl = gsap.timeline({ paused: true });
+    gsap.set(chars, { opacity: 0 });
+    gsap.set(caret, { opacity: 0, x: 0 });
+    gsap.set("#word-bold", { scale: 1 });
+
+    gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+    tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.45, ease: "expo.out" }, 0.06);
+
+    const SPLIT_SHIFT = 700;
+    const SPLIT_SCALE = 1;
+    tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.45, ease: "expo.out" }, 0.06);
+
+    tl.to("#placeholder", { opacity: 0, duration: .18, ease: "power2.out" }, .5)
+      .to("#world", { scale: 3.2, x: 768, y: 404, duration: .55, ease: "power2.inOut" }, .55)
+      .to(caret, { opacity: 1, duration: .06, ease: "power1.out" }, 1.1);
+
+    const milestones = [
+      { start: 1.18, end: 1.41, count: 4 },
+      { start: 1.45, end: 1.55, count: 6 },
+      { start: 1.59, end: 1.81, count: 11 },
+      { start: 1.87, end: 2.21, count: 18 },
+      { start: 2.21, end: 2.26, count: 19 },
+      { start: 2.30, end: 2.49, count: 22 },
+      { start: 2.55, end: 3.01, count: 31 }
+    ];
+
+    let priorCount = 0;
+    milestones.forEach((segment) => {
+      const additions = segment.count - priorCount;
+      for (let i = 0; i < additions; i++) {
+        const index = priorCount + i;
+        const at = additions === 1
+          ? segment.end
+          : segment.start + ((segment.end - segment.start) * i / (additions - 1));
+        tl.to(chars[index], { opacity: 1, duration: .045, ease: "power1.out" }, at)
+          .to(caret, { x: caretPositions[index + 1], duration: .065, ease: "power1.out" }, at);
+      }
+      priorCount = segment.count;
+    });
+
+    tl.to("#world", { x: 200, duration: 1.83, ease: "power1.inOut" }, 1.18)
+      .to("#word-bold", { scale: 1.03, duration: .1, ease: "power2.out" }, 1.81)
+      .to("#word-bold", { scale: 1, duration: .12, ease: "power2.inOut" }, 1.92)
+      .to("#world", { scale: 1.15, x: -56, y: 28, duration: 1, ease: "power2.inOut" }, 5.8)
+      .to("#world", { scale: 1.1, opacity: 0, duration: .6, ease: "power2.in" }, 7.4);
+
+    tl.to("#graphic-zone", { autoAlpha: 1, y: -864, duration: 0.38, ease: "power3.in" }, 7.2);
+    tl.to("#talking-head video", { y: 0, scale: 1, duration: 0.38, ease: "power3.in" }, 7.2);
+
+    window.__timelines["google-typing-zoom-motion-9x16"] = tl;
+    tl.seek(0);
+  </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var timelines=window.__timelines||{};var ids=Object.keys(timelines);if(!ids.length){setTimeout(play,150);return;}ids.forEach(function(id){var timeline=timelines[id];timeline.eventCallback("onComplete",function(){setTimeout(play,1200)});timeline.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

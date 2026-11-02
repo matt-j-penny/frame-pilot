@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g11: THE RIGHT TOOLS (list card · overlay · Callout L · borrowed palette)</title>
+<script src="../vendor/gsap.min.js"></script>
+<script src="hf-anim.js"></script>
+<style>
+/* g11 · timeline 45.26 -> 55.30 (DUR 10.04) · alpha overlay · Callout L x120 y150 w620
+   Borrowed palette (2026-08-31 rule): each chip's colour SAMPLED off the real logo asset —
+   Google #4285F4/#EA4335/#FBBC05/#34A853 (gstatic googlelogo svg), Brave #FF2000 (brave.com
+   logo svg gradient stop), YouTube #FF0000 (gstatic youtubelogo svg) — not guessed from memory. */
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Bold.otf') format('opentype');font-weight:700;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--txt:#e8f0ff;--muted:#8fa6d4;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Inter',sans-serif;}
+#float{position:absolute;inset:0;will-change:transform;}
+.panel{position:absolute;left:120px;top:150px;width:620px;height:380px;
+  background:linear-gradient(160deg,#12224e 0%,#0a1435 100%);
+  border:2px solid rgba(96,146,255,0.42);border-radius:22px;
+  box-shadow:0 26px 60px rgba(2,7,24,0.72), 0 0 0 1px rgba(6,13,36,0.85),
+             inset 0 2px 0 rgba(140,180,255,0.22);opacity:0;overflow:visible;}
+.eyebrow{position:absolute;left:40px;top:40px;font-weight:700;font-size:23px;
+  letter-spacing:3.4px;text-transform:uppercase;color:var(--muted);opacity:0;}
+.row{position:absolute;left:40px;width:540px;height:70px;opacity:0;}
+.row .chip{position:absolute;left:0;top:9px;width:52px;height:52px;border-radius:50%;overflow:hidden;}
+.row .lbl{position:absolute;left:72px;top:15px;font-weight:700;font-size:36px;
+  letter-spacing:-0.8px;color:var(--txt);}
+#r1{top:106px;} #r2{top:186px;} #r3{top:266px;}
+/* Google chip: 4-quadrant real-sampled colours, glow in each quadrant's own hue */
+.gq{position:absolute;width:26px;height:26px;}
+.gq.blue{left:0;top:0;background:#4285F4;box-shadow:-6px -6px 14px rgba(66,133,244,0.55);}
+.gq.red{left:26px;top:0;background:#EA4335;box-shadow:6px -6px 14px rgba(234,67,53,0.55);}
+.gq.yellow{left:0;top:26px;background:#FBBC05;box-shadow:-6px 6px 14px rgba(251,188,5,0.55);}
+.gq.green{left:26px;top:26px;background:#34A853;box-shadow:6px 6px 14px rgba(52,168,83,0.55);}
+/* Brave chip: solid sampled orange + white shield glyph */
+.chip.brave{background:#FF2000;box-shadow:0 0 12px rgba(255,32,0,0.60), 0 0 24px rgba(255,32,0,0.30);}
+.chip.brave svg{position:absolute;left:14px;top:12px;}
+/* YouTube chip: solid sampled red + white play glyph */
+.chip.yt{background:#FF0000;box-shadow:0 0 12px rgba(255,0,0,0.60), 0 0 24px rgba(255,0,0,0.30);}
+.chip.yt svg{position:absolute;left:18px;top:15px;}
+</style></head>
+<body style="margin:0;background:transparent;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="10.0400">
+<div id="float">
+  <div class="panel" id="panel">
+    <div class="eyebrow" id="eyebrow">The Right Tools</div>
+    <div class="row" id="r1">
+      <div class="chip"><div class="gq blue"></div><div class="gq red"></div><div class="gq yellow"></div><div class="gq green"></div></div>
+      <div class="lbl">Google Images</div>
+    </div>
+    <div class="row" id="r2">
+      <div class="chip brave"><svg width="24" height="28" viewBox="0 0 24 28"><path fill="#fff" d="M12 0l10 3-1 3 2 5s-2 9-3 11c-1 2-2 3-3 4l-5 4-5-4c-1-1-2-2-3-4-1-2-3-11-3-11l2-5-1-3z"/></svg></div>
+      <div class="lbl">Brave Search</div>
+    </div>
+    <div class="row" id="r3">
+      <div class="chip yt"><svg width="16" height="18" viewBox="0 0 16 18"><polygon fill="#fff" points="0,0 16,9 0,18"/></svg></div>
+      <div class="lbl">YouTube</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const DUR = 10.04;
+const H = HF.init({fps: 50/1, dur: DUR});
+const {tl, F, riseIn, exit, float} = H;
+float('#float', 0, DUR, 'subtle');
+tl.set('#panel', {opacity: 1}, 0);
+riseIn('#eyebrow', 0.10, 18);
+// word-synced to each tool's name (comp starts at 45.26): 'Google' 49.86 -> 4.60 ·
+// 'Brave' 50.84 -> 5.58 · 'YouTube' 53.80 -> 8.54
+riseIn('#r1', 4.60, 18);
+riseIn('#r2', 5.58, 18);
+riseIn('#r3', 8.54, 18);
+exit('#panel'); exit('#eyebrow'); exit('#r1'); exit('#r2'); exit('#r3');
+H.finish();
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

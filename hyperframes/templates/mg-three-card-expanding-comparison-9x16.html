@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920">
+  <title>Three-Card Expanding Comparison — 9:16</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 800;
+    }
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+    }
+    :root {
+      --bg: #fafafa;
+      --card-deep: #1f1038;
+      --card-mid: #39166d;
+      --card-bright: #5b21b6;
+      --text: #1a1a2e;
+      --text-on-purple: #fafafa;
+      --text-secondary: #e9e2f7;
+      --accent: #7c3aed;
+      --accent-light: #a78bfa;
+      --success: #a7f3d0;
+      --success-dark: #34d399;
+      --error: #fecdd3;
+      --error-dark: #fb7185;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    body {
+      color: var(--text);
+      font-family: "Satoshi", sans-serif;
+    }
+    #tce-root {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+
+    /* ── TOP HALF: stacked comparison cards ── */
+    #graphic-zone {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 864px;
+      overflow: hidden;
+      z-index: 2;
+      will-change: transform, opacity;
+    }
+    .clip { position: absolute; inset: 0; }
+    #tce-shell {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--bg);
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+    .tce-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background-image:
+        linear-gradient(rgba(26, 26, 46, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26, 26, 46, 0.055) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .tce-depth {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 74% 20%, rgba(124, 58, 237, 0.09), transparent 34%),
+        radial-gradient(circle at 16% 42%, rgba(91, 33, 182, 0.07), transparent 38%);
+      pointer-events: none;
+    }
+    .tce-aurora-field {
+      position: absolute;
+      inset: -120px -160px;
+      z-index: 1;
+      opacity: 0.54;
+      pointer-events: none;
+      will-change: transform, opacity;
+      filter: blur(60px);
+      background:
+        radial-gradient(ellipse 64% 52% at 5% 112%, rgba(91, 33, 182, 0.78) 0%, rgba(124, 58, 237, 0.48) 28%, rgba(167, 139, 250, 0.16) 55%, transparent 82%),
+        radial-gradient(ellipse 48% 60% at 45% 116%, rgba(167, 139, 250, 0.72) 0%, rgba(124, 58, 237, 0.34) 32%, rgba(91, 33, 182, 0.12) 60%, transparent 84%),
+        radial-gradient(ellipse 72% 48% at 91% 110%, rgba(99, 102, 241, 0.58) 0%, rgba(124, 58, 237, 0.34) 34%, rgba(167, 139, 250, 0.10) 61%, transparent 84%);
+    }
+    .tce-aurora-ribbon {
+      position: absolute;
+      left: -170px;
+      right: -170px;
+      bottom: -160px;
+      height: 400px;
+      z-index: 1;
+      opacity: 0.34;
+      pointer-events: none;
+      will-change: transform, opacity;
+      filter: blur(80px);
+      background:
+        linear-gradient(
+          104deg,
+          transparent 2%,
+          rgba(91, 33, 182, 0.20) 16%,
+          rgba(124, 58, 237, 0.62) 38%,
+          rgba(196, 181, 253, 0.56) 54%,
+          rgba(99, 102, 241, 0.42) 72%,
+          transparent 96%
+        );
+    }
+    .tce-aurora-lobe {
+      position: absolute;
+      z-index: 1;
+      border-radius: 50%;
+      opacity: 0.36;
+      pointer-events: none;
+      transform-origin: 50% 82%;
+      will-change: transform, opacity;
+      filter: blur(64px);
+    }
+    #tce-lobe-one {
+      left: -190px;
+      bottom: -110px;
+      width: 600px;
+      height: 200px;
+      background: radial-gradient(ellipse at 58% 62%, rgba(91, 33, 182, 0.74) 0%, rgba(124, 58, 237, 0.40) 30%, rgba(167, 139, 250, 0.12) 58%, transparent 84%);
+    }
+    #tce-lobe-two {
+      left: 320px;
+      bottom: -230px;
+      width: 440px;
+      height: 360px;
+      filter: blur(84px);
+      background: radial-gradient(ellipse at 48% 44%, rgba(196, 181, 253, 0.72) 0%, rgba(167, 139, 250, 0.40) 27%, rgba(124, 58, 237, 0.14) 57%, transparent 84%);
+    }
+    #tce-lobe-three {
+      right: -250px;
+      bottom: -140px;
+      width: 690px;
+      height: 230px;
+      filter: blur(74px);
+      background: radial-gradient(ellipse at 42% 58%, rgba(99, 102, 241, 0.64) 0%, rgba(124, 58, 237, 0.38) 32%, rgba(167, 139, 250, 0.10) 62%, transparent 86%);
+    }
+    .tce-ambient {
+      position: absolute;
+      width: 720px;
+      height: 400px;
+      left: 180px;
+      top: 560px;
+      z-index: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.23) 0%, rgba(124, 58, 237, 0) 72%);
+      pointer-events: none;
+    }
+
+    /* Column of three stacked rows — row pitch is 260px (230 card + 30 gap) */
+    .tce-col {
+      position: absolute;
+      left: 90px;
+      top: 105px;
+      z-index: 3;
+      width: 900px;
+      height: 750px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      overflow: visible;
+    }
+    .tce-card {
+      position: relative;
+      flex: 0 0 230px;
+      width: 900px;
+      height: 230px;
+      overflow: hidden;
+      border: 2px solid rgba(196, 181, 253, 0.72);
+      border-radius: 24px;
+      color: var(--text-on-purple);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.08), transparent 36%),
+        linear-gradient(145deg, var(--card-bright) 0%, var(--card-mid) 48%, var(--card-deep) 100%);
+      box-shadow:
+        0 24px 70px rgba(91, 33, 182, 0.24),
+        0 10px 34px rgba(124, 58, 237, 0.17),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+      transform-origin: 50% 50%;
+      will-change: transform, opacity, filter;
+    }
+    #tce-card-1 {
+      border-color: rgba(167, 243, 208, 0.72);
+    }
+    #tce-card-3 {
+      border-color: rgba(254, 205, 211, 0.72);
+    }
+    .tce-card-inner {
+      width: 100%;
+      height: 100%;
+      padding: 34px 48px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 40px;
+    }
+    .tce-icon {
+      flex: 0 0 92px;
+      width: 92px;
+      height: 92px;
+    }
+    .tce-divider {
+      flex: 0 0 2px;
+      width: 2px;
+      height: 130px;
+      background: rgba(255, 255, 255, 0.20);
+    }
+    .tce-lower {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 12px;
+    }
+    .tce-title {
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 60px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      text-align: left;
+    }
+    #tce-card-1 .tce-title {
+      color: var(--success);
+    }
+    #tce-card-3 .tce-title {
+      color: var(--error);
+    }
+    .tce-note {
+      color: var(--text-secondary);
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1.15;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    /* ── BOTTOM HALF: talking head ── */
+    #talking-head {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #0a0a0f;
+      z-index: 1;
+    }
+    #talking-head video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div id="tce-root" data-composition-id="mg-three-card-expanding-comparison-9x16" data-start="0" data-duration="7.4" data-width="1080" data-height="1920" data-fps="30">
+    <div id="graphic-zone" data-layout-allow-overflow>
+      <section id="tce-clip" class="clip" data-start="0" data-duration="7.4" data-track-index="1" aria-label="Three-card expanding comparison">
+        <div id="tce-shell">
+          <div class="tce-depth" aria-hidden="true"></div>
+          <div id="tce-aurora-field" class="tce-aurora-field" aria-hidden="true" data-layout-ignore="true"></div>
+          <div id="tce-aurora-ribbon" class="tce-aurora-ribbon" aria-hidden="true" data-layout-ignore="true"></div>
+          <div id="tce-lobe-one" class="tce-aurora-lobe" aria-hidden="true" data-layout-ignore="true"></div>
+          <div id="tce-lobe-two" class="tce-aurora-lobe" aria-hidden="true" data-layout-ignore="true"></div>
+          <div id="tce-lobe-three" class="tce-aurora-lobe" aria-hidden="true" data-layout-ignore="true"></div>
+          <div class="tce-grid"></div>
+          <div id="tce-ambient" class="tce-ambient" data-layout-ignore="true"></div>
+
+          <div class="tce-col" data-layout-allow-overflow="true">
+            <!-- REPLACE: title and note text in each card. Inline SVG icons can also be replaced. -->
+            <article id="tce-card-1" class="tce-card" data-layout-allow-overflow="true">
+              <div class="tce-card-inner">
+                <svg class="tce-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                  <circle cx="40" cy="40" r="29" stroke="#a7f3d0" stroke-width="7"/>
+                  <path d="M25 41 L35 51 L56 28" stroke="#a7f3d0" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="tce-divider"></div>
+                <div class="tce-lower">
+                  <h2 class="tce-title">Pays well</h2>
+                  <p class="tce-note">but lots of rules</p>
+                </div>
+              </div>
+            </article>
+
+            <article id="tce-card-2" class="tce-card" data-layout-allow-overflow="true">
+              <div class="tce-card-inner">
+                <svg class="tce-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                  <path d="M47 7 L20 43 H37 L31 73 L61 34 H44 Z" fill="#c4b5fd"/>
+                </svg>
+                <div class="tce-divider"></div>
+                <div class="tce-lower">
+                  <h2 class="tce-title">Pays less</h2>
+                  <p class="tce-note">but move fast</p>
+                </div>
+              </div>
+            </article>
+
+            <article id="tce-card-3" class="tce-card" data-layout-allow-overflow="true">
+              <div class="tce-card-inner">
+                <svg class="tce-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                  <path d="M20 20 L60 60 M60 20 L20 60" stroke="#fecdd3" stroke-width="9" stroke-linecap="round"/>
+                </svg>
+                <div class="tce-divider"></div>
+                <div class="tce-lower">
+                  <h2 class="tce-title">Waste of time</h2>
+                  <p class="tce-note">just skip these</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- REPLACE: swap src/poster for your own talking-head footage -->
+    <div id="talking-head">
+      <video
+        id="source-video"
+        class="clip"
+        src="assets/placeholder-video.mp4"
+        poster="assets/talking-head-placeholder.png"
+        muted
+        playsinline
+        preload="auto"
+        data-start="0"
+        data-duration="7.4"
+        data-track-index="0"
+      ></video>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    gsap.set("#graphic-zone", { autoAlpha: 1, y: -864 });
+    tl.to("#graphic-zone", { autoAlpha: 1, y: 0, duration: 0.82, ease: "expo.out" }, 0.14);
+    /* ── SPLIT FRAMING — REPLACE per project ──────────────────────────────
+       This is a 45/55 split: the graphic covers the top 864px of the canvas; the footage shows
+       through the 1080×864 window below it. SPLIT_SHIFT slides the footage
+       down so the speaker's face lands inside that window.
+
+       SPLIT_SCALE must stay at 1. Any value below 1 narrows the footage
+       inside its 1080px frame and exposes bars down both sides.
+       SPLIT_SHIFT must stay within 0…864, which is the range that keeps
+       the window fully covered — outside it the footage pulls off an edge.
+
+       For real footage, read both values off the actual face position:
+         python3 scripts/face-frame.py <video> --window 864:1920
+       ────────────────────────────────────────────────────────────────── */
+    const SPLIT_SHIFT = 700;   /* px the footage travels down (0…864) */
+    const SPLIT_SCALE = 1;     /* never below 1 — see above */
+
+    tl.fromTo("#talking-head video", { y: 0, scale: 1 }, { y: SPLIT_SHIFT, scale: SPLIT_SCALE, duration: 0.82, ease: "expo.out" }, 0.14);
+
+    /* Cards expand downward instead of sideways: y offsets keep the visible
+       group centred as 1 → 2 → 3 cards fill the column. Row pitch = 260px. */
+
+    tl.fromTo("#tce-card-1", {
+      y: 294,
+      scale: 0.88,
+      opacity: 0
+    }, {
+      y: 260,
+      scale: 1,
+      opacity: 1,
+      duration: 0.72,
+      ease: "expo.out"
+    }, 0.2);
+
+    tl.fromTo("#tce-ambient", {
+      opacity: 0,
+      scale: 0.84
+    }, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.9,
+      ease: "power2.out"
+    }, 0.12);
+
+    tl.fromTo("#tce-aurora-field", {
+      x: -100,
+      y: 78,
+      scale: 1.03,
+      rotation: -2.2,
+      opacity: 0.44
+    }, {
+      x: 106,
+      y: -6,
+      scale: 1.13,
+      rotation: 2,
+      opacity: 0.74,
+      duration: 3.18,
+      repeat: 1,
+      yoyo: true,
+      ease: "sine.inOut"
+    }, 0);
+    tl.fromTo("#tce-aurora-ribbon", {
+      x: 106,
+      y: 66,
+      scale: 1.03,
+      skewY: -3,
+      opacity: 0.26
+    }, {
+      x: -94,
+      y: -3,
+      scale: 1.12,
+      skewY: 2,
+      opacity: 0.56,
+      duration: 3.12,
+      repeat: 1,
+      yoyo: true,
+      ease: "sine.inOut"
+    }, 0.1);
+    tl.fromTo("#tce-lobe-one", {
+      x: -45,
+      y: 46,
+      scaleX: 0.96,
+      scaleY: 0.92,
+      opacity: 0.28
+    }, {
+      x: 58,
+      y: -13,
+      scaleX: 1.12,
+      scaleY: 1.08,
+      opacity: 0.58,
+      duration: 3.08,
+      repeat: 1,
+      yoyo: true,
+      ease: "sine.inOut"
+    }, 0.05);
+    tl.fromTo("#tce-lobe-two", {
+      x: 62,
+      y: 40,
+      scaleX: 1.04,
+      scaleY: 0.94,
+      opacity: 0.24
+    }, {
+      x: -58,
+      y: -17,
+      scaleX: 0.94,
+      scaleY: 1.12,
+      opacity: 0.54,
+      duration: 3.05,
+      repeat: 1,
+      yoyo: true,
+      ease: "sine.inOut"
+    }, 0.18);
+    tl.fromTo("#tce-lobe-three", {
+      x: 46,
+      y: 50,
+      scaleX: 0.94,
+      scaleY: 0.96,
+      opacity: 0.22
+    }, {
+      x: -72,
+      y: -10,
+      scaleX: 1.12,
+      scaleY: 1.08,
+      opacity: 0.50,
+      duration: 3.02,
+      repeat: 1,
+      yoyo: true,
+      ease: "sine.inOut"
+    }, 0.28);
+
+    /* Card 2 arrives — the pair re-centres */
+    tl.to("#tce-card-1", {
+      y: 130,
+      duration: 0.92,
+      ease: "expo.inOut"
+    }, 1.82);
+    tl.fromTo("#tce-card-2", {
+      y: 450,
+      scale: 0.92,
+      filter: "blur(12px)"
+    }, {
+      y: 130,
+      scale: 1,
+      filter: "blur(0px)",
+      duration: 0.92,
+      ease: "expo.inOut"
+    }, 1.82);
+    tl.fromTo("#tce-card-2", {
+      opacity: 0
+    }, {
+      opacity: 1,
+      duration: 0.42,
+      ease: "power2.out"
+    }, 1.82);
+
+    /* Card 3 arrives — all three settle into the full column */
+    tl.to("#tce-card-1", {
+      y: 0,
+      duration: 1,
+      ease: "expo.inOut"
+    }, 3.86);
+    tl.to("#tce-card-2", {
+      y: 0,
+      duration: 1,
+      ease: "expo.inOut"
+    }, 3.86);
+    tl.fromTo("#tce-card-3", {
+      y: 300,
+      scale: 0.92,
+      filter: "blur(12px)"
+    }, {
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      duration: 1,
+      ease: "expo.inOut"
+    }, 3.86);
+    tl.fromTo("#tce-card-3", {
+      opacity: 0
+    }, {
+      opacity: 1,
+      duration: 0.44,
+      ease: "power2.out"
+    }, 3.86);
+
+    tl.to("#tce-shell", {
+      opacity: 0,
+      y: -20,
+      scale: 0.985,
+      duration: 0.6,
+      ease: "power2.in"
+    }, 6.64);
+    tl.to("#tce-aurora-field", {
+      y: 58,
+      scale: 1.14,
+      opacity: 0.12,
+      duration: 0.64,
+      ease: "power2.inOut"
+    }, 6.64);
+    tl.to("#tce-aurora-ribbon, .tce-aurora-lobe", {
+      y: 48,
+      opacity: 0.06,
+      duration: 0.62,
+      ease: "power2.inOut"
+    }, 6.64);
+    tl.to("#graphic-zone", {
+      autoAlpha: 1,
+      y: -864,
+      duration: 0.64,
+      ease: "power3.in"
+    }, 6.58);
+    tl.to("#talking-head video", {
+      y: 0,
+      scale: 1,
+      duration: 0.64,
+      ease: "power3.in"
+    }, 6.58);
+
+    window.__timelines["mg-three-card-expanding-comparison-9x16"] = tl;
+  </script>
+
+  <!-- hf-autoplay -->
+  <script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

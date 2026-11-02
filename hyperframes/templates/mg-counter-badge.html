@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@600&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+
+    /* Transparent overlay — layer over source video in parent composition */
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .clip { position: absolute; }
+
+    /* REPLACE: adjust top/right/bottom/left to reposition */
+    .badge {
+      position: absolute;
+      top: 100px;
+      right: 140px;
+      text-align: right;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 36px 36px;
+      border-radius: 20px;
+      padding: 32px 48px;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10);
+      will-change: transform, opacity;
+    }
+
+    .counter-num {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 116px;
+      font-weight: 800;
+      color: #7c3aed;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .counter-lbl {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.45);
+      text-align: right;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-counter-badge" data-start="0" data-duration="4" data-width="1920" data-height="1080">
+
+    <div class="badge" id="badge">
+      <!-- REPLACE: TARGET_COUNT and DISPLAY_SUFFIX below in <script> -->
+      <div class="counter-num" id="counter-num">0</div>
+      <!-- REPLACE: label text -->
+      <div class="counter-lbl">businesses helped</div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // ── REPLACE these two values ──────────────────────────────
+    const TARGET_COUNT   = 2000;   // the number to count up to
+    const DISPLAY_SUFFIX = '+';    // appended once the counter reaches target ('', '+', 'k+', etc.)
+    // ─────────────────────────────────────────────────────────
+
+    const el    = document.getElementById('counter-num');
+    const proxy = { v: 0 };
+
+    tl.from('#badge', { opacity: 0, y: 20, duration: 0.35, ease: 'power2.out' }, 0);
+    tl.to(proxy, {
+      v: TARGET_COUNT,
+      duration: 0.95,
+      ease: 'power3.out',
+      onUpdate() {
+        const done = proxy.v >= TARGET_COUNT - 0.5;
+        el.textContent = done
+          ? TARGET_COUNT.toLocaleString() + DISPLAY_SUFFIX
+          : Math.round(proxy.v).toLocaleString();
+      }
+    }, 0);
+
+    tl.to('#badge', { opacity: 0, y: -18, scale: 0.92, duration: 0.4, ease: 'power2.in', transformOrigin: 'center center' }, 3.25);
+
+    window.__timelines['mg-counter-badge'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

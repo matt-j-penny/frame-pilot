@@ -44,7 +44,7 @@ export const Captions: React.FC<{ words: Word[]; beats: Beat[]; style: Style }> 
   if (!g) return null;
   const emphasis = new Set((beat.emphasis ?? []).map(norm));
   const activeIdx = g.words.reduce((acc, w, i) => (w.start <= t ? i : acc), -1);
-  const pop = spring({ frame: frame - Math.round(g.start * fps), fps, config: { damping: 14 }, durationInFrames: c.pop_frames ?? 6 });
+  const pop = c.pop_frames === 0 ? 1 : spring({ frame: frame - Math.round(g.start * fps), fps, config: { damping: 14 }, durationInFrames: c.pop_frames ?? 6 });
   const f = style.fonts.caption;
   const safe = style.safe_zone ?? { top: 220, bottom: 420, right: 130 };
 

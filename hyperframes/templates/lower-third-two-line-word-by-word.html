@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      .clip {
+        position: absolute;
+      }
+
+      .lower-third {
+        pointer-events: none;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 300px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 0 160px 54px;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(6, 5, 12, 0.5) 32%,
+            rgba(3, 3, 8, 0.94) 100%
+          );
+        z-index: 3;
+      }
+
+      .lower-third-text {
+        position: relative;
+        max-width: 1280px;
+        font-family: "Satoshi", "Inter", "Helvetica Neue", Arial, sans-serif;
+        font-size: 88px;
+        font-weight: 700;
+        line-height: 1.05;
+        letter-spacing: 0;
+        text-align: center;
+      }
+
+      .caption-line {
+        display: block;
+        text-shadow:
+          0 2px 3px rgba(0, 0, 0, 0.46),
+          0 12px 32px rgba(0, 0, 0, 0.78),
+          0 0 22px rgba(248, 244, 236, 0.14);
+      }
+
+      .caption-line-primary {
+        color: #f8f4ec;
+      }
+
+      /* Replace font-family here to change the accent line font */
+      .caption-line-accent {
+        margin-top: 4px;
+        color: #a78bfa;
+        font-family: "Kaushan Script", cursive;
+        font-size: 96px;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        text-shadow:
+          0 2px 3px rgba(0, 0, 0, 0.48),
+          0 14px 34px rgba(0, 0, 0, 0.82),
+          0 0 26px rgba(124, 58, 237, 0.28);
+      }
+
+      .word {
+        display: inline-block;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- REPLACE: Update the text in buildWordSpans() calls in the <script> below -->
+      <div
+        id="lower-third"
+        class="clip lower-third"
+        data-start="0"
+        data-duration="4.25"
+        data-track-index="0"
+      >
+        <div id="lower-third-text" class="lower-third-text">
+          <span id="caption-line-1" class="caption-line caption-line-primary"></span>
+          <span id="caption-line-2" class="caption-line caption-line-accent"></span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // REPLACE: Update the strings passed to buildWordSpans() with your own copy
+      const LINE_1 = "This is the primary line";
+      const LINE_2 = "and this is the accent";
+
+      function buildWordSpans(el, text) {
+        const words = text.split(" ");
+        el.innerHTML = words
+          .map((w, i) => `<span class="word">${w}${i < words.length - 1 ? " " : ""}</span>`)
+          .join("");
+        return el.querySelectorAll(".word");
+      }
+
+      const line1Words = buildWordSpans(document.getElementById("caption-line-1"), LINE_1);
+      const line2Words = buildWordSpans(document.getElementById("caption-line-2"), LINE_2);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      gsap.set("#lower-third", { autoAlpha: 0, y: 44 });
+      gsap.set([...line1Words, ...line2Words], { opacity: 0, y: 32, filter: "blur(6px)" });
+
+      // Container entrance
+      tl.to("#lower-third", { autoAlpha: 1, y: 0, duration: 0.58, ease: "power2.out" }, 0.24);
+
+      // Line 1 — word by word
+      tl.to(
+        line1Words,
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, stagger: 0.18, ease: "power3.out" },
+        0.52
+      );
+
+      // Line 2 — word by word, starts after line 1 finishes
+      const line1End = 0.52 + 0.55 + (line1Words.length - 1) * 0.18;
+      tl.to(
+        line2Words,
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, stagger: 0.18, ease: "power3.out" },
+        line1End + 0.08
+      );
+
+      // Exit — all words out together
+      tl.to(
+        [...line1Words, ...line2Words],
+        { opacity: 0, y: 28, filter: "blur(6px)", duration: 0.42, stagger: 0.04, ease: "power2.in" },
+        3.42
+      );
+      tl.to("#lower-third", { autoAlpha: 0, y: 32, duration: 0.5, ease: "power2.in" }, 3.58);
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: transparent;
+      }
+      #bottom-gradient {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 360px; /* 33.333% of 1080 */
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.5) 0%,
+          rgba(0, 0, 0, 0.34) 46%,
+          rgba(0, 0, 0, 0) 100%
+        );
+        pointer-events: none;
+      }
+      #word-row {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 178px;
+        line-height: 1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .word {
+        display: inline-block;
+        text-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        will-change: transform, opacity;
+      }
+      .word-primary { color: #ffffff; }
+      .word-accent  { color: #7c3aed; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bottom-gradient"></div>
+
+      <div id="word-row">
+        <!-- REPLACE: swap the three words; keep .word-primary / .word-accent class pattern -->
+        <span id="word-0" class="word word-primary">Build</span>
+        <span id="word-1" class="word word-primary">With</span>
+        <span id="word-2" class="word word-accent">AI</span>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const words = ["#word-0", "#word-1", "#word-2"];
+
+      // Set initial state — all words invisible, shifted down
+      gsap.set(words, { opacity: 0, y: 90 });
+
+      // Staggered entrance: 0.23s between each word (7 frames at 30fps)
+      // spring { damping: 18, stiffness: 160, mass: 0.7 } → power3.out 0.55s
+      words.forEach((sel, i) => {
+        tl.to(
+          sel,
+          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          i * 0.23
+        );
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  <!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>

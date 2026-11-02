@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Perspective Ranked List</title>
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Cabinet Grotesk";
+      src: url("assets/fonts/CabinetGrotesk-ExtraBold.woff2") format("woff2");
+      font-weight: 800;
+      font-style: normal;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: "Satoshi";
+      src: url("assets/fonts/Satoshi-Bold.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+    }
+
+    :root {
+      --prl-canvas: #fafafa;
+      --prl-ink: #1a1a2e;
+      --prl-accent: #7c3aed;
+      --prl-accent-dark: #5b21b6;
+      --prl-accent-light: #a78bfa;
+      --prl-accent-pale: #ede9fe;
+      --prl-white: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: var(--prl-canvas);
+    }
+
+    #prl-root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    .prl-background {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background-color: var(--prl-canvas);
+      background-image:
+        linear-gradient(rgba(124, 58, 237, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124, 58, 237, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .prl-glow {
+      position: absolute;
+      right: -155px;
+      top: -235px;
+      width: 1060px;
+      height: 1060px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(167, 139, 250, 0.3) 0%,
+        rgba(237, 233, 254, 0.22) 46%,
+        rgba(237, 233, 254, 0) 70%
+      );
+      will-change: transform, opacity;
+    }
+
+    .prl-perspective-lines {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 826px;
+      height: 508px;
+      overflow: visible;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .prl-perspective-lines .prl-ray {
+      fill: none;
+      stroke: var(--prl-accent);
+      stroke-width: 2;
+      opacity: 0.1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .prl-perspective-lines .prl-arc {
+      fill: none;
+      stroke: var(--prl-accent-light);
+      stroke-width: 3;
+      opacity: 0.16;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .prl-perspective-lines .prl-anchor {
+      fill: var(--prl-accent);
+      opacity: 0.5;
+    }
+
+    .prl-ghost-mark {
+      position: absolute;
+      right: 125px;
+      bottom: -42px;
+      color: rgba(124, 58, 237, 0.055);
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 460px;
+      font-weight: 800;
+      line-height: 0.8;
+      letter-spacing: -0.075em;
+      user-select: none;
+      will-change: transform, opacity;
+    }
+
+    .prl-scene-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      padding: 120px 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1690px;
+      perspective-origin: 50% 34%;
+      will-change: transform, opacity;
+    }
+
+    .prl-plane {
+      width: 1220px;
+      display: flex;
+      flex-direction: column;
+      gap: 23px;
+      list-style: none;
+      transform:
+        rotateX(10.5deg)
+        rotateY(-1.4deg)
+        rotateZ(-0.45deg);
+      transform-origin: 50% 44%;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .prl-row {
+      display: grid;
+      grid-template-columns: 127px minmax(0, 1fr);
+      align-items: center;
+      gap: 30px;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+
+    .prl-rank {
+      color: var(--prl-accent);
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 72px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      text-align: right;
+      text-shadow: 0 6px 17px rgba(124, 58, 237, 0.13);
+      font-variant-numeric: tabular-nums;
+      transform: translateZ(16px);
+    }
+
+    .prl-entry {
+      position: relative;
+      height: 116px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 48px;
+      overflow: hidden;
+      border: 3px solid var(--prl-accent-dark);
+      border-radius: 24px;
+      background: var(--prl-accent);
+      box-shadow:
+        0 6px 0 var(--prl-accent-dark),
+        0 16px 34px rgba(124, 58, 237, 0.2),
+        inset 0 3px 0 rgba(255, 255, 255, 0.14);
+      color: var(--prl-white);
+      font-family: "Cabinet Grotesk", sans-serif;
+      font-size: 63px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.025em;
+      text-align: center;
+      white-space: nowrap;
+      transform: translateZ(3px);
+    }
+
+    .prl-entry::before,
+    .prl-entry::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.34);
+      transform: translateY(-50%);
+    }
+
+    .prl-entry::before {
+      left: 25px;
+    }
+
+    .prl-entry::after {
+      right: 25px;
+    }
+
+    #prl-row-4 .prl-entry {
+      font-size: 55px;
+      letter-spacing: -0.032em;
+    }
+
+    #prl-row-5 .prl-entry {
+      font-size: 59px;
+    }
+  </style>
+</head>
+<body>
+  <main
+    id="prl-root"
+    data-composition-id="mg-perspective-ranked-list"
+    data-start="0"
+    data-duration="7"
+    data-width="1920"
+    data-height="1080"
+    aria-label="Animated perspective ranked list"
+  >
+    <div class="prl-background" id="prl-background">
+      <div class="prl-glow" id="prl-glow" data-layout-ignore></div>
+
+      <svg
+        class="prl-perspective-lines"
+        id="prl-lines"
+        viewBox="0 0 820 500"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        data-layout-ignore
+      >
+        <path class="prl-ray" d="M-35 500 L560 48"></path>
+        <path class="prl-ray" d="M82 500 L588 102"></path>
+        <path class="prl-ray" d="M206 500 L620 169"></path>
+        <path class="prl-ray" d="M343 500 L654 248"></path>
+        <path class="prl-arc" d="M-96 416 C117 452 317 377 456 257"></path>
+        <path class="prl-arc" d="M-90 455 C153 488 378 402 524 279"></path>
+        <circle class="prl-anchor" cx="456" cy="257" r="5"></circle>
+        <circle class="prl-anchor" cx="524" cy="279" r="3"></circle>
+      </svg>
+
+      <div class="prl-ghost-mark" id="prl-ghost-mark" aria-hidden="true" data-layout-ignore>05</div>
+    </div>
+
+    <section class="prl-scene-content" id="prl-scene-content">
+      <ol class="prl-plane" id="prl-plane">
+        <!-- REPLACE: rank and label text. Keep unique prl-prefixed ids when adding or removing rows. -->
+        <li class="prl-row" id="prl-row-1">
+          <span class="prl-rank" aria-hidden="true">1.</span>
+          <div class="prl-entry">Whop</div>
+        </li>
+        <li class="prl-row" id="prl-row-2">
+          <span class="prl-rank" aria-hidden="true">2.</span>
+          <div class="prl-entry">Reach.cat</div>
+        </li>
+        <li class="prl-row" id="prl-row-3">
+          <span class="prl-rank" aria-hidden="true">3.</span>
+          <div class="prl-entry">Vyro</div>
+        </li>
+        <li class="prl-row" id="prl-row-4">
+          <span class="prl-rank" aria-hidden="true">4.</span>
+          <div class="prl-entry">ClipAffiliates / Clipping.io</div>
+        </li>
+        <li class="prl-row" id="prl-row-5">
+          <span class="prl-rank" aria-hidden="true">5.</span>
+          <div class="prl-entry">Native programs</div>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const prlTimeline = gsap.timeline({
+      paused: true,
+      defaults: { ease: "power3.out" },
+    });
+
+    prlTimeline.fromTo(
+      "#prl-glow",
+      { opacity: 0, x: 70, y: -24, scale: 0.88 },
+      { opacity: 1, x: 0, y: 0, scale: 1, duration: 1.05, ease: "power2.out" },
+      0.08,
+    );
+
+    prlTimeline.fromTo(
+      "#prl-ghost-mark",
+      { opacity: 0, y: 28 },
+      { opacity: 1, y: 0, duration: 0.9, ease: "sine.out" },
+      0.16,
+    );
+
+    prlTimeline.fromTo(
+      "#prl-lines",
+      { opacity: 0, x: -30, y: 18 },
+      { opacity: 1, x: 0, y: 0, duration: 0.9, ease: "power2.out" },
+      0.18,
+    );
+
+    prlTimeline.fromTo(
+      "#prl-plane",
+      {
+        y: 48,
+        scale: 0.96,
+        rotationX: 15.5,
+        rotationY: -4.2,
+        rotationZ: -1.1,
+      },
+      {
+        y: 0,
+        scale: 1,
+        rotationX: 10.5,
+        rotationY: -1.4,
+        rotationZ: -0.45,
+        duration: 1.15,
+        ease: "power3.out",
+      },
+      0.12,
+    );
+
+    const prlRows = [
+      "#prl-row-1",
+      "#prl-row-2",
+      "#prl-row-3",
+      "#prl-row-4",
+      "#prl-row-5",
+    ];
+
+    prlTimeline.set(prlRows, { opacity: 0 }, 0);
+    prlRows.forEach(function (row, index) {
+      const rowStart = 0.34 + index * 0.28;
+      prlTimeline.set(
+        row,
+        {
+          opacity: 1,
+          x: 118,
+          y: 18,
+          z: -95,
+          rotationY: -4,
+        },
+        rowStart,
+      );
+      prlTimeline.to(
+        row,
+        {
+          x: 0,
+          y: 0,
+          z: 0,
+          rotationY: 0,
+          duration: 0.62,
+          ease: "power4.out",
+        },
+        rowStart,
+      );
+    });
+
+    /* Smooth camera-like plane movement across the hold. */
+    prlTimeline.to(
+      "#prl-plane",
+      {
+        y: -8,
+        rotationX: 8.9,
+        rotationY: 0.8,
+        rotationZ: 0.22,
+        duration: 2,
+        ease: "sine.inOut",
+      },
+      2.18,
+    );
+
+    prlTimeline.to(
+      "#prl-plane",
+      {
+        y: 3,
+        rotationX: 11.2,
+        rotationY: -1.8,
+        rotationZ: -0.3,
+        duration: 1.55,
+        ease: "sine.inOut",
+      },
+      4.22,
+    );
+
+    /* Independent atmospheric drift keeps the background gently alive. */
+    prlTimeline.to(
+      "#prl-glow",
+      {
+        x: -42,
+        y: 28,
+        scale: 1.055,
+        duration: 2.62,
+        ease: "sine.inOut",
+      },
+      1.18,
+    );
+
+    prlTimeline.to(
+      "#prl-glow",
+      {
+        x: 12,
+        y: -10,
+        scale: 0.985,
+        duration: 2.22,
+        ease: "sine.inOut",
+      },
+      3.82,
+    );
+
+    prlTimeline.to(
+      "#prl-lines",
+      {
+        x: 16,
+        y: -8,
+        duration: 4.55,
+        ease: "sine.inOut",
+      },
+      1.25,
+    );
+
+    /* Reverse cascade: rows recede into the plane before disappearing. */
+    const prlExitRows = prlRows.slice().reverse();
+    prlExitRows.forEach(function (row, index) {
+      const exitStart = 5.92 + index * 0.06;
+      prlTimeline.to(
+        row,
+        {
+          x: -72,
+          y: -12,
+          z: -210,
+          rotationY: 4.5,
+          duration: 0.58,
+          ease: "power3.inOut",
+        },
+        exitStart,
+      );
+      prlTimeline.set(row, { autoAlpha: 0 }, exitStart + 0.58);
+    });
+
+    prlTimeline.to(
+      "#prl-plane",
+      {
+        y: -28,
+        scale: 0.975,
+        rotationX: 15,
+        rotationY: -4.2,
+        rotationZ: -0.7,
+        duration: 0.92,
+        ease: "sine.inOut",
+      },
+      5.82,
+    );
+
+    prlTimeline.to(
+      "#prl-ghost-mark, #prl-lines, #prl-glow",
+      {
+        opacity: 0,
+        y: -12,
+        duration: 0.5,
+        ease: "power2.inOut",
+      },
+      6.3,
+    );
+
+    prlTimeline.set("#prl-scene-content", { autoAlpha: 0 }, 6.78);
+
+    window.__timelines["mg-perspective-ranked-list"] = prlTimeline;
+  </script>
+
+  <!-- hf-autoplay -->
+  <script>
+    (function () {
+      if (window.self === window.top) return;
+      function play() {
+        var timelines = window.__timelines || {};
+        var ids = Object.keys(timelines);
+        if (!ids.length) {
+          setTimeout(play, 150);
+          return;
+        }
+        ids.forEach(function (id) {
+          var timeline = timelines[id];
+          timeline.eventCallback("onComplete", function () {
+            setTimeout(play, 1200);
+          });
+          timeline.restart();
+        });
+      }
+      setTimeout(play, 200);
+    })();
+  </script>
+</body>
+</html>

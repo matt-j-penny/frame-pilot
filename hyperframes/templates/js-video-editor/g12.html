@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/>
+<meta name="viewport" content="width=1920, height=1080"/>
+<title>g12: MCPs — Higgsfield / TopView (icon-row · overlay · Callout R)</title>
+<script src="../vendor/gsap.min.js"></script>
+<script src="hf-anim.js"></script>
+<style>
+/* g12 · timeline 55.90 -> 60.10 (DUR 4.20) · alpha overlay · Callout R x1180 y150 w620
+   Icon-ROW (side-by-side), not stacked list — varies the template against g7/g11.
+   Copy corrected from the transcript's WhisperX mis-split ("Higgs Field"/"top view") to
+   the real one-word product names; no sampled brand colour exists for either, house
+   royal tokens per the borrowed-palette rule's own fallback. */
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Bold.otf') format('opentype');font-weight:700;}
+@font-face{font-family:'Inter';src:url('assets/fonts/Inter-Black.otf') format('opentype');font-weight:900;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--royal:#1e48ff;--txt:#e8f0ff;--muted:#8fa6d4;}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:'Inter',sans-serif;}
+#float{position:absolute;inset:0;will-change:transform;}
+.panel{position:absolute;left:1180px;top:150px;width:620px;height:270px;
+  background:linear-gradient(160deg,#12224e 0%,#0a1435 100%);
+  border:2px solid rgba(96,146,255,0.42);border-radius:22px;
+  box-shadow:0 26px 60px rgba(2,7,24,0.72), 0 0 0 1px rgba(6,13,36,0.85),
+             inset 0 2px 0 rgba(140,180,255,0.22);opacity:0;overflow:visible;}
+.eyebrow{position:absolute;left:40px;top:36px;font-weight:700;font-size:23px;
+  letter-spacing:3.4px;text-transform:uppercase;color:var(--muted);opacity:0;}
+.item{position:absolute;top:96px;width:160px;text-align:center;opacity:0;}
+.item .ic{position:absolute;left:40px;top:0;width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(160deg,#3d69ff 0%,var(--royal) 100%);
+  box-shadow:0 0 14px rgba(30,72,255,0.60), 0 0 28px rgba(30,72,255,0.28);}
+.item .ic svg{position:absolute;left:20px;top:20px;}
+.item .lbl{position:absolute;left:0;top:96px;width:160px;text-align:center;
+  font-weight:700;font-size:28px;letter-spacing:-0.5px;color:var(--txt);}
+#i1{left:80px;} #i2{left:340px;}
+</style></head>
+<body style="margin:0;background:transparent;">
+<div id="root" data-composition-id="main" data-width="1920" data-height="1080" data-start="0" data-duration="4.2000">
+<div id="float">
+  <div class="panel" id="panel">
+    <div class="eyebrow" id="eyebrow">MCPs</div>
+    <div class="item" id="i1">
+      <div class="ic"><svg width="40" height="40" viewBox="0 0 40 40"><polygon fill="#fff" points="20,4 25,16 38,18 28,27 31,39 20,32 9,39 12,27 2,18 15,16"/></svg></div>
+      <div class="lbl">Higgsfield</div>
+    </div>
+    <div class="item" id="i2">
+      <div class="ic"><svg width="34" height="34" viewBox="0 0 34 34"><path fill="#fff" d="M17 2C9 2 2 9 2 17s7 15 15 15 15-7 15-15S25 2 17 2zm0 6a9 9 0 110 18 9 9 0 010-18z"/></svg></div>
+      <div class="lbl">TopView</div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+const DUR = 4.20;
+const H = HF.init({fps: 50/1, dur: DUR});
+const {tl, F, pop, riseIn, exit, float} = H;
+float('#float', 0, DUR, 'subtle');
+tl.set('#panel', {opacity: 1}, 0);
+riseIn('#eyebrow', 0.10, 18);
+// word-synced: 'Higgs' 56.69->0.79 (comp starts 55.90 incl. small lead) · 'top' 58.59->2.69
+pop('#i1', 0.79);
+pop('#i2', 2.69);
+exit('#panel'); exit('#eyebrow'); exit('#i1'); exit('#i2');
+H.finish();
+</script><script>if(window.top!==window.self){const t=window.__timelines?.main;if(t)t.repeat(-1).repeatDelay(.35).play(0);}</script></body></html>

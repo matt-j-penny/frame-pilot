@@ -44,7 +44,7 @@
   .hitem span { color: var(--muted); font-size: 12px; display: flex; gap: 6px; align-items: center; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex: none; }
   .dot.running, .dot.queued { background: var(--brand); animation: pulse 1.2s infinite; }
-  .dot.done { background: var(--ok); } .dot.error { background: var(--err); } .dot.cancelled { background: var(--muted); }
+  .dot.done { background: var(--ok); } .dot.preview { background: var(--warn); } .dot.error { background: var(--err); } .dot.cancelled { background: var(--muted); }
   @keyframes pulse { 50% { opacity: .35; } }
   .claude-status { margin-top: auto; font-size: 12px; color: var(--muted); padding: 8px; border-top: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
   main { padding: 28px 36px 60px; max-width: 1180px; width: 100%; }
@@ -706,6 +706,43 @@
   .pickers .effort-picker { padding-left: 12px; }
   .pickers .effort-picker select, .pickers .format-picker label { font-size: 13.5px; }
   .pickers .ddbtn .lbl, .pickers .effort-picker .lbl { font-size: 12.5px; }
+  .preview-option { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
+  .storyboard { max-width: 1100px; margin: 0 auto; }
+  .sb-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  .sb-head h3 { margin: 0 0 4px; font-size: 16px; }
+  .sb-head p { margin: 0; font-size: 13px; color: var(--muted); }
+  .sb-beat { display: grid; grid-template-columns: 200px 1fr; gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .sb-meta b { font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .sb-meta p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+  .sb-ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 220px)); gap: 14px; }
+  .storyboard.landscape .sb-ideas { grid-template-columns: repeat(auto-fill, minmax(240px, 320px)); }
+  .sb-idea { display: block; border: 2px solid var(--line); border-radius: var(--r-sm, 8px); overflow: hidden; background: var(--panel); cursor: pointer; }
+  .sb-idea:has(input:checked) { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+  .sb-idea:has(input:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .sb-idea input { position: absolute; opacity: 0; pointer-events: none; }
+  .sb-idea img { display: block; width: 100%; height: auto; background: #0B0C10; }
+  .sb-idea span { display: block; padding: 8px 10px; font-size: 12.5px; }
+  .sb-idea small { color: var(--muted); }
+  .sb-foot { display: flex; justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--line); }
+  .storyboard details { margin-bottom: 18px; font-size: 13px; color: var(--muted); white-space: pre-wrap; }
+  .gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .gl-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .gl-still { aspect-ratio: 9 / 16; background: var(--soft); display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+  .gl-still img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tpl-dlg { width: min(1100px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+  .tpl-pick-head { display: flex; gap: 12px; align-items: center; position: sticky; top: -1px; background: var(--panel); padding: 4px 0 14px; z-index: 2; }
+  .tpl-pick-head h3 { margin: 0; flex: none; } .tpl-pick-head input { flex: 1; min-width: 0; }
+  .tpl-chip .x { border: none; background: none; color: var(--muted); font-size: 16px; padding: 0 4px; cursor: pointer; }
+  .tpl-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--brand-soft); border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 12.5px; }
+  .gl-grid.wide { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .gl-grid.wide .gl-still { aspect-ratio: 16 / 9; }
+  .gl-hf { position: relative; overflow: hidden; display: block; background: #111; }
+  .gl-hf iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .gl-card div.gl-meta { padding: 10px 12px 12px; font-size: 12.5px; color: var(--muted); }
+  .gl-meta b { display: block; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
+  .gl-meta code { font-size: 11.5px; }
+  .gl-meta p { margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  @media (max-width: 700px) { .sb-beat { grid-template-columns: 1fr; gap: 10px; } .sb-ideas, .storyboard.landscape .sb-ideas { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .sb-head { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -716,6 +753,7 @@
       <div><h1>Frame Pilot</h1><small>Your footage. Your direction.</small></div>
     </div>
     <a class="btn primary new-btn" href="#/new" style="text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New video</a>
+    <a class="navlink" id="graphicsLink" href="#/graphics" style="margin-bottom:10px">Graphics library</a>
     <div class="history-title side-head">Styles<button class="side-add" id="sideNewStyle" title="Create a style guide">+</button></div>
     <nav class="history" id="styleNav" style="flex:none;max-height:180px"></nav>
     <div class="history-title">History</div>
@@ -730,6 +768,7 @@
 
 <dialog id="styleDlg"></dialog>
 <dialog id="setupDlg" aria-labelledby="setupTitle"></dialog>
+<dialog id="tplDlg" class="tpl-dlg" aria-label="Choose a template"></dialog>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -743,7 +782,7 @@ const api = async (url, opts = {}) => {
 };
 const toast = (msg) => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600); };
 const ago = (ms) => { const s = (Date.now() - ms) / 1000; return s < 60 ? "just now" : s < 3600 ? `${Math.floor(s / 60)}m ago` : s < 86400 ? `${Math.floor(s / 3600)}h ago` : `${Math.floor(s / 86400)}d ago`; };
-const draft = { upload: null, editor: localStorage.getItem("se-editor") || "native", model: localStorage.getItem("se-model") || "opus", effort: localStorage.getItem("se-effort:" + (localStorage.getItem("se-model") || "opus")) || "default", style: localStorage.getItem("se-style") || "", direction: "", aspectRatio: "9:16", advanced: false, inspiration: null, references: [], features: { roughCut: true, subtitles: true, motionGraphics: true, sfx: true, music: true }, transcript: null, transcriptionId: null, transcriptEdits: [], selection: null, transcribing: false, attachmentsBusy: false };
+const draft = { upload: null, editor: localStorage.getItem("se-editor") || "native", model: localStorage.getItem("se-model") || "opus", effort: localStorage.getItem("se-effort:" + (localStorage.getItem("se-model") || "opus")) || "default", style: localStorage.getItem("se-style") || "", direction: "", aspectRatio: "9:16", advanced: false, inspiration: null, references: [], features: { roughCut: true, subtitles: true, motionGraphics: true, sfx: true, music: true }, preview: false, ideas: 1, transcript: null, transcriptionId: null, transcriptEdits: [], selection: null, transcribing: false, attachmentsBusy: false };
 let meta = { models: [] }, styles = [], timer = null;
 
 async function refreshSide() {
@@ -754,7 +793,7 @@ async function refreshSide() {
     $("#history").innerHTML = jobs.length ? jobs.map((j) => `
       <a class="hitem ${j.id === cur ? "active" : ""}" href="#/job/${j.id}">
         <b>${esc(j.title)}</b>
-        <span><i class="dot ${j.status}"></i>${esc(j.style || "No style")} · ${j.versions ? `v${j.versions}` : j.status}${j.approved ? ' · <b style="color:var(--ok);display:inline;font-weight:700">✓ approved</b>' : ""} · ${ago(j.created)}</span>
+        <span><i class="dot ${j.status}"></i>${esc(j.style || "No style")} · ${j.versions ? `v${j.versions}` : j.status === "preview" ? "storyboard ready" : j.status}${j.approved ? ' · <b style="color:var(--ok);display:inline;font-weight:700">✓ approved</b>' : ""} · ${ago(j.created)}</span>
       </a>`).join("") : `<p class="muted" style="padding:0 8px">No edits yet.</p>`;
     const sl = await api("/api/styles");
     $("#styleNav").innerHTML = sl.map((x) => {
@@ -933,10 +972,12 @@ async function viewNew() {
               <section class="reference-upload" data-upload-target="referenceFiles"><h3>References ${helpTip('Add images and videos the editor can use as visual references or assets in this edit.')}</h3><label class="upload-label reference-dropzone" tabindex="0" role="button" aria-label="Upload reference images or videos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></svg><span class="drop-caption">Drop images or videos</span><small>or browse</small><input type="file" id="referenceFiles" accept="image/png,image/jpeg,image/webp,image/gif,video/*" multiple hidden></label><div id="referenceList"></div></section>
             </div>
             <section class="feature-section"><div class="feature-toggles">${Object.entries({roughCut:['Rough cut','Automatically remove silences, fillers and retakes. Turn off to preserve the original timing; explicit transcript cuts still apply.'],subtitles:['Subtitles','Add captions timed to the speech, using the selected style or your brief.'],motionGraphics:['Motion graphics','Add animated graphics, callouts, transitions and camera moves where appropriate.'],sfx:['SFX','Add sound effects to support graphics and transitions.'],music:['Music','Add background music and lower its volume under speech.']}).map(([key,[label,help]]) => `<div class="feature-option"><label class="feature-toggle"><span>${label}</span><span class="switch-control"><input type="checkbox" role="switch" data-feature="${key}" ${draft.features[key] ? 'checked' : ''}><span class="switch-track" aria-hidden="true"></span></span></label>${helpTip(help)}</div>`).join('')}</div></section>
+            <section class="feature-section preview-option"><div class="feature-option"><label class="feature-toggle"><span>Preview before building</span><span class="switch-control"><input type="checkbox" role="switch" id="previewToggle" ${draft.preview ? 'checked' : ''}><span class="switch-track" aria-hidden="true"></span></span></label>${helpTip('Plan the edit and show a still of every beat with its motion graphic first. Pick the ideas you like, then build the video. Native editor with Motion graphics on.')}</div>
+              <label class="effort-picker" id="ideasPicker" ${draft.preview ? '' : 'hidden'}><span class="lbl">Ideas per beat</span><select id="ideasSelect" aria-label="Ideas per beat">${[1,2,3].map(n => `<option value="${n}" ${draft.ideas === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label></section>
             <section class="transcript-section"><div class="transcript-heading"><h3>Edit by transcript ${helpTip('Transcribe your source video with your configured Deepgram key. Drag across words, or click then Shift-click to select a passage. Add instructions for what should happen there; they are applied when you start the edit.')}</h3><button class="btn small" id="transcribeBtn" title="Upload a source video first">Transcribe video</button></div><p id="transcriptStatus" role="status" class="muted" hidden></p><div id="transcriptEditor"></div></section>
           </section>
           <div class="composer-row" style="justify-content:flex-end"><span class="muted" id="goHint" style="font-size:13px;margin-right:auto"></span>
-            <button class="send" id="goBtn" style="margin-left:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 8-4 8M14 4l4 8-4 8"/></svg>Edit</button>
+            <button class="send" id="goBtn" style="margin-left:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 8-4 8M14 4l4 8-4 8"/></svg><span id="goLabel">Edit</span></button>
           </div>
         </div>
         <div class="pickers">
@@ -1052,7 +1093,7 @@ function bindNew() {
   $("#goBtn").onclick = async () => {
     $("#goBtn").disabled = true;
     try {
-      const { id } = await api("/api/jobs", { method: "POST", body: { source: draft.upload.path, name: draft.upload.name, editor: draft.editor, style: draft.style, model: draft.model, effort: draft.effort, direction: draft.direction, aspectRatio: draft.aspectRatio, features: draft.features, inspiration: draft.inspiration?.path, references: draft.references.map(r => r.path), transcriptionId: draft.transcriptionId, transcriptEdits: draft.transcriptEdits } });
+      const { id } = await api("/api/jobs", { method: "POST", body: { source: draft.upload.path, name: draft.upload.name, editor: draft.editor, style: draft.style, model: draft.model, effort: draft.effort, direction: draft.direction, aspectRatio: draft.aspectRatio, features: draft.features, inspiration: draft.inspiration?.path, references: draft.references.map(r => r.path), transcriptionId: draft.transcriptionId, transcriptEdits: draft.transcriptEdits, previewIdeas: previewAvailable() && draft.preview ? draft.ideas : 0 } });
       if (draft.upload?.preview) URL.revokeObjectURL(draft.upload.preview);
       draft.upload = null; draft.direction = ""; draft.inspiration = null; draft.references = []; clearTranscript();
       location.hash = `#/job/${id}`;
@@ -1060,9 +1101,13 @@ function bindNew() {
   };
 }
 
+const previewAvailable = () => draft.editor === 'native' && draft.features.motionGraphics;
+
 function updateGo() {
   const btn = $("#goBtn");
   if (!btn) return;
+  if ($("#previewToggle")) $("#previewToggle").disabled = !previewAvailable();
+  $("#goLabel").textContent = previewAvailable() && draft.preview ? 'Create preview' : 'Edit';
   const pendingInstruction = $("#transcriptInstruction")?.value.trim();
   const editor = meta.editors?.find(editor => editor.id === draft.editor);
   const editorReady = draft.editor === 'native' || editor?.ready;
@@ -1097,8 +1142,16 @@ function bindAdvanced() {
     $("#advancedBtn").setAttribute('aria-expanded', String(draft.advanced));
     $("#advancedBtn").textContent = `${draft.advanced ? '−' : '+'} Advanced options`;
   };
-  document.querySelectorAll('[name=aspect]').forEach(r => r.onchange = () => { draft.aspectRatio = r.value; });
-  document.querySelectorAll('[data-feature]').forEach(r => r.onchange = () => { draft.features[r.dataset.feature] = r.checked; });
+  document.querySelectorAll('[name=aspect]').forEach(r => r.onchange = () => {
+    draft.aspectRatio = r.value;
+    const n = draft.transcriptEdits.length;
+    draft.transcriptEdits = draft.transcriptEdits.filter(e => !e.aspect || e.aspect === r.value);
+    if (draft.pendingTemplate?.aspect !== r.value) draft.pendingTemplate = null;
+    if (draft.transcriptEdits.length < n) { toast(`Removed ${n - draft.transcriptEdits.length} template instruction${n - draft.transcriptEdits.length > 1 ? "s" : ""} made for the other format`); renderTranscript(); }
+  });
+  document.querySelectorAll('[data-feature]').forEach(r => r.onchange = () => { draft.features[r.dataset.feature] = r.checked; updateGo(); });
+  $("#previewToggle").onchange = e => { draft.preview = e.target.checked; $("#ideasPicker").hidden = !draft.preview; updateGo(); };
+  $("#ideasSelect").onchange = e => { draft.ideas = Number(e.target.value); };
   const addFiles = async (input, inspiration, selectedFiles = input.files) => {
     if (draft.attachmentsBusy) return;
     const files = Array.from(selectedFiles);
@@ -1189,13 +1242,13 @@ function renderTranscript(error = '') {
   $("#transcribeBtn").disabled = !draft.upload?.path || draft.transcribing;
   if (!words) { $("#transcriptEditor").innerHTML = ''; return; }
   $("#transcriptEditor").innerHTML = `<div class="transcript-words" id="transcriptWords" tabindex="0" aria-label="Source transcript">${words.map((w,i) => `<span class="transcript-word" data-word="${i}" title="${w.start.toFixed(2)}s – ${w.end.toFixed(2)}s">${esc(w.word)}</span>`).join(' ')}</div>
-    <div class="transcript-note"><p id="selectionLabel">Select a passage above.</p><textarea id="transcriptInstruction" aria-label="Instruction for selected passage" placeholder="What should happen here?"></textarea><div class="transcript-actions"><button class="btn small primary" id="addTranscriptEdit" disabled>Add instruction</button></div></div>
+    <div class="transcript-note"><p id="selectionLabel">Select a passage above.</p><textarea id="transcriptInstruction" aria-label="Instruction for selected passage" placeholder="What should happen here? With a template, what it should say (optional)."></textarea><div class="transcript-actions"><button class="btn small" id="pickTranscriptTemplate">Use a template</button><span id="templateChip"></span><button class="btn small primary" id="addTranscriptEdit" disabled>Add instruction</button></div></div>
     <div id="transcriptEdits"></div>`;
   const select = (from, to) => {
     draft.selection = { from: Math.min(from,to), to: Math.max(from,to) };
     document.querySelectorAll('[data-word]').forEach(el => el.classList.toggle('selected', Number(el.dataset.word) >= draft.selection.from && Number(el.dataset.word) <= draft.selection.to));
     $("#selectionLabel").textContent = `${words[draft.selection.from].start.toFixed(2)}s – ${words[draft.selection.to].end.toFixed(2)}s · “${words.slice(draft.selection.from,draft.selection.to+1).map(w=>w.word).join(' ')}”`;
-    $("#addTranscriptEdit").disabled = !$("#transcriptInstruction").value.trim();
+    canAdd();
   };
   const box = $("#transcriptWords");
   let anchor = null;
@@ -1212,17 +1265,27 @@ function renderTranscript(error = '') {
     const a = selected?.anchorNode?.parentElement?.closest('[data-word]'), b = selected?.focusNode?.parentElement?.closest('[data-word]');
     if (a && b && box.contains(a) && box.contains(b)) select(Number(a.dataset.word), Number(b.dataset.word));
   };
-  $("#transcriptInstruction").oninput = () => { $("#addTranscriptEdit").disabled = !draft.selection || !$("#transcriptInstruction").value.trim(); updateGo(); };
+  const canAdd = () => { $("#addTranscriptEdit").disabled = !draft.selection || !($("#transcriptInstruction").value.trim() || draft.pendingTemplate); };
+  const showChip = () => {
+    $("#templateChip").innerHTML = draft.pendingTemplate ? `<span class="tpl-chip">${esc(draft.pendingTemplate.name.replace(/^MG: /, ""))}<button class="x" id="clearTemplate" aria-label="Remove template">×</button></span>` : "";
+    if ($("#clearTemplate")) $("#clearTemplate").onclick = () => { draft.pendingTemplate = null; showChip(); };
+    $("#pickTranscriptTemplate").textContent = draft.pendingTemplate ? "Change template" : "Use a template";
+    canAdd(); updateGo();
+  };
+  $("#pickTranscriptTemplate").onclick = async () => { const t = await pickTemplate(draft.aspectRatio); if (t) { draft.pendingTemplate = t; showChip(); } };
+  $("#transcriptInstruction").oninput = () => { canAdd(); updateGo(); };
   const renderEdits = () => {
-    $("#transcriptEdits").innerHTML = draft.transcriptEdits.map((edit,i) => `<div class="transcript-edit"><blockquote>${esc(words.slice(edit.from, edit.to+1).map(w=>w.word).join(' '))}</blockquote><span>${esc(edit.instruction)}</span> <button class="btn small" data-delete-edit="${i}" aria-label="Remove instruction">Remove</button></div>`).join('');
+    $("#transcriptEdits").innerHTML = draft.transcriptEdits.map((edit,i) => `<div class="transcript-edit"><blockquote>${esc(words.slice(edit.from, edit.to+1).map(w=>w.word).join(' '))}</blockquote>${edit.template ? `<span class="tpl-chip" style="padding-right:10px">Template: ${esc(edit.templateName || edit.template)}</span> ` : ''}<span>${esc(edit.instruction)}</span> <button class="btn small" data-delete-edit="${i}" aria-label="Remove instruction">Remove</button></div>`).join('');
     document.querySelectorAll('[data-delete-edit]').forEach(b => b.onclick = () => { draft.transcriptEdits.splice(Number(b.dataset.deleteEdit),1); renderEdits(); });
   };
   $("#addTranscriptEdit").onclick = () => {
-    if (!draft.selection || !$("#transcriptInstruction").value.trim()) return;
-    draft.transcriptEdits.push({ ...draft.selection, instruction: $("#transcriptInstruction").value.trim() });
-    $("#transcriptInstruction").value = ''; $("#addTranscriptEdit").disabled = true; renderEdits(); updateGo();
+    const t = draft.pendingTemplate;
+    if (!draft.selection || !($("#transcriptInstruction").value.trim() || t)) return;
+    draft.transcriptEdits.push({ ...draft.selection, instruction: $("#transcriptInstruction").value.trim(), ...(t ? { template: t.id, templateName: t.name.replace(/^MG: /, ""), aspect: t.aspect } : {}) });
+    $("#transcriptInstruction").value = ''; draft.pendingTemplate = null; showChip(); renderEdits(); updateGo();
   };
   renderEdits();
+  showChip();
   if (draft.selection) select(draft.selection.from, draft.selection.to);
 }
 
@@ -1488,9 +1551,10 @@ async function viewJob(id, keepScroll) {
   const st = j.stages;
   const doneN = st.filter((s) => s.done).length;
   const pct = Math.round((doneN / Math.max(1, st.length)) * 100);
-  const heading = cancelling ? "Stopping…" : j.status === "queued" ? `Queued${j.queuePosition ? ` · #${j.queuePosition} in line` : ""}` : j.status === "running" ? (run.kind === "edit" ? "Editing your video" : run.kind === "lessons" ? "Learning from this edit" : "Applying your change") :
+  const heading = cancelling ? "Stopping…" : j.status === "queued" ? `Queued${j.queuePosition ? ` · #${j.queuePosition} in line` : ""}` : j.status === "running" ? (run.kind === "edit" ? "Editing your video" : run.kind === "preview" ? "Creating your storyboard" : run.kind === "build" ? "Building your video" : run.kind === "lessons" ? "Learning from this edit" : "Applying your change") :
     j.status === "done" ? "Finished" : j.status === "cancelled" ? "Cancelled" : "Something went wrong";
   const view = $("#view");
+  if (j.status === "preview" && j.storyboard) return viewStoryboard(j, run);
   const ap = j.approval;
   const leftKey = `${j.id}:${j.versions.length}:${selectedVersion}:${active}:${cancelling}:${ap?.state}:${ap?.version}:${ap?.superseded}`;
   const rightKey = `${j.status}:${cancelling}:${ap?.state}:${ap?.superseded}`;
@@ -1513,7 +1577,7 @@ async function viewJob(id, keepScroll) {
     <div class="job">
       <div id="jobLeft" data-key="${leftKey}" data-job="${j.id}" data-version-count="${j.versions.length}">
         <div id="previewFrame" aria-label="Video preview" aria-busy="false" class="phone ${j.aspectRatio === '16:9' ? 'landscape' : ''}">${v ? `<video id="player" src="/files/${j.id}/${v.file}?t=${v.created}" controls playsinline></video>` :
-          `<div class="empty"><div>${active ? '<div class="spinner"></div>' : ""}<b>${cancelling ? "Stopping…" : active ? "Your video is being edited" : "No render yet"}</b><p style="font-size:12.5px;margin:6px 0 0">${cancelling ? "Stopping the editor and render" : active ? "Usually a few minutes for a 30-90s video." : esc(run?.summary?.slice(0, 160) || "")}</p></div></div>`}<div class="preview-working" id="previewWorking" hidden>
+          `<div class="empty"><div>${active ? '<div class="spinner"></div>' : ""}<b>${cancelling ? "Stopping…" : active ? (run?.kind === "preview" ? "Your storyboard is being created" : "Your video is being edited") : "No render yet"}</b><p style="font-size:12.5px;margin:6px 0 0">${cancelling ? "Stopping the editor and render" : active ? "Usually a few minutes for a 30-90s video." : esc(run?.summary?.slice(0, 160) || "")}</p></div></div>`}<div class="preview-working" id="previewWorking" hidden>
           <div class="preview-working-content"><div class="spinner" aria-hidden="true"></div><div role="status" aria-live="polite"><b id="previewWorkingTitle"></b><span id="previewWorkingDetail"></span></div>
           <div class="bar" id="previewWorkingProgress" role="progressbar" aria-label="Revision progress" aria-valuemin="0" aria-valuemax="100" hidden><i></i></div>
           <small>Previous version underneath</small></div>
@@ -1549,6 +1613,31 @@ async function viewJob(id, keepScroll) {
     try { await api(`/api/jobs/${id}/approve`, { method: "POST", body: { version: j.versions.length } }); viewJob(id, true); }
     catch (e) { toast(e.message); $("#approveBtn").disabled = false; }
   };
+}
+
+const storyPicks = {};
+const fmtTime = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
+function viewStoryboard(j, run) {
+  const picks = storyPicks[j.id] ??= {}, sb = j.storyboard;
+  const choices = sb.beats.filter(b => b.ideas.length > 1).length;
+  $("#view").innerHTML = `
+    <div class="page-title"><h2>${esc(j.title)}</h2>
+      <div class="chips"><span class="chip">${esc(j.style || "No style")}</span><span class="chip">${esc(meta.models.find(m => m.id === j.model)?.label || j.model)}</span><span class="chip">${esc(j.aspectRatio || "9:16")}</span><span class="chip">${sb.ideas} idea${sb.ideas === 1 ? "" : "s"} per beat</span></div></div>
+    <div class="storyboard ${j.aspectRatio === '16:9' ? 'landscape' : ''}">
+      <div class="sb-head"><div><h3>Storyboard</h3><p>${choices ? `Pick an idea for ${choices} beat${choices === 1 ? "" : "s"}, then build the video.` : "Check every beat, then build the video."} Stills show each beat after its graphic has settled.</p></div><button class="btn primary" data-build>Build video</button></div>
+      ${run?.summary ? `<details><summary>Editor notes</summary>${esc(run.summary)}</details>` : ""}
+      ${sb.beats.map(b => `<section class="sb-beat"><div class="sb-meta"><b>${fmtTime(b.start)} – ${fmtTime(b.end)}</b><p>${esc(b.text)}</p></div>
+        <div class="sb-ideas" role="radiogroup" aria-label="Ideas for ${fmtTime(b.start)}">${b.ideas.map((idea, k) => `<label class="sb-idea"><input type="radio" name="beat-${esc(String(b.id))}" data-beat="${esc(String(b.id))}" value="${k}" ${(picks[b.id] ?? 0) === k ? "checked" : ""}>
+          <img src="/files/${encodeURIComponent(j.id)}/${idea.still}" alt="Beat at ${fmtTime(b.start)}, idea ${k + 1}" loading="lazy">
+          <span>${b.ideas.length > 1 ? `<b>${k + 1}.</b> ` : ""}${esc(idea.label || (idea.type ? idea.type : "Talking head"))} <small>· ${esc(idea.layout.replace("_", " "))}</small></span></label>`).join("")}</div></section>`).join("")}
+      <div class="sb-foot"><button class="btn primary" data-build>Build video</button></div>
+    </div>`;
+  document.querySelectorAll("[data-beat]").forEach(r => r.onchange = () => { picks[r.dataset.beat] = Number(r.value); });
+  document.querySelectorAll("[data-build]").forEach(btn => btn.onclick = async () => {
+    document.querySelectorAll("[data-build]").forEach(b => b.disabled = true);
+    try { await api(`/api/jobs/${j.id}/build`, { method: "POST", body: { choices: picks } }); delete storyPicks[j.id]; viewJob(j.id); }
+    catch (e) { toast(e.message); document.querySelectorAll("[data-build]").forEach(b => b.disabled = false); }
+  });
 }
 
 function approveHtml(j, active) {
@@ -2036,6 +2125,108 @@ window.addEventListener("beforeunload", (e) => { if (se && $("#saveBtn") && !$("
 
 // ---------- router ----------
 
+let glStyle = null, glAspect = "9:16", hfList = null, hfObserver = null;
+const loadHf = async () => (hfList ??= await api("/api/hf-templates").catch(() => []));
+const hfCard = (t, extra = "") => `<div class="gl-card" data-tpl="${esc(t.id)}"><div class="gl-still gl-hf"><iframe data-src="${esc(t.src)}" title="${esc(t.name)}" scrolling="no" sandbox="allow-scripts allow-same-origin" tabindex="-1"></iframe></div>
+  <div class="gl-meta"><b>${esc(t.name.replace(/^MG: /, ""))}</b><code>${esc(t.id)}</code>${t.custom ? " · yours" : t.captured ? " · captured" : ""}<p title="${esc(t.description)}">${esc(t.description)}</p>${extra}</div></div>`;
+function hfPreviews(root, wide) {
+  const [w, h] = wide ? [1920, 1080] : [1080, 1920];
+  hfObserver?.disconnect();
+  // ponytail: only iframes in view play, unloads off-screen ones so ~80 GSAP pages don't run at once
+  hfObserver = new IntersectionObserver((es) => es.forEach(({ target: f, isIntersecting }) => {
+    f.style.cssText = `width:${w}px;height:${h}px;transform:scale(${f.parentElement.clientWidth / w})`;
+    if (isIntersecting) { if (!f.src || f.src === "about:blank") f.src = f.dataset.src; } else if (f.src) f.src = "about:blank";
+  }), { rootMargin: "200px" });
+  root.querySelectorAll(".gl-hf iframe").forEach((f) => hfObserver.observe(f));
+}
+function newTemplate() {
+  const d = $("#tplDlg"), files = [];
+  d.innerHTML = `<form method="dialog" class="body" id="ntForm"><h3>New template</h3>
+    <p class="hint" style="margin-top:-6px">An AI agent builds a reusable HyperFrames template from your description. It then shows up in this library and in the transcript template picker.</p>
+    <label>Name<input type="text" name="name" required placeholder="e.g. Big number with underline"></label>
+    <div class="style-model-row"><label>Format<select name="aspect"><option ${glAspect === "9:16" ? "selected" : ""}>9:16</option><option ${glAspect === "16:9" ? "selected" : ""}>16:9</option></select></label>
+      <label>Layout<select name="kind"><option value="overlay">Over the speaker (transparent)</option><option value="fullscreen">Full screen</option></select></label></div>
+    <label>What should it look like and do?<textarea name="description" rows="5" required placeholder="e.g. A lower third: a white pill slides in from the left with a purple icon, then the headline types on word by word with a soft whoosh."></textarea></label>
+    <label>Reference images or videos (optional)<input type="file" id="ntFiles" multiple accept="video/*,image/png,image/jpeg,image/webp,image/gif"></label>
+    <div class="style-model-row"><label>Model<select name="model">${meta.models.map((m) => `<option value="${esc(m.id)}" ${m.id === draft.model ? "selected" : ""}>${esc(m.label)}</option>`).join("")}</select></label><label>Effort<select name="effort" aria-label="Reasoning effort"></select></label></div>
+    <p id="ntError" class="style-builder-error" role="alert" hidden></p>
+    <div class="actions"><button class="btn" value="cancel" formnovalidate>Cancel</button><button class="btn primary" id="ntGo" value="ok">Build template</button></div></form>`;
+  const form = $("#ntForm");
+  bindFormEffort(form, form.elements.model.value);
+  form.elements.model.onchange = () => bindFormEffort(form, form.elements.model.value);
+  $("#ntFiles").onchange = (e) => { files.splice(0, files.length, ...e.target.files); };
+  d.onclose = null;
+  form.onsubmit = async (e) => {
+    if (e.submitter?.value !== "ok") return;
+    e.preventDefault();
+    const f = form.elements, err = $("#ntError");
+    $("#ntGo").disabled = true; err.hidden = true;
+    try {
+      const references = [];
+      for (const file of files) references.push((await uploadFile(file)).path);
+      await api("/api/templates", { method: "POST", body: { name: f.name.value, description: f.description.value, aspect: f.aspect.value, kind: f.kind.value, references, model: f.model.value, effort: f.effort.value } });
+      d.close();
+      glAspect = f.aspect.value;
+      toast("Building your template");
+      viewGraphics();
+    } catch (x) { err.textContent = x.message; err.hidden = false; $("#ntGo").disabled = false; }
+  };
+  d.showModal();
+}
+function pickTemplate(aspect) {
+  return new Promise(async (resolve) => {
+    const d = $("#tplDlg"), list = (await loadHf()).filter((t) => t.aspect === aspect);
+    d.innerHTML = `<div class="body tpl-pick"><div class="tpl-pick-head"><h3>Choose a template</h3><input id="tplSearch" type="search" placeholder="Search ${list.length} ${aspect} templates" aria-label="Search templates"><button class="btn" id="tplCancel">Cancel</button></div>
+      <div class="gl-grid ${aspect === "16:9" ? "wide" : ""}" id="tplGrid">${list.map((t) => hfCard(t, `<button class="btn small primary" data-pick="${esc(t.id)}" style="margin-top:8px">Use this</button>`)).join("")}</div></div>`;
+    const done = (t) => { hfObserver?.disconnect(); d.close(); resolve(t); };
+    d.onclose = () => resolve(null);
+    $("#tplCancel").onclick = () => done(null);
+    d.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => done(list.find((t) => t.id === b.dataset.pick))));
+    $("#tplSearch").oninput = (e) => { const q = e.target.value.toLowerCase(); d.querySelectorAll("[data-tpl]").forEach((c) => (c.hidden = !c.textContent.toLowerCase().includes(q))); };
+    d.showModal();
+    hfPreviews(d, aspect === "16:9");
+  });
+}
+const runRows = (runs) => runs.filter((r) => r.status !== "done").map((r) => `<div class="group" style="display:flex;gap:12px;align-items:center;margin:12px 0"><span class="dot ${r.status === "error" ? "" : "running"}"></span><div style="flex:1;min-width:0"><b>${esc(r.name)}</b> <span class="muted">${r.aspect} · ${r.status === "error" ? "failed" : r.status === "queued" ? "queued" : "building…"}</span><div class="muted" style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.status === "error" ? r.summary : r.log?.filter((l) => l.text).at(-1)?.text || "Starting…")}</div></div>${r.status === "error" ? `<button class="btn small" data-del-tpl="${esc(r.id)}">Dismiss</button>` : ""}</div>`).join("");
+async function viewGraphics(poll) {
+  if (!poll) styles = await api("/api/styles");
+  const usable = styles.filter((s) => !isBusy(s) && !isFailed(s));
+  glStyle = usable.some((s) => s.name === glStyle) ? glStyle : usable.some((s) => s.name === draft.style) ? draft.style : usable[0]?.name ?? "";
+  const { items, run } = await api(`/api/graphics?style=${encodeURIComponent(glStyle)}&aspect=${glAspect}`);
+  const running = run?.status === "running";
+  const runs = await api("/api/templates/runs").catch(() => []);
+  const building = runs.some((r) => /queued|running/.test(r.status)), wasBuilding = $("#view").dataset.building === "1";
+  if (poll && !running && $("#glRender")?.dataset.running !== "1") {
+    if (building) { $("#glRuns").innerHTML = runRows(runs); return; }
+    if (!wasBuilding) return;
+    hfList = null;
+  }
+  const hf = (await loadHf()).filter((t) => t.aspect === glAspect);
+  const rendered = items.some((g) => g.still), wide = glAspect === "16:9";
+  $("#view").dataset.building = building ? 1 : 0;
+  $("#view").innerHTML = `
+    <div class="se-head"><h2>Graphics library</h2><span class="grow"></span>
+      <div class="tabs">${["9:16", "16:9"].map((a) => `<button data-gl-aspect="${a}" class="${a === glAspect ? "on" : ""}">${a}</button>`).join("")}</div>
+      <select id="glStyle" aria-label="Preview style" style="width:auto">${usable.map((s) => `<option ${s.name === glStyle ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
+      <button class="btn small primary" id="glRender" data-running="${running ? 1 : 0}" ${running || !glStyle ? "disabled" : ""}>${running ? "Rendering…" : rendered ? "Re-render previews" : "Render previews"}</button></div>
+    <div style="display:flex;align-items:center;gap:12px"><h3 style="margin:0">Templates <span class="muted" style="font-weight:400">${items.length + hf.length}</span></h3><span class="grow" style="flex:1"></span><button class="btn small" id="glNewTemplate">+ New template</button></div>
+    <div id="glRuns">${runRows(runs)}</div>
+    <p class="hint">Pick one for any part of the transcript when you start an edit, or build your own with New template. Built-in graphics preview in the selected style${run?.status === "error" ? ` · <span style="color:var(--danger,#d33)">${esc(run.error)}</span>` : ""}.</p>
+    <div class="gl-grid ${wide ? "wide" : ""}">${items.map((g) => `<div class="gl-card"><div class="gl-still">${g.still ? `<img src="${g.still}" alt="${esc(g.name)} preview" loading="lazy">` : running ? "Rendering…" : "No preview yet"}</div>
+      <div class="gl-meta"><b>${esc(g.name)}</b><code>${esc(g.type)}</code>${g.media ? " · uses your media" : ""}<p>${esc(g.about)}</p></div></div>`).join("")}${hf.map((t) => hfCard(t, t.custom ? `<button class="btn small ghost" data-del-tpl="${esc(t.id)}" style="padding:2px 0;margin-top:6px">Delete</button>` : "")).join("")}</div>`;
+  $("#glNewTemplate").onclick = newTemplate;
+  $("#view").onclick = async (e) => {
+    const b = e.target.closest("[data-del-tpl]");
+    if (!b || (b.textContent === "Delete" && !confirm("Delete this template?"))) return;
+    await api(`/api/templates/${b.dataset.delTpl}`, { method: "DELETE" });
+    hfList = null; viewGraphics();
+  };
+  document.querySelectorAll("[data-gl-aspect]").forEach((b) => (b.onclick = () => { glAspect = b.dataset.glAspect; viewGraphics(); }));
+  $("#glStyle").onchange = (e) => { glStyle = e.target.value; viewGraphics(); };
+  $("#glRender").onclick = async () => { await api("/api/graphics", { method: "POST", body: { style: glStyle, aspect: glAspect } }).catch((e) => toast(e.message)); viewGraphics(); };
+  hfPreviews($("#view"), wide);
+}
+
 let lastHash = location.hash;
 async function route() {
   if (se && $("#saveBtn") && !$("#saveBtn").disabled && !location.hash.startsWith(`#/style/${se.name}`) && !confirm("Leave without saving your style changes?")) { history.replaceState(null, "", lastHash); return; }
@@ -2043,7 +2234,12 @@ async function route() {
   clearInterval(timer);
   const [, view, id] = location.hash.split("/");
   refreshSide();
-  if (view === "style" && id) {
+  $("#graphicsLink").classList.toggle("active", view === "graphics");
+  if (view !== "graphics") hfObserver?.disconnect();
+  if (view === "graphics") {
+    await viewGraphics();
+    timer = setInterval(() => viewGraphics(true), 3000);
+  } else if (view === "style" && id) {
     await viewStyle(id);
     timer = setInterval(() => { refreshSide(); updateRunBanner(); }, 3000);
   } else if (view === "job" && id) {

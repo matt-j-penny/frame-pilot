@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin="">
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script src="vendor/gsap.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 1920px; height: 1080px; overflow: hidden; background: #f8f9fb; }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #f8f9fb;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clip { position: absolute; }
+
+    .paths-fs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      width: 100%;
+      max-width: 1760px;
+      padding: 0 32px;
+      will-change: transform, opacity;
+    }
+
+    .eyebrow {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7c3aed;
+      will-change: transform, opacity;
+    }
+
+    .columns {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .path-col {
+      flex: 1;
+      padding: 48px 56px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+      will-change: transform, opacity;
+    }
+    .path-col-a { border-top: 6px solid #10b981; }
+    .path-col-b { border-top: 6px solid #7c3aed; }
+
+    .path-or {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: rgba(0,0,0,0.4);
+      will-change: transform, opacity;
+    }
+
+    .path-label {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(0,0,0,0.45);
+      margin-bottom: 18px;
+      will-change: transform, opacity;
+    }
+
+    .path-headline {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 76px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+      will-change: transform, opacity;
+    }
+
+    .path-sub {
+      font-family: 'Satoshi', sans-serif;
+      font-size: 38px;
+      font-weight: 500;
+      color: rgba(0,0,0,0.48);
+      will-change: transform, opacity;
+    }
+
+    .c-green  { color: #059669; }
+    .c-purple { color: #7c3aed; }
+    .c-red    { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div id="root" data-composition-id="mg-two-path-comparison" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+
+    <div class="paths-fs" id="paths-fs">
+      <!-- REPLACE: eyebrow -->
+      <div class="eyebrow" id="eyebrow">Two scenarios</div>
+      <div class="columns">
+        <div class="path-col path-col-a" id="col-a">
+          <!-- REPLACE: path A label, headline colour class, headline, sub -->
+          <div class="path-label" id="a-label">Path A</div>
+          <div class="path-headline c-green" id="a-headline">Reduce headcount</div>
+          <div class="path-sub" id="a-sub">→ save money</div>
+        </div>
+        <div class="path-or" id="path-or">or</div>
+        <div class="path-col path-col-b" id="col-b">
+          <!-- REPLACE: path B label, headline colour class, headline, sub -->
+          <div class="path-label" id="b-label">Path B</div>
+          <div class="path-headline c-purple" id="b-headline">Redirect the time</div>
+          <div class="path-sub" id="b-sub">→ revenue activity</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    tl.set('#eyebrow, #col-a, #a-label, #a-headline, #a-sub, #path-or, #col-b, #b-label, #b-headline, #b-sub', { opacity: 0, y: 24 }, 0);
+
+    tl.to('#eyebrow',    { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.2);
+    tl.to('#col-a',      { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out' }, 0.8);
+    tl.to('#a-label',    { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, 0.8);
+    tl.to('#a-headline', { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 0.9);
+    tl.to('#a-sub',      { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, 1.8);
+    tl.to('#path-or',    { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 2.4);
+    tl.to('#col-b',      { opacity: 1, y: 0, duration: 0.5,  ease: 'power3.out' }, 2.4);
+    tl.to('#b-label',    { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, 2.7);
+    tl.to('#b-headline', { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 3.8);
+    tl.to('#b-sub',      { opacity: 1, y: 0, duration: 0.4,  ease: 'power2.out' }, 4.8);
+    tl.to('#paths-fs',   { opacity: 0, y: -28, duration: 0.45, ease: 'power2.in' }, 7.1);
+
+    window.__timelines['mg-two-path-comparison'] = tl;
+  </script>
+<!-- hf-autoplay --><script>(function(){if(window.self===window.top)return;function play(){var tl=window.__timelines||{};var k=Object.keys(tl);if(!k.length){setTimeout(play,150);return;}k.forEach(function(id){var t=tl[id];t.eventCallback("onComplete",function(){setTimeout(play,1200)});t.restart();});}setTimeout(play,200);}());</script>
+</body>
+</html>
