@@ -147,7 +147,7 @@ function startRun(job, kind, prompt, note, attachments = []) {
       r.started = Date.now();
       saveJob(j);
       const child = runQueuedAgent({
-        prompt, model: j.model, effort: j.effort, sessionId: j.sessionId, resume: kind !== "edit" && kind !== "preview" && !!j.sessionId,
+        prompt, model: j.model, effort: j.effort, sessionId: j.sessionId, resume: (kind === "preview" ? note === "Revise storyboard" : kind !== "edit") && !!j.sessionId,
         onSession: (id) => { const x = loadJob(j.id); x.sessionId = id; saveJob(x); },
         onLog: (entry) => { const x = loadJob(j.id); x.runs.at(-1).log.push({ ...entry, at: Date.now() }); saveJob(x); },
         onDone: ({ ok, summary }) => {
