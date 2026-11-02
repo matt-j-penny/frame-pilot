@@ -140,6 +140,7 @@
   .menu { position: absolute; top: calc(100% + 6px); z-index: 5; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 16px 50px rgba(20,20,19,.16); padding: 6px; width: min(400px, 90vw); max-height: 420px; overflow: auto; display: none; }
   .menu.open { display: block; }
   .menu.right { right: 0; }
+  .model-search { position: sticky; top: -6px; z-index: 1; width: 100%; margin: -6px 0 6px; padding: 10px; border: none; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--panel); font-size: 13.5px; outline: none; }
   .pickers .dd:first-child .menu { left: 0; }
   .mi { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: none; background: transparent; border-radius: 10px; padding: 9px 10px; }
   .mi:hover { background: var(--soft); }
@@ -825,7 +826,7 @@ async function openSetup() {
     setup = await checkSetup();
     const selected = meta.models.find(m => m.id === draft.model)?.provider;
     d.innerHTML = `<div class="body"><h3 id="setupTitle">Setup</h3>
-      <h4 class="setup-section-title">AI provider</h4><p>Choose Claude or Codex / ChatGPT. You only need one. Run the commands below in Terminal on the computer running this app.</p>
+      <h4 class="setup-section-title">AI provider</h4><p>Choose Claude, Codex / ChatGPT or OpenCode. You only need one. Run the commands below in Terminal on the computer running this app.</p>
       ${setup.providers.map(p => `<section style="border:1px solid var(--line);border-radius:10px;padding:14px">
         <h3>${esc(p.label)}</h3><p>${p.ready ? "✓ Ready" : p.status === "missing" ? "Installation needed" : p.status === "login" ? "Sign-in needed" : "Check failed"} · ${esc(p.message)}</p>
         ${!p.ready ? `${p.status === "missing" ? `<p>1. Install (requires Node.js/npm):</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere"><code>${esc(p.install)}</code></pre>` : ""}
@@ -908,9 +909,34 @@ function styleMenu() {
   }).join("") + `<hr><button class="mi" data-newstyle><span class="sw3" style="background:var(--soft)"><b style="width:28px;text-align:center">+</b></span><span><b>New style</b><small>Document, references, or guided questions</small></span></button>`;
 }
 
-function modelMenu() {
-  return meta.models.map((m) => `<button class="mi ${m.id === draft.model ? "on" : ""}" data-model="${m.id}"><span><b>${m.label}</b><small>${m.note}</small></span>${tickSvg}</button>`).join("");
+const PROVIDER_LABELS = { claude: "Claude", codex: "ChatGPT", opencode: "OpenCode" };
+const modelName = id => (meta.models.find(m => m.id === id)?.label || id).replace(/^[^·]+·\s*/, "");
+const providerOf = id => meta.models.find(m => m.id === id)?.provider || "claude";
+const firstModel = provider => meta.models.find(m => m.provider === provider)?.id;
+function providerOptions(selected) {
+  return [...new Set(meta.models.map(m => m.provider))].map(p => `<option value="${esc(p)}" ${p === selected ? "selected" : ""}>${esc(PROVIDER_LABELS[p] || p)}</option>`).join("");
 }
+function modelItems(selected, query = "") {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean), provider = providerOf(selected);
+  const list = meta.models.filter(m => m.provider === provider && words.every(w => `${m.label} ${m.note} ${m.id}`.toLowerCase().includes(w)));
+  return list.map(m => `<button class="mi ${m.id === selected ? "on" : ""}" data-model="${esc(m.id)}"><span><b>${esc(m.label.replace(/^[^·]+·\s*/, ""))}</b><small>${esc(m.note)}</small></span>${tickSvg}</button>`).join("")
+    || `<p class="muted" style="padding:9px 10px;margin:0">No models match.</p>`;
+}
+function modelMenu(menu, selected) {
+  menu.innerHTML = `<input class="model-search" type="search" placeholder="Search models…" aria-label="Search models" autocomplete="off"><div class="model-list">${modelItems(selected)}</div>`;
+  const input = menu.querySelector(".model-search");
+  input.onclick = e => e.stopPropagation();
+  input.oninput = () => menu.querySelector(".model-list").innerHTML = modelItems(selected, input.value);
+  input.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); menu.querySelector("[data-model]")?.click(); } };
+}
+const openModelMenu = menu => {
+  const input = menu.querySelector(".model-search");
+  if (!menu.classList.contains("open") || !input) return;
+  input.value = ""; input.oninput(); input.focus();
+  menu.style.left = "";
+  const overflow = menu.getBoundingClientRect().right - (innerWidth - 8);
+  if (overflow > 0) menu.style.left = `${-overflow}px`;
+};
 
 const effortLabel = value => ({ default: 'Default', none: 'None', minimal: 'Minimal', low: 'Low', medium: 'Medium', high: 'High', xhigh: 'Extra high', max: 'Max', ultra: 'Ultra' }[value] || value);
 function effortOptions(model, selected = 'default') {
@@ -933,9 +959,10 @@ function pickerLabels() {
   const s = styles.find((x) => x.name === draft.style);
   const c = s?.colors || {};
   $("#styleBtn").innerHTML = `<span class="lbl">Style</span>` + (s ? `<span class="sw" style="background:${esc(c.primary || s.background)}"></span><b>${esc(s.name)}</b>` : `<b>No style</b>`) + chev;
-  $("#modelBtn").innerHTML = `<span class="lbl">Model</span><b>${esc(meta.models.find((m) => m.id === draft.model)?.label || draft.model)}</b>${chev}`;
+  $("#modelBtn").innerHTML = `<span class="lbl">Model</span><b>${esc(modelName(draft.model))}</b>${chev}`;
   $("#styleMenu").innerHTML = styleMenu();
-  $("#modelMenu").innerHTML = modelMenu();
+  modelMenu($("#modelMenu"), draft.model);
+  $("#providerSelect").innerHTML = providerOptions(providerOf(draft.model));
   if ($("#effortSelect")) {
     const model = meta.models.find(m => m.id === draft.model);
     if (draft.effort !== 'default' && !model?.efforts?.includes(draft.effort)) draft.effort = 'default';
@@ -988,7 +1015,8 @@ async function viewNew() {
             <label><input type="radio" name="aspect" value="16:9" ${draft.aspectRatio === '16:9' ? 'checked' : ''}>16:9 <small>Landscape</small></label>
           </fieldset>
           <div class="dd"><button class="ddbtn" id="styleBtn"></button><div class="menu" id="styleMenu"></div></div>
-          <div class="dd"><button class="ddbtn" id="modelBtn"></button><div class="menu right" id="modelMenu"></div></div>
+          <label class="effort-picker"><span class="lbl">Provider</span><select id="providerSelect" aria-label="AI provider"></select></label>
+          <div class="dd"><button class="ddbtn" id="modelBtn"></button><div class="menu" id="modelMenu"></div></div>
           <label class="effort-picker"><span class="lbl">Effort</span><select id="effortSelect" aria-label="Reasoning effort" title="How much reasoning the model uses. Higher levels can take longer."></select></label>
         </div>
 
@@ -1057,7 +1085,12 @@ function bindNew() {
   ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey && !$("#goBtn").disabled) { e.preventDefault(); $("#goBtn").click(); } };
   const toggle = (btn, menu) => (e) => { e.stopPropagation(); const open = !menu.classList.contains("open"); document.querySelectorAll(".menu").forEach((m) => m.classList.remove("open")); menu.classList.toggle("open", open); };
   $("#styleBtn").onclick = toggle($("#styleBtn"), $("#styleMenu"));
-  $("#modelBtn").onclick = toggle($("#modelBtn"), $("#modelMenu"));
+  $("#modelBtn").onclick = (e) => { toggle($("#modelBtn"), $("#modelMenu"))(e); openModelMenu($("#modelMenu")); };
+  $("#providerSelect").onchange = e => {
+    draft.model = firstModel(e.target.value); localStorage.setItem("se-model", draft.model);
+    draft.effort = localStorage.getItem("se-effort:" + draft.model) || "default";
+    pickerLabels();
+  };
   document.onclick = () => document.querySelectorAll(".menu").forEach((m) => m.classList.remove("open"));
   $("#styleMenu").onclick = (e) => {
     e.stopPropagation();
@@ -1702,6 +1735,7 @@ function renderRevisionFiles(id, active=false) {
   $('#revisionFiles').disabled=busy;$('#revisionBrowse').disabled=busy;
   $('#reviseText').disabled=active || state.submitting;
   $('#reviseModelBtn').disabled=active || state.submitting;
+  $('#reviseProvider').disabled=active || state.submitting;
   $('#reviseEffort').disabled=active || state.submitting || !meta.models.find(model=>model.id===state.model)?.efforts?.length;
   $('#revisionBrowse').textContent=state.uploading?'Uploading…':'Attach images or videos';
   $('#reviseBtn').disabled=busy || (!$('#reviseText').value.trim() && !state.files.some(file=>file.path));
@@ -1745,8 +1779,9 @@ function rightHtml(j, run, active, heading, pct, st) {
       <textarea id="reviseText" aria-label="Revision instructions" placeholder="${j.versions.length ? "Describe a change… or drop images and videos here" : "You can request changes once the first version is ready"}" ${active ? "disabled" : ""}>${esc(sessionStorage.getItem("rev-" + j.id) || "")}</textarea>
       <div class="revision-upload-row"><button class="btn small" id="revisionBrowse" ${active ? 'disabled' : ''}>Attach images or videos</button><span class="muted" id="revisionUploadStatus" role="status"></span></div>
       <div class="composer-row">
-        <div class="dd"><button class="ddbtn" id="reviseModelBtn"><b>${esc(meta.models.find((m) => m.id === j.model)?.label || j.model)}</b>${chev}</button>
-          <div class="menu" id="reviseModelMenu" style="top:auto;bottom:calc(100% + 6px)">${meta.models.map((m) => `<button class="mi ${m.id === j.model ? "on" : ""}" data-model="${m.id}"><span><b>${m.label}</b><small>${m.note}</small></span>${tickSvg}</button>`).join("")}</div></div>
+        <label class="effort-picker"><span class="lbl">Provider</span><select id="reviseProvider" aria-label="Revision AI provider" ${active ? "disabled" : ""}></select></label>
+        <div class="dd"><button class="ddbtn" id="reviseModelBtn"><b>${esc(modelName(j.model))}</b>${chev}</button>
+          <div class="menu" id="reviseModelMenu" style="top:auto;bottom:calc(100% + 6px)"></div></div>
         <label class="effort-picker"><span class="lbl">Effort</span><select id="reviseEffort" aria-label="Revision reasoning effort" ${active ? "disabled" : ""}>${effortOptions(j.model, j.effort || "default")}</select></label>
         <button class="send" id="reviseBtn" ${active ? "disabled" : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 4v5h-5M20 12a8 8 0 0 1-14 5.3M4 20v-5h5"/></svg>Apply</button>
       </div>
@@ -1766,7 +1801,7 @@ function bindJob(j, id) {
   const ta = $("#reviseText");
   const state=revisionDraft(id), active=j.status === 'running' || j.status === 'queued';
   let model = state.model || j.model; state.model=model;
-  $('#reviseModelBtn b').textContent=meta.models.find(m=>m.id===model)?.label || model;
+  $('#reviseModelBtn b').textContent=modelName(model);
   if(state.effort)$('#reviseEffort').innerHTML=effortOptions(model,state.effort);
   ta.oninput = () => { sessionStorage.setItem("rev-" + j.id, ta.value); ta.style.height = "auto"; ta.style.height = `${ta.scrollHeight}px`; renderRevisionFiles(id,active); };
   const composer=$('#revisionComposer'), fileInput=$('#revisionFiles');
@@ -1778,17 +1813,26 @@ function bindJob(j, id) {
   $('#reviseEffort').onchange=e=>{state.effort=e.target.value;};
   renderRevisionFiles(id,active);
   ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#reviseBtn").click(); } };
-  $("#reviseModelBtn").onclick = (e) => { e.stopPropagation(); $("#reviseModelMenu").classList.toggle("open"); };
-  document.onclick = () => document.querySelectorAll(".menu").forEach((m) => m.classList.remove("open"));
-  $("#reviseModelMenu").onclick = (e) => {
-    const it = e.target.closest("[data-model]");
-    if (!it) return;
-    model = it.dataset.model; state.model=model;
+  const pickModel = (id) => {
+    model = id; state.model = model;
     $("#reviseEffort").innerHTML = effortOptions(model, localStorage.getItem("se-effort:" + model) || "default");
     $("#reviseEffort").disabled = !meta.models.find(m => m.id === model)?.efforts?.length;
-    state.effort=$("#reviseEffort").value;
-    $("#reviseModelBtn b").textContent = meta.models.find((m) => m.id === model).label;
-    $("#reviseModelMenu").querySelectorAll(".mi").forEach((m) => m.classList.toggle("on", m === it));
+    state.effort = $("#reviseEffort").value;
+    $("#reviseModelBtn b").textContent = modelName(model);
+    $("#reviseProvider").innerHTML = providerOptions(providerOf(model));
+    modelMenu($("#reviseModelMenu"), model);
+  };
+  $("#reviseProvider").innerHTML = providerOptions(providerOf(model));
+  modelMenu($("#reviseModelMenu"), model);
+  $("#reviseProvider").onchange = e => pickModel(firstModel(e.target.value));
+  $("#reviseModelBtn").onclick = (e) => { e.stopPropagation(); $("#reviseModelMenu").classList.toggle("open"); openModelMenu($("#reviseModelMenu")); };
+  document.onclick = () => document.querySelectorAll(".menu").forEach((m) => m.classList.remove("open"));
+  $("#reviseModelMenu").onclick = (e) => {
+    e.stopPropagation();
+    const it = e.target.closest("[data-model]");
+    if (!it) return;
+    pickModel(it.dataset.model);
+    $("#reviseModelMenu").classList.remove("open");
   };
   $("#reviseBtn").onclick = async () => {
     const button = $("#reviseBtn");

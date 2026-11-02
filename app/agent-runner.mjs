@@ -2,6 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { execFile, execFileSync } from "node:child_process";
 import { spawnTask as spawn } from "./process-control.mjs";
 const TOOLS = ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "Skill", "WebFetch", "mcp__brave-search__brave_image_search"];
 const HEADLESS = "You are running headless behind the Frame Pilot web UI. Nobody can answer questions: never ask the user anything, never wait for input. " +
@@ -61,21 +62,37 @@ export const MODELS = [
   { id: "opus-5", provider: "claude", cliModel: "claude-opus-5", label: "Claude · Opus 5", note: "claude-opus-5", efforts: CLAUDE_EFFORTS, defaultEffort: "high" },
   { id: "sonnet-5", provider: "claude", cliModel: "claude-sonnet-5", label: "Claude · Sonnet 5", note: "claude-sonnet-5", efforts: CLAUDE_EFFORTS, defaultEffort: "high" },
   { id: "codex", provider: "codex", label: "ChatGPT · CLI default", note: "Uses your Codex CLI model setting", efforts: [] },
+  { id: "opencode", provider: "opencode", label: "OpenCode · CLI default", note: "Uses your OpenCode model setting", efforts: [] },
 ];
+const MODEL_SLUG = /^[a-zA-Z0-9][a-zA-Z0-9._:~@+\/-]{0,199}$/;
+let opencodeModels, opencodeRefreshed = false;
+function listOpencodeModels() {
+  if (!opencodeModels) {
+    // OpenCode's models.dev cache goes stale; refresh it once per server start and reload the list when done.
+    if (!opencodeRefreshed) opencodeRefreshed = true, execFile("opencode", ["models", "--refresh"], { timeout: 120000, maxBuffer: 4 * 1024 * 1024 }, (error) => { if (!error) opencodeModels = undefined; });
+    try {
+      opencodeModels = execFileSync("opencode", ["models"], { encoding: "utf8", timeout: 8000 }).split("\n").map(l => l.trim()).filter(l => MODEL_SLUG.test(l))
+        .map(slug => ({ id: `opencode:${slug}`, provider: "opencode", cliModel: slug, label: `OpenCode · ${slug}`, note: "OpenCode model", efforts: [] }));
+    } catch { opencodeModels = []; }
+  }
+  return opencodeModels;
+}
 export function availableModels() {
   try {
     const home = process.env.CODEX_HOME || path.join(os.homedir(), ".codex");
     const cache = JSON.parse(fs.readFileSync(path.join(home, "models_cache.json"), "utf8"));
     const models = (cache.models ?? []).filter(m => m.visibility === "list" && /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(m.slug));
-    return [...MODELS, ...models.map(m => ({ id: `codex:${m.slug}`, provider: "codex", cliModel: m.slug,
+    return [...MODELS, ...listOpencodeModels(), ...models.map(m => ({ id: `codex:${m.slug}`, provider: "codex", cliModel: m.slug,
       label: `ChatGPT · ${m.display_name || m.slug}`, note: m.description || "Codex model",
       efforts: (m.supported_reasoning_levels ?? []).map(level => level.effort).filter(level => ["none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"].includes(level)), defaultEffort: m.default_reasoning_level }))];
-  } catch { return MODELS; }
+  } catch { return [...MODELS, ...listOpencodeModels()]; }
 }
 export function modelConfig(id = "opus") {
   // Persisted model selections remain usable if the CLI cache later changes.
   if (/^codex:[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/.test(id))
     return { id, provider: "codex", cliModel: id.slice(6) };
+  if (id.startsWith("opencode:") && MODEL_SLUG.test(id.slice(9)))
+    return { id, provider: "opencode", cliModel: id.slice(9) };
   const model = MODELS.find((m) => m.id === id);
   if (!model) throw new Error("Choose a supported model.");
   return model;
@@ -116,7 +133,44 @@ const safeLog = (label, onLog) => (entry) => {
 
 export function runAgent(options) {
   options = { ...options, effort: normalizeEffort(options.model, options.effort), onLog: safeLog(options.model, options.onLog) };
-  return modelConfig(options.model).provider === "codex" ? runCodex(options) : runClaude(options);
+  const provider = modelConfig(options.model).provider;
+  return provider === "codex" ? runCodex(options) : provider === "opencode" ? runOpencode(options) : runClaude(options);
+}
+
+function runOpencode({ prompt, model, sessionId, resume, root, environment = {}, onSession = () => {}, onLog, onDone }) {
+  const cliModel = modelConfig(model).cliModel;
+  const args = ["run", "--format", "json", ...(cliModel ? ["--model", cliModel] : []), ...(resume && sessionId ? ["--session", sessionId] : [])];
+  const child = spawn("opencode", args, { cwd: root, env: { ...process.env, ...environment }, stdio: ["pipe", "pipe", "pipe"] });
+  let buffer = "", stderr = "", summary = "", failure = "", completed = false, session = null;
+  function event(line) {
+    let ev;
+    try { ev = JSON.parse(line); } catch { return; }
+    if (ev.sessionID && ev.sessionID !== session) { session = ev.sessionID; onSession(session); }
+    const part = ev.part;
+    if (ev.type === "text" && part?.text?.trim()) { summary = part.text; onLog({ t: "say", text: summary.trim() }); }
+    if (ev.type === "tool_use") onLog({ t: "tool", text: (part?.state?.input?.command ?? part?.state?.input?.filePath ?? part?.tool ?? "Tool").slice(0, 140) });
+    if (ev.type === "step_finish" && part?.reason === "stop") completed = true;
+    // OpenCode exits 0 even on API errors, so the error event is the only failure signal.
+    if (ev.type === "error") failure = ev.error?.data?.message ?? ev.error?.message ?? "OpenCode run failed";
+  }
+  child.stdout.on("data", (chunk) => {
+    buffer += chunk;
+    let i;
+    while ((i = buffer.indexOf("\n")) >= 0) { event(buffer.slice(0, i)); buffer = buffer.slice(i + 1); }
+  });
+  child.stderr.on("data", (chunk) => { stderr = (stderr + chunk).slice(-8000); });
+  child.stdin.on("error", () => {});
+  child.on("error", (error) => { failure = `Could not start OpenCode CLI: ${error.message}. Install it with npm install -g opencode-ai, then run opencode auth login.`; });
+  onFinish(child, "opencode", (code) => {
+    if (buffer.trim()) event(buffer);
+    const ok = code === 0 && completed && !failure;
+    let text = failure || (ok ? summary : stderr.trim().slice(-1200)) || summary || `OpenCode exited with code ${code}`;
+    if (!ok && /api key|unauthorized|authentication|401/i.test(text))
+      text += "\n\nFix: open Terminal, run opencode auth login, and add a provider. Then try again.";
+    onDone({ ok, summary: text });
+  });
+  child.stdin.end(`${HEADLESS}\n\nRead SKILL.md in the working folder and follow its referenced workflow files. Use your available shell and image-viewing tools for the pipeline and visual verification.\n\n${prompt}`);
+  return child;
 }
 
 function runCodex({ prompt, model, effort, sessionId, resume, root, environment = {}, onSession = () => {}, onLog, onDone }) {

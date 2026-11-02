@@ -15,7 +15,12 @@ process.stdin.on('data', c => prompt += c);
 process.stdin.on('end', () => {
  const args = process.argv.slice(2);
  const claude = process.argv[1].endsWith('claude');
- const events = claude ? [
+ const opencode = process.argv[1].endsWith('opencode');
+ const events = opencode ? (prompt.includes('FAIL_RUN') ? [{type:'error',sessionID:'oc-1',error:{data:{message:'Missing API key.'}}}] : [
+  {type:'tool_use',sessionID:'oc-1',part:{tool:'bash',state:{input:{command:'ls'}}}},
+  {type:'text',sessionID:'oc-1',part:{text:JSON.stringify({args,prompt})}},
+  {type:'step_finish',sessionID:'oc-1',part:{reason:'stop'}}
+ ]) : claude ? [
   {type:'assistant',message:{content:[{type:'text',text:'Working'}]}},
   {type:'result',result:'Claude done'}
  ] : prompt.includes('FAIL_RUN') ? [{type:'turn.failed',error:{message:'Authentication expired'}}] : [
@@ -28,7 +33,7 @@ process.stdin.on('end', () => {
 });
 `;
   try {
-    for (const cli of ['claude', 'codex']) fs.writeFileSync(path.join(dir, cli), fixture, { mode: 0o755 });
+    for (const cli of ['claude', 'codex', 'opencode']) fs.writeFileSync(path.join(dir, cli), fixture, { mode: 0o755 });
     process.env.PATH = dir + path.delimiter + previousPath;
     const execute = (options) => new Promise(resolve => {
       const logs = [], sessions = [];
@@ -54,6 +59,14 @@ process.stdin.on('end', () => {
     const failure = await execute({ model: 'codex', prompt: 'FAIL_RUN' });
     assert.equal(failure.ok, false);
     assert.match(failure.summary, /codex login/);
+    const oc = await execute({ model: 'opencode:openrouter/anthropic/claude-haiku-4.5', resume: true, sessionId: 'oc-1' });
+    assert.equal(oc.ok, true);
+    assert.deepEqual(oc.sessions, ['oc-1']);
+    assert.equal(oc.logs[0].text, 'ls');
+    assert.ok(JSON.parse(oc.summary).args.join(' ').includes('--model openrouter/anthropic/claude-haiku-4.5 --session oc-1'));
+    const ocFail = await execute({ model: 'opencode', prompt: 'FAIL_RUN' });
+    assert.equal(ocFail.ok, false);
+    assert.match(ocFail.summary, /opencode auth login/);
     const claude = await execute({ model: 'opus' });
     assert.equal(claude.ok, true);
     assert.equal(claude.summary, "Claude done");

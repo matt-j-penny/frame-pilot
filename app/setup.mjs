@@ -5,6 +5,7 @@ import { modelConfig } from './agent-runner.mjs';
 export const PROVIDERS = [
   { id: 'claude', label: 'Claude', install: 'npm install -g @anthropic-ai/claude-code', login: 'claude auth login', model: 'opus' },
   { id: 'codex', label: 'Codex / ChatGPT', install: 'npm install -g @openai/codex', login: 'codex login', model: 'codex' },
+  { id: 'opencode', label: 'OpenCode', install: 'npm install -g opencode-ai', login: 'opencode auth login', model: 'opencode' },
 ];
 function command(file, args) {
   return new Promise(resolve => execFile(file, args, { timeout: 8000, maxBuffer: 128 * 1024 }, (error, stdout, stderr) => {
@@ -17,7 +18,7 @@ export async function checkProvider(id, run = command) {
   const version = await run(id, ['--version']);
   if (!version.ok) return { ...provider, status: version.missing ? 'missing' : 'error', ready: false,
     message: version.missing ? 'CLI is not installed or is not on the server PATH.' : 'Could not run the CLI. Try its version command in Terminal.' };
-  const auth = await run(id, id === 'claude' ? ['auth', 'status', '--json'] : ['login', 'status']);
+  const auth = await run(id, { claude: ['auth', 'status', '--json'], opencode: ['auth', 'list'] }[id] ?? ['login', 'status']);
   let ready = auth.ok;
   if (id === 'claude') {
     try { ready = auth.ok && JSON.parse(auth.stdout).loggedIn === true; } catch { ready = false; }
