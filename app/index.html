@@ -726,7 +726,8 @@
   .sb-idea img { display: block; width: 100%; height: auto; background: #0B0C10; }
   .sb-idea span { display: block; padding: 8px 10px; font-size: 12.5px; }
   .sb-idea small { color: var(--muted); }
-  .sb-foot { display: flex; justify-content: flex-end; padding-top: 18px; border-top: 1px solid var(--line); }
+  .sb-foot { display: flex; justify-content: flex-end; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .sb-note { grid-column: 2; width: 100%; resize: vertical; font: inherit; font-size: 13px; }
   .storyboard details { margin-bottom: 18px; font-size: 13px; color: var(--muted); white-space: pre-wrap; }
   .gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
   .gl-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
@@ -745,7 +746,7 @@
   .gl-meta b { display: block; color: var(--ink); font-size: 14px; margin-bottom: 2px; }
   .gl-meta code { font-size: 11.5px; }
   .gl-meta p { margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  @media (max-width: 700px) { .sb-beat { grid-template-columns: 1fr; gap: 10px; } .sb-ideas, .storyboard.landscape .sb-ideas { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .sb-head { flex-direction: column; } }
+  @media (max-width: 700px) { .sb-beat { grid-template-columns: 1fr; gap: 10px; } .sb-note { grid-column: 1; } .sb-ideas, .storyboard.landscape .sb-ideas { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); } .sb-head { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -1650,10 +1651,10 @@ async function viewJob(id, keepScroll) {
   };
 }
 
-const storyPicks = {};
+const storyPicks = {}, storyNotes = {};
 const fmtTime = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
 function viewStoryboard(j, run) {
-  const picks = storyPicks[j.id] ??= {}, sb = j.storyboard;
+  const picks = storyPicks[j.id] ??= {}, notes = storyNotes[j.id] ??= {}, sb = j.storyboard;
   const choices = sb.beats.filter(b => b.ideas.length > 1).length;
   $("#view").innerHTML = `
     <div class="page-title"><h2>${esc(j.title)}</h2>
@@ -1664,10 +1665,18 @@ function viewStoryboard(j, run) {
       ${sb.beats.map(b => `<section class="sb-beat"><div class="sb-meta"><b>${fmtTime(b.start)} – ${fmtTime(b.end)}</b><p>${esc(b.text)}</p></div>
         <div class="sb-ideas" role="radiogroup" aria-label="Ideas for ${fmtTime(b.start)}">${b.ideas.map((idea, k) => `<label class="sb-idea"><input type="radio" name="beat-${esc(String(b.id))}" data-beat="${esc(String(b.id))}" value="${k}" ${(picks[b.id] ?? 0) === k ? "checked" : ""}>
           <img src="/files/${encodeURIComponent(j.id)}/${idea.still}" alt="Beat at ${fmtTime(b.start)}, idea ${k + 1}" loading="lazy">
-          <span>${b.ideas.length > 1 ? `<b>${k + 1}.</b> ` : ""}${esc(idea.label || (idea.type ? idea.type : "Talking head"))} <small>· ${esc(idea.layout.replace("_", " "))}</small></span></label>`).join("")}</div></section>`).join("")}
-      <div class="sb-foot"><button class="btn primary" data-build>Build video</button></div>
+          <span>${b.ideas.length > 1 ? `<b>${k + 1}.</b> ` : ""}${esc(idea.label || (idea.type ? idea.type : "Talking head"))} <small>· ${esc(idea.layout.replace("_", " "))}</small></span></label>`).join("")}</div>
+        <textarea class="sb-note" data-note="${esc(String(b.id))}" rows="2" placeholder="What should change on this beat?" aria-label="Changes for ${fmtTime(b.start)}">${esc(notes[b.id] || "")}</textarea></section>`).join("")}
+      <div class="sb-foot"><button class="btn" data-revise>Revise storyboard</button><button class="btn primary" data-build>Build video</button></div>
     </div>`;
   document.querySelectorAll("[data-beat]").forEach(r => r.onchange = () => { picks[r.dataset.beat] = Number(r.value); });
+  document.querySelectorAll("[data-note]").forEach(t => t.oninput = () => { notes[t.dataset.note] = t.value; });
+  $("[data-revise]").onclick = async () => {
+    if (!Object.values(notes).some(n => n.trim())) return toast("Add a note to at least one beat.");
+    document.querySelectorAll("[data-build], [data-revise]").forEach(b => b.disabled = true);
+    try { await api(`/api/jobs/${j.id}/storyboard-revise`, { method: "POST", body: { notes } }); delete storyNotes[j.id]; delete storyPicks[j.id]; viewJob(j.id); }
+    catch (e) { toast(e.message); document.querySelectorAll("[data-build], [data-revise]").forEach(b => b.disabled = false); }
+  };
   document.querySelectorAll("[data-build]").forEach(btn => btn.onclick = async () => {
     document.querySelectorAll("[data-build]").forEach(b => b.disabled = true);
     try { await api(`/api/jobs/${j.id}/build`, { method: "POST", body: { choices: picks } }); delete storyPicks[j.id]; viewJob(j.id); }
