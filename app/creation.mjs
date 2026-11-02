@@ -14,7 +14,6 @@ export function creationSettings(body) {
   if (!Array.isArray(body.transcriptEdits ?? [])) throw new Error('Invalid transcript instructions.');
   const previewIdeas = body.previewIdeas ?? 0;
   if (![0, 1, 2, 3].includes(previewIdeas)) throw new Error('Choose 1 to 3 ideas per beat.');
-  if (previewIdeas && editor !== 'native') throw new Error('Preview before building works with the Native editor only.');
   if (previewIdeas && !features.motionGraphics) throw new Error('Turn on Motion graphics to preview them.');
   return { editor, aspectRatio, features, previewIdeas, inspiration: body.inspiration || null, references: body.references ?? [], transcriptionId: body.transcriptionId || null,
     transcriptEdits: (body.transcriptEdits ?? []).map(edit => {
