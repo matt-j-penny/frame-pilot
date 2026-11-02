@@ -727,7 +727,17 @@
   .sb-idea span { display: block; padding: 8px 10px; font-size: 12.5px; }
   .sb-idea small { color: var(--muted); }
   .sb-foot { display: flex; justify-content: flex-end; gap: 10px; padding-top: 18px; border-top: 1px solid var(--line); }
-  .sb-note { grid-column: 2; width: 100%; resize: vertical; font: inherit; font-size: 13px; }
+  .sb-note { grid-column: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .sb-note textarea { width: 100%; resize: vertical; font: inherit; font-size: 13px; }
+  .sb-idea { position: relative; }
+  .sb-num { position: absolute; top: 6px; left: 6px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 99px; background: rgba(0,0,0,.7); color: #fff; font: 700 13px/24px system-ui, sans-serif; text-align: center; font-style: normal; }
+  .sb-idea:has(input:checked) .sb-num { background: var(--brand); }
+  .img-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .img-chips:not(:empty) { margin-top: 6px; }
+  .img-chip { position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: var(--soft); }
+  .img-chip img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-chip.uploading img { opacity: .4; }
+  .img-chip button { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; padding: 0; border: none; border-radius: 99px; background: rgba(0,0,0,.65); color: #fff; font-size: 12px; line-height: 18px; cursor: pointer; }
   .storyboard details { margin-bottom: 18px; font-size: 13px; color: var(--muted); white-space: pre-wrap; }
   .gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
   .gl-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
@@ -1061,6 +1071,19 @@ function uploadFile(file, onProgress, kind = "media") {
     x.send(file);
   });
 }
+
+async function addImages(files, list, rerender) {
+  for (const file of files) {
+    if (!/\.(png|jpe?g|webp|gif)$/i.test(file.name)) { toast("Choose PNG, JPG, WebP or GIF images."); continue; }
+    if (list.length >= 10) { toast("Attach up to 10 images."); break; }
+    const item = { name: file.name, preview: URL.createObjectURL(file) };
+    list.push(item); rerender();
+    try { item.path = (await uploadFile(file)).path; }
+    catch (e) { list.splice(list.indexOf(item), 1); toast(`${file.name}: ${e.message}`); }
+    rerender();
+  }
+}
+const imageChips = (list, removeAttr) => list.map((f, i) => `<span class="img-chip${f.path ? "" : " uploading"}"><img src="${esc(f.preview)}" alt="${esc(f.name)}"><button type="button" ${removeAttr}="${i}" aria-label="Remove ${esc(f.name)}">×</button></span>`).join("");
 
 async function upload(file) {
   if (!/\.(mp4|mov|m4v|webm)$/i.test(file.name)) return toast("Choose an MP4, MOV, M4V or WebM video.");
@@ -1444,7 +1467,8 @@ async function openRefine(name) {
   d.innerHTML = `<form method="dialog" id="rfForm">
     <h3>Refine ${esc(name)}</h3>
     <p class="muted" style="margin:0">${s.kind === "preset" ? "This is a shipped preset: changes apply to the preset itself." : "Claude updates the style guide and logs it in the changelog."}</p>
-    <label>What should change?<textarea name="text" required placeholder="e.g. captions 20% smaller, fewer full-screen graphics, use our brand blue #2450FF"></textarea></label>
+    <label>What should change?<textarea name="text" placeholder="e.g. captions 20% smaller, fewer full-screen graphics, use our brand blue #2450FF"></textarea></label>
+    <div><button type="button" class="btn small" id="rfAttach">Attach example images</button><input type="file" id="rfFiles" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden><div class="img-chips" id="rfImages"></div></div>
     <label style="flex-direction:row;align-items:center;gap:8px;font-weight:500"><input type="checkbox" name="lock"> Lock the style after this change</label>
     <label>Model<select name="model">${meta.models.map((m) => `<option value="${m.id}">${m.label}</option>`).join("")}</select></label>
     <label>Effort<select name="effort" aria-label="Reasoning effort"></select></label>
@@ -1452,12 +1476,21 @@ async function openRefine(name) {
   </form>`;
   d.showModal();
   bindFormEffort($("#rfForm"), draft.model);
+  const images = [];
+  const renderImages = () => {
+    $("#rfImages").innerHTML = imageChips(images, "data-rm");
+    $("#rfImages").querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { images.splice(Number(b.dataset.rm), 1); renderImages(); });
+  };
+  $("#rfAttach").onclick = () => $("#rfFiles").click();
+  $("#rfFiles").onchange = (e) => { addImages([...e.target.files], images, renderImages); e.target.value = ""; };
   $("#rfForm").onsubmit = async (e) => {
     if (e.submitter?.value !== "ok") return;
     e.preventDefault();
     const f = new FormData(e.target);
+    if (images.some(i => !i.path)) return toast("Wait for the images to finish uploading.");
+    if (!f.get("text").trim() && !images.length) return toast("Say what to change or attach an example image.");
     try {
-      await api(`/api/styles/${name}/refine`, { method: "POST", body: { text: f.get("text") + (f.get("lock") ? "\nThen lock the style." : ""), model: f.get("model"), effort: f.get("effort") } });
+      await api(`/api/styles/${name}/refine`, { method: "POST", body: { text: f.get("text") + (f.get("lock") ? "\nThen lock the style." : ""), images: images.map(i => i.path), model: f.get("model"), effort: f.get("effort") } });
       d.close();
       toast("AI editor is changing the style…");
       location.hash.startsWith("#/style/") ? viewStyle(name) : viewNew();
@@ -1651,10 +1684,10 @@ async function viewJob(id, keepScroll) {
   };
 }
 
-const storyPicks = {}, storyNotes = {};
+const storyPicks = {}, storyNotes = {}, storyImages = {};
 const fmtTime = (t) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padStart(4, "0")}`;
 function viewStoryboard(j, run) {
-  const picks = storyPicks[j.id] ??= {}, notes = storyNotes[j.id] ??= {}, sb = j.storyboard;
+  const picks = storyPicks[j.id] ??= {}, notes = storyNotes[j.id] ??= {}, imgs = storyImages[j.id] ??= {}, sb = j.storyboard;
   const choices = sb.beats.filter(b => b.ideas.length > 1).length;
   $("#view").innerHTML = `
     <div class="page-title"><h2>${esc(j.title)}</h2>
@@ -1664,17 +1697,30 @@ function viewStoryboard(j, run) {
       ${run?.summary ? `<details><summary>Editor notes</summary>${esc(run.summary)}</details>` : ""}
       ${sb.beats.map(b => `<section class="sb-beat"><div class="sb-meta"><b>${fmtTime(b.start)} – ${fmtTime(b.end)}</b><p>${esc(b.text)}</p></div>
         <div class="sb-ideas" role="radiogroup" aria-label="Ideas for ${fmtTime(b.start)}">${b.ideas.map((idea, k) => `<label class="sb-idea"><input type="radio" name="beat-${esc(String(b.id))}" data-beat="${esc(String(b.id))}" value="${k}" ${(picks[b.id] ?? 0) === k ? "checked" : ""}>
-          <img src="/files/${encodeURIComponent(j.id)}/${idea.still}" alt="Beat at ${fmtTime(b.start)}, idea ${k + 1}" loading="lazy">
+          ${b.ideas.length > 1 ? `<i class="sb-num" aria-hidden="true">${k + 1}</i>` : ""}<img src="/files/${encodeURIComponent(j.id)}/${idea.still}" alt="Beat at ${fmtTime(b.start)}, idea ${k + 1}" loading="lazy">
           <span>${b.ideas.length > 1 ? `<b>${k + 1}.</b> ` : ""}${esc(idea.label || (idea.type ? idea.type : "Talking head"))} <small>· ${esc(idea.layout.replace("_", " "))}</small></span></label>`).join("")}</div>
-        <textarea class="sb-note" data-note="${esc(String(b.id))}" rows="2" placeholder="What should change on this beat?" aria-label="Changes for ${fmtTime(b.start)}">${esc(notes[b.id] || "")}</textarea></section>`).join("")}
+        <div class="sb-note"><textarea data-note="${esc(String(b.id))}" rows="2" placeholder="What should change on this beat?" aria-label="Changes for ${fmtTime(b.start)}">${esc(notes[b.id] || "")}</textarea>
+          <div class="img-chips" data-imgs="${esc(String(b.id))}"></div>
+          <button type="button" class="btn small ghost" data-attach="${esc(String(b.id))}">Attach images</button><input type="file" data-files="${esc(String(b.id))}" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden></div></section>`).join("")}
       <div class="sb-foot"><button class="btn" data-revise>Revise storyboard</button><button class="btn primary" data-build>Build video</button></div>
     </div>`;
   document.querySelectorAll("[data-beat]").forEach(r => r.onchange = () => { picks[r.dataset.beat] = Number(r.value); });
   document.querySelectorAll("[data-note]").forEach(t => t.oninput = () => { notes[t.dataset.note] = t.value; });
+  const renderImgs = (id) => {
+    const el = document.querySelector(`[data-imgs="${CSS.escape(id)}"]`), list = imgs[id] ??= [];
+    el.innerHTML = imageChips(list, "data-rm");
+    el.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { list.splice(Number(b.dataset.rm), 1); renderImgs(id); });
+  };
+  document.querySelectorAll("[data-imgs]").forEach(el => renderImgs(el.dataset.imgs));
+  document.querySelectorAll("[data-attach]").forEach(b => b.onclick = () => document.querySelector(`[data-files="${CSS.escape(b.dataset.attach)}"]`).click());
+  document.querySelectorAll("[data-files]").forEach(input => input.onchange = () => { const id = input.dataset.files; addImages([...input.files], imgs[id] ??= [], () => renderImgs(id)); input.value = ""; });
   $("[data-revise]").onclick = async () => {
-    if (!Object.values(notes).some(n => n.trim())) return toast("Add a note to at least one beat.");
+    const all = Object.values(imgs).flat();
+    if (all.some(i => !i.path)) return toast("Wait for the images to finish uploading.");
+    if (!Object.values(notes).some(n => n.trim()) && !all.length) return toast("Add a note or image to at least one beat.");
+    const images = Object.fromEntries(Object.entries(imgs).filter(([, v]) => v.length).map(([k, v]) => [k, v.map(i => i.path)]));
     document.querySelectorAll("[data-build], [data-revise]").forEach(b => b.disabled = true);
-    try { await api(`/api/jobs/${j.id}/storyboard-revise`, { method: "POST", body: { notes } }); delete storyNotes[j.id]; delete storyPicks[j.id]; viewJob(j.id); }
+    try { await api(`/api/jobs/${j.id}/storyboard-revise`, { method: "POST", body: { notes, images } }); delete storyNotes[j.id]; delete storyPicks[j.id]; delete storyImages[j.id]; viewJob(j.id); }
     catch (e) { toast(e.message); document.querySelectorAll("[data-build], [data-revise]").forEach(b => b.disabled = false); }
   };
   document.querySelectorAll("[data-build]").forEach(btn => btn.onclick = async () => {
