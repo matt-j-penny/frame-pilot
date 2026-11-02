@@ -103,7 +103,7 @@ function stages(job) {
   const pipeline = job.editor && job.editor !== 'native' && run.kind !== 'lessons'
     ? defs.map(stage => stage[0] === 'render' ? ['render', `Export from ${EDITORS.find(e=>e.id===job.editor)?.label}`, 'output/final.mp4'] : stage).filter(stage=>stage[0]!=='loudness')
     : defs;
-  if (job.editor && job.editor !== 'native' && run.kind !== 'lessons') pipeline.splice(pipeline.findIndex(s=>s[0]==='render'),0,['editor','Build editable project','editor-project.json']);
+  if (job.editor && job.editor !== 'native' && run.kind !== 'lessons' && run.kind !== 'preview') pipeline.splice(pipeline.findIndex(s=>s[0]==='render'),0,['editor','Build editable project','editor-project.json']);
   const out = pipeline.map(([key, label, files]) => ({
     key, label, done: [files].flat().some((f) => mtime(path.join(dir, f)) >= run.started - 1500),
   }));
@@ -193,7 +193,7 @@ function editPrompt(job) {
     : "Edit a video in Edit mode, following references/edit.md stages 1-10 completely, including the verify/fix loop.";
   return `Use the reel-editor skill (its SKILL.md is in this folder: ${ROOT}). ${stagesText}
 
-${editorPrompt(job)}
+${job.previewIdeas ? "" : editorPrompt(job)}
 
 Source video: ${job.source}
 Style: ${job.style || "No style"}
@@ -212,6 +212,7 @@ function buildPrompt(job) {
   return `The user reviewed the storyboard for this Frame Pilot job (${path.join(JOBS, job.id)}) and picked an idea for each beat. Frame Pilot has already merged the picks into beat-plan.json and removed \`alternatives\`; preview-choices.json records them.
 Continue references/edit.md from Stage 6: render, verify (max 3 fix loops) and deliver. Keep the graphics the user picked; change one only if verification shows it broken, and say so in the summary.
 ${settingsPrompt(job)}
+${editorPrompt(job)}
 
 End with a short summary: graphics used, music and SFX, and anything verification could not fix.`;
 }

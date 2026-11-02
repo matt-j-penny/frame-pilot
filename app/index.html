@@ -343,6 +343,8 @@
   .switch-track::after { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; box-shadow: 0 1px 2px #0002; transition: transform .15s; }
   .switch-control input:checked + .switch-track { background: var(--brand); }
   .switch-control input:checked + .switch-track::after { transform: translateX(14px); }
+  .switch-control input:disabled { cursor: not-allowed; }
+  .switch-control input:disabled + .switch-track { opacity: .4; }
   .switch-control input:focus-visible + .switch-track { outline: 2px solid var(--brand); outline-offset: 3px; }
   .help-tip { position: relative; display: inline-flex; align-items: center; flex: none; font-weight: 400; }
   .help-icon { display: grid; place-items: center; width: 17px; height: 17px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--muted); font-size: 11px; cursor: help; }
@@ -999,7 +1001,7 @@ async function viewNew() {
               <section class="reference-upload" data-upload-target="referenceFiles"><h3>References ${helpTip('Add images and videos the editor can use as visual references or assets in this edit.')}</h3><label class="upload-label reference-dropzone" tabindex="0" role="button" aria-label="Upload reference images or videos"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></svg><span class="drop-caption">Drop images or videos</span><small>or browse</small><input type="file" id="referenceFiles" accept="image/png,image/jpeg,image/webp,image/gif,video/*" multiple hidden></label><div id="referenceList"></div></section>
             </div>
             <section class="feature-section"><div class="feature-toggles">${Object.entries({roughCut:['Rough cut','Automatically remove silences, fillers and retakes. Turn off to preserve the original timing; explicit transcript cuts still apply.'],subtitles:['Subtitles','Add captions timed to the speech, using the selected style or your brief.'],motionGraphics:['Motion graphics','Add animated graphics, callouts, transitions and camera moves where appropriate.'],sfx:['SFX','Add sound effects to support graphics and transitions.'],music:['Music','Add background music and lower its volume under speech.']}).map(([key,[label,help]]) => `<div class="feature-option"><label class="feature-toggle"><span>${label}</span><span class="switch-control"><input type="checkbox" role="switch" data-feature="${key}" ${draft.features[key] ? 'checked' : ''}><span class="switch-track" aria-hidden="true"></span></span></label>${helpTip(help)}</div>`).join('')}</div></section>
-            <section class="feature-section preview-option"><div class="feature-option"><label class="feature-toggle"><span>Preview before building</span><span class="switch-control"><input type="checkbox" role="switch" id="previewToggle" ${draft.preview ? 'checked' : ''}><span class="switch-track" aria-hidden="true"></span></span></label>${helpTip('Plan the edit and show a still of every beat with its motion graphic first. Pick the ideas you like, then build the video. Native editor with Motion graphics on.')}</div>
+            <section class="feature-section preview-option"><div class="feature-option"><label class="feature-toggle"><span>Preview before building</span><span class="switch-control"><input type="checkbox" role="switch" id="previewToggle" ${draft.preview ? 'checked' : ''}><span class="switch-track" aria-hidden="true"></span></span></label>${helpTip('Plan the edit and show a still of every beat with its motion graphic first. Pick the ideas you like, then build the video. Needs Motion graphics on.')}</div>
               <label class="effort-picker" id="ideasPicker" ${draft.preview ? '' : 'hidden'}><span class="lbl">Ideas per beat</span><select id="ideasSelect" aria-label="Ideas per beat">${[1,2,3].map(n => `<option value="${n}" ${draft.ideas === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label></section>
             <section class="transcript-section"><div class="transcript-heading"><h3>Edit by transcript ${helpTip('Transcribe your source video with your configured Deepgram key. Drag across words, or click then Shift-click to select a passage. Add instructions for what should happen there; they are applied when you start the edit.')}</h3><button class="btn small" id="transcribeBtn" title="Upload a source video first">Transcribe video</button></div><p id="transcriptStatus" role="status" class="muted" hidden></p><div id="transcriptEditor"></div></section>
           </section>
@@ -1134,7 +1136,7 @@ function bindNew() {
   };
 }
 
-const previewAvailable = () => draft.editor === 'native' && draft.features.motionGraphics;
+const previewAvailable = () => draft.features.motionGraphics;
 
 function updateGo() {
   const btn = $("#goBtn");
