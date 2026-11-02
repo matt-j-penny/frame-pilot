@@ -134,6 +134,7 @@ function recordVersion(x, rr) {
 }
 
 function startRun(job, kind, prompt, note, attachments = []) {
+  if (!fs.existsSync(job.source)) throw Object.assign(new Error(`Source file missing: ${job.source}. Move it back to continue this job.`), { status: 400 });
   const run = { kind, note, attachments, model: job.model, effort: job.effort ?? null, status: "queued", queued: Date.now(), started: 0, ended: 0, log: [], summary: "" };
   job.runs.push(run);
   job.status = "queued";
@@ -466,7 +467,8 @@ function serveFile(req, res, file) {
 }
 
 const uploadedFile = file => typeof file === "string" && path.dirname(path.resolve(file)) === UPLOADS && fs.existsSync(file) && fs.statSync(file).isFile();
-const imageUploads = (files, max = 10) => Array.isArray(files) && files.length <= max && files.every(f => uploadedFile(f) && /\.(png|jpe?g|webp|gif)$/i.test(f));
+const localVideo = file => typeof file === "string" && path.isAbsolute(file) && /\.(mp4|mov|m4v|webm)$/i.test(file) && fs.existsSync(file) && fs.statSync(file).isFile();
+const imageUploads =(files, max = 10) => Array.isArray(files) && files.length <= max && files.every(f => uploadedFile(f) && /\.(png|jpe?g|webp|gif)$/i.test(f));
 function copyUploads(files, dir) {
   fs.mkdirSync(dir, { recursive: true });
   return [...new Set(files)].map(f => { const dest = path.join(dir, path.basename(f)); if (!fs.existsSync(dest)) fs.copyFileSync(f, dest); return dest; });
@@ -529,6 +531,19 @@ const server = http.createServer(async (req, res) => {
       return send(res,200,result);
     }
 
+    if (req.method === "POST" && p === "/api/pick-video") {
+      const child = spawn("osascript", ["-e", "activate", "-e", 'POSIX path of (choose file with prompt "Choose a video" of type {"public.movie"})']);
+      let out = "";
+      child.stdout.on("data", c => (out += c));
+      child.on("close", code => send(res, 200, code ? { cancelled: true } : { path: out.trim(), name: path.basename(out.trim()) }));
+      return;
+    }
+
+    if (req.method === "GET" && p === "/api/source") {
+      const file = url.searchParams.get("path");
+      return localVideo(file) ? serveFile(req, res, file) : send(res, 404, { error: "not found" });
+    }
+
     if (req.method === "POST" && p === "/api/upload") {
       const name = (url.searchParams.get("name") ?? "video.mp4").replace(/[^\w.\-]+/g, "_");
       const document = url.searchParams.get('kind') === 'style-document';
@@ -542,7 +557,7 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "POST" && p === "/api/transcriptions") {
       const b = await readBody(req);
-      if (!uploadedFile(b.source) || !/\.(mp4|mov|m4v|webm)$/i.test(b.source)) return send(res, 400, { error: "Upload a source video first." });
+      if (!localVideo(b.source)) return send(res, 400, { error: "Upload a source video first." });
       const id = randomUUID(), dir = path.join(TRANSCRIPTS, id);
       fs.mkdirSync(path.join(dir, "input"), { recursive: true });
       fs.symlinkSync(b.source, path.join(dir, "input", "source" + path.extname(b.source)));
@@ -765,7 +780,7 @@ Do not ask the user anything: use your best font/colour matches and list them as
 
     if (req.method === "POST" && p === "/api/jobs") {
       const b = await readBody(req);
-      if (!uploadedFile(b.source) || !/\.(mp4|mov|m4v|webm)$/i.test(b.source)) return send(res, 400, { error: "Upload a video first." });
+      if (!localVideo(b.source)) return send(res, 400, { error: "Upload a video first." });
       if (b.style && !listStyles().some((s) => s.name === b.style && !s.run?.status?.match(/queued|running/))) return send(res, 400, { error: "Pick a style." });
       let settings;
       try { settings = { ...creationSettings(b), effort: normalizeEffort(b.model ?? "opus", b.effort) }; } catch (error) { return send(res, 400, { error: error.message }); }
