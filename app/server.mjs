@@ -570,7 +570,8 @@ const server = http.createServer(async (req, res) => {
       const captured = rj(path.join(HF_ROOT, "captured-templates.json")) ?? [];
       const custom = (rj(CUSTOM_TEMPLATES) ?? []).filter((t) => fs.existsSync(path.join(HF_ROOT, t.path))).map((t) => ({ ...t, custom: true }));
       const all = [...custom.reverse(), ...captured.map((t) => ({ ...t, description: t.desc, technical: { width: 1920, height: 1080 } })), ...(index.templates ?? []), ...(index["mg-templates"] ?? [])];
-      return send(res, 200, all.map((t) => ({ id: t.id, name: t.name, description: t.description ?? "", captured: !!t.captured, custom: !!t.custom,
+      const person = (t) => { try { return /placeholder-video|footage\.mp4|talking-head-(placeholder|cutout)/.test(fs.readFileSync(path.join(HF_ROOT, String(t.path).replace(/^Assets\//, "").replace(/^(?!templates\/)/, "templates/")), "utf8")); } catch { return false; } };
+      return send(res, 200, all.map((t) => ({ id: t.id, name: t.name, description: t.description ?? "", captured: !!t.captured, custom: !!t.custom, person: person(t),
         aspect: (t.technical?.height ?? 1080) > (t.technical?.width ?? 1920) ? "9:16" : "16:9",
         src: "/hf/" + String(t.path).replace(/^Assets\//, "").replace(/^(?!templates\/)/, "templates/") })));
     }
@@ -599,6 +600,12 @@ const server = http.createServer(async (req, res) => {
       }
       fs.rmSync(path.join(TEMPLATE_RUNS, `${ct[1]}.json`), { force: true });
       return send(res, 200, { ok: true });
+    }
+    if (req.method === "GET" && p === "/api/effects") return send(res, 200, rj(path.join(ROOT, "effects/effects.json")) ?? []);
+    const fxp = p.match(/^\/fx\/(9x16|16x9)\/([a-z0-9-]+\.(?:mp4|jpg))$/);
+    if (req.method === "GET" && fxp) {
+      const file = path.join(ROOT, "effects/previews", fxp[1], fxp[2]);
+      return fs.existsSync(file) ? serveFile(req, res, file) : send(res, 404, { error: "not found" });
     }
     if (req.method === "GET" && p.startsWith("/hf/")) {
       const file = path.resolve(HF_ROOT, decodeURIComponent(p.slice(4)));

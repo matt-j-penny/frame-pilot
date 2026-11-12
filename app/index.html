@@ -753,7 +753,7 @@
       <div><h1>Frame Pilot</h1><small>Your footage. Your direction.</small></div>
     </div>
     <a class="btn primary new-btn" href="#/new" style="text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New video</a>
-    <a class="navlink" id="graphicsLink" href="#/graphics" style="margin-bottom:10px">Graphics library</a>
+    <a class="navlink" id="graphicsLink" href="#/graphics" style="margin-bottom:10px">Template library</a>
     <div class="history-title side-head">Styles<button class="side-add" id="sideNewStyle" title="Create a style guide">+</button></div>
     <nav class="history" id="styleNav" style="flex:none;max-height:180px"></nav>
     <div class="history-title">History</div>
@@ -769,6 +769,7 @@
 <dialog id="styleDlg"></dialog>
 <dialog id="setupDlg" aria-labelledby="setupTitle"></dialog>
 <dialog id="tplDlg" class="tpl-dlg" aria-label="Choose a template"></dialog>
+<dialog id="howDlg" aria-labelledby="howTitle"></dialog>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2125,7 +2126,7 @@ window.addEventListener("beforeunload", (e) => { if (se && $("#saveBtn") && !$("
 
 // ---------- router ----------
 
-let glStyle = null, glAspect = "9:16", hfList = null, hfObserver = null;
+let glStyle = null, glAspect = "9:16", hfList = null, hfObserver = null, fxList = null;
 const loadHf = async () => (hfList ??= await api("/api/hf-templates").catch(() => []));
 const hfCard = (t, extra = "") => `<div class="gl-card" data-tpl="${esc(t.id)}"><div class="gl-still gl-hf"><iframe data-src="${esc(t.src)}" title="${esc(t.name)}" scrolling="no" sandbox="allow-scripts allow-same-origin" tabindex="-1"></iframe></div>
   <div class="gl-meta"><b>${esc(t.name.replace(/^MG: /, ""))}</b><code>${esc(t.id)}</code>${t.custom ? " · yours" : t.captured ? " · captured" : ""}<p title="${esc(t.description)}">${esc(t.description)}</p>${extra}</div></div>`;
@@ -2188,6 +2189,33 @@ function pickTemplate(aspect) {
   });
 }
 const runRows = (runs) => runs.filter((r) => r.status !== "done").map((r) => `<div class="group" style="display:flex;gap:12px;align-items:center;margin:12px 0"><span class="dot ${r.status === "error" ? "" : "running"}"></span><div style="flex:1;min-width:0"><b>${esc(r.name)}</b> <span class="muted">${r.aspect} · ${r.status === "error" ? "failed" : r.status === "queued" ? "queued" : "building…"}</span><div class="muted" style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.status === "error" ? r.summary : r.log?.filter((l) => l.text).at(-1)?.text || "Starting…")}</div></div>${r.status === "error" ? `<button class="btn small" data-del-tpl="${esc(r.id)}">Dismiss</button>` : ""}</div>`).join("");
+const copyPrompts = new Map();
+const copyBtn = (key, text) => (copyPrompts.set(key, text), `<button class="btn small" data-copy="${esc(key)}" style="margin-top:8px">Copy</button>`);
+const fxPrompt = (f) => { const R = meta.root + "/effects"; return `Use the Frame Pilot video effect "${f.id}": ${f.description}.
+It lives in ${R} (every effect's options are in ${R}/EFFECTS.md). It tracks my face and can sit behind my head.
+Apply it to my video at the moment I tell you, for 1.5 to 4 seconds:
+  "${R}/.venv/bin/python" "${R}/scripts/fx.py" ${f.id} <my video> <output.mp4> --start <seconds> --end <seconds>
+Check a frame first with --still <seconds> instead of the output, and make sure nothing covers my face. First time only: bash "${R}/scripts/setup.sh".`; };
+const hfPrompt = (t) => `Use this HyperFrames motion graphic template: "${t.name.replace(/^MG: /, "")}" (${t.id}).
+File: ${meta.root}/hyperframes/${decodeURIComponent(t.src.replace(/^\/hf\//, ""))}
+What it does: ${t.description}
+Copy it into a new HyperFrames project, change only the slots marked <!-- REPLACE --> to my content, keep its structure, CSS and GSAP timing, then render it with npx hyperframes render. Inside a Frame Pilot edit use: python3 "${meta.root}/scripts/reel.py" template <job> ${t.id} <name> <start> <end>.`;
+const gPrompt = (g) => `Use Frame Pilot's built-in "${g.name}" graphic (type "${g.type}"): ${g.about}
+Add it to a beat in the edit's beat-plan.json as {"graphic": {"type": "${g.type}", ...}}. Its fields and an example are in "${meta.root}/references/style-schema.md" and the Frame Pilot project is at "${meta.root}". It is styled from the edit's style guide automatically.`;
+function howToUse() {
+  const d = $("#howDlg");
+  d.innerHTML = `<div class="body" style="max-width:560px"><h3 id="howTitle">How to use the template library</h3>
+    <p><b>Effects</b> are baked into your footage and track your face. <b>With you in shot</b> are templates built around your video. <b>Graphics</b> are full-screen or overlay graphics without you in them.</p>
+    <h4 style="margin:16px 0 4px">In a Frame Pilot edit</h4>
+    <ol style="margin:0;padding-left:20px"><li>Start a <b>New video</b> and transcribe it.</li><li>Select the words where you want it.</li><li>Pick a template, or type an effect name as the instruction, e.g. <code>effect: orbit</code>.</li></ol>
+    <h4 style="margin:16px 0 4px">With any AI agent (Claude Code, Codex…)</h4>
+    <ol style="margin:0;padding-left:20px"><li>Click <b>Copy</b> on the card you want. A prompt saying what it is and where it lives on your computer goes to your clipboard.</li><li>Paste it into your agent with your video and when it should appear, e.g. <i>“on the word ‘Claude’ at 0:12”</i>.</li></ol>
+    <h4 style="margin:16px 0 4px">Tips</h4>
+    <ul style="margin:0;padding-left:20px"><li>Hover an effect to play it. Use <b>9:16 / 16:9</b> to switch formats.</li><li>Built-in graphics preview in the style picked at the top; click <b>Change Style</b> after picking or adding a style.</li></ul>
+    <div class="actions"><button class="btn primary" id="howClose">Got it</button></div></div>`;
+  $("#howClose").onclick = () => d.close();
+  d.showModal();
+}
 async function viewGraphics(poll) {
   if (!poll) styles = await api("/api/styles");
   const usable = styles.filter((s) => !isBusy(s) && !isFailed(s));
@@ -2202,20 +2230,33 @@ async function viewGraphics(poll) {
     hfList = null;
   }
   const hf = (await loadHf()).filter((t) => t.aspect === glAspect);
+  const fx = await (fxList ??= api("/api/effects").catch(() => [])), fxDir = wide => (wide ? "16x9" : "9x16");
+  const hfYou = hf.filter((t) => t.person), hfArt = hf.filter((t) => !t.person);
   const rendered = items.some((g) => g.still), wide = glAspect === "16:9";
   $("#view").dataset.building = building ? 1 : 0;
   $("#view").innerHTML = `
-    <div class="se-head"><h2>Graphics library</h2><span class="grow"></span>
+    <div class="se-head"><h2>Template library</h2><button class="btn small ghost" id="glHow">How to use</button><span class="grow"></span>
       <div class="tabs">${["9:16", "16:9"].map((a) => `<button data-gl-aspect="${a}" class="${a === glAspect ? "on" : ""}">${a}</button>`).join("")}</div>
       <select id="glStyle" aria-label="Preview style" style="width:auto">${usable.map((s) => `<option ${s.name === glStyle ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
-      <button class="btn small primary" id="glRender" data-running="${running ? 1 : 0}" ${running || !glStyle ? "disabled" : ""}>${running ? "Rendering…" : rendered ? "Re-render previews" : "Render previews"}</button></div>
-    <div style="display:flex;align-items:center;gap:12px"><h3 style="margin:0">Templates <span class="muted" style="font-weight:400">${items.length + hf.length}</span></h3><span class="grow" style="flex:1"></span><button class="btn small" id="glNewTemplate">+ New template</button></div>
+      <button class="btn small primary" id="glRender" data-running="${running ? 1 : 0}" ${running || !glStyle ? "disabled" : ""}>${running ? "Rendering…" : "Change Style"}</button></div>
+    <h3 style="margin:0">Effects <span class="muted" style="font-weight:400">${fx.length}</span></h3>
+    <p class="hint">Face-tracked effects baked into your footage, many sitting behind your head. Hover to play. Name one in the transcript (e.g. "effect: orbit") and the AI editor adds it.</p>
+    <div class="gl-grid ${wide ? "wide" : ""}">${fx.map((f) => `<div class="gl-card gl-fx"><div class="gl-still"><video muted loop playsinline preload="none" poster="/fx/${fxDir(wide)}/${f.id}.jpg" src="/fx/${fxDir(wide)}/${f.id}.mp4" style="width:100%;height:100%;object-fit:cover"></video></div>
+      <div class="gl-meta"><b>${esc(f.id)}</b><p>${esc(f.description)}</p>${copyBtn("fx:" + f.id, fxPrompt(f))}</div></div>`).join("")}</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:28px"><h3 style="margin:0">With you in shot <span class="muted" style="font-weight:400">${hfYou.length}</span></h3><span class="grow" style="flex:1"></span><button class="btn small" id="glNewTemplate">+ New template</button></div>
     <div id="glRuns">${runRows(runs)}</div>
-    <p class="hint">Pick one for any part of the transcript when you start an edit, or build your own with New template. Built-in graphics preview in the selected style${run?.status === "error" ? ` · <span style="color:var(--danger,#d33)">${esc(run.error)}</span>` : ""}.</p>
+    <p class="hint">Templates built around your footage. Pick one for any part of the transcript when you start an edit, or build your own with New template.</p>
+    <div class="gl-grid ${wide ? "wide" : ""}">${hfYou.map((t) => hfCard(t, copyBtn("hf:" + t.id, hfPrompt(t)) + (t.custom ? ` <button class="btn small ghost" data-del-tpl="${esc(t.id)}" style="padding:2px 0;margin-top:6px">Delete</button>` : ""))).join("")}</div>
+    <h3 style="margin:28px 0 0">Graphics <span class="muted" style="font-weight:400">${items.length + hfArt.length}</span></h3>
+    <p class="hint">Full-screen and overlay graphics without you in them. Built-in graphics preview in the selected style${run?.status === "error" ? ` · <span style="color:var(--danger,#d33)">${esc(run.error)}</span>` : ""}.</p>
     <div class="gl-grid ${wide ? "wide" : ""}">${items.map((g) => `<div class="gl-card"><div class="gl-still">${g.still ? `<img src="${g.still}" alt="${esc(g.name)} preview" loading="lazy">` : running ? "Rendering…" : "No preview yet"}</div>
-      <div class="gl-meta"><b>${esc(g.name)}</b><code>${esc(g.type)}</code>${g.media ? " · uses your media" : ""}<p>${esc(g.about)}</p></div></div>`).join("")}${hf.map((t) => hfCard(t, t.custom ? `<button class="btn small ghost" data-del-tpl="${esc(t.id)}" style="padding:2px 0;margin-top:6px">Delete</button>` : "")).join("")}</div>`;
+      <div class="gl-meta"><b>${esc(g.name)}</b><code>${esc(g.type)}</code>${g.media ? " · uses your media" : ""}<p>${esc(g.about)}</p>${copyBtn("g:" + g.type, gPrompt(g))}</div></div>`).join("")}${hfArt.map((t) => hfCard(t, copyBtn("hf:" + t.id, hfPrompt(t)) + (t.custom ? ` <button class="btn small ghost" data-del-tpl="${esc(t.id)}" style="padding:2px 0;margin-top:6px">Delete</button>` : ""))).join("")}</div>`;
   $("#glNewTemplate").onclick = newTemplate;
+  $("#view").querySelectorAll(".gl-fx video").forEach((v) => { const c = v.closest(".gl-card"); c.onmouseenter = () => v.play().catch(() => {}); c.onmouseleave = () => { v.pause(); v.currentTime = 0; }; });
+  $("#glHow").onclick = howToUse;
   $("#view").onclick = async (e) => {
+    const cp = e.target.closest("[data-copy]");
+    if (cp) { await navigator.clipboard.writeText(copyPrompts.get(cp.dataset.copy)); toast("Copied: paste it into your AI agent with your video"); return; }
     const b = e.target.closest("[data-del-tpl]");
     if (!b || (b.textContent === "Delete" && !confirm("Delete this template?"))) return;
     await api(`/api/templates/${b.dataset.delTpl}`, { method: "DELETE" });

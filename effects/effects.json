@@ -1,0 +1,206 @@
+[
+ {
+  "id": "noise",
+  "description": "reels pile up behind your head, one every quarter second"
+ },
+ {
+  "id": "lineup",
+  "description": "numbered tiles fan out in an arc above your head"
+ },
+ {
+  "id": "locked-on",
+  "description": "corner brackets snap onto your face and the camera follows you"
+ },
+ {
+  "id": "orbit",
+  "description": "your reels circle your head: in front at the bottom, behind you at the top"
+ },
+ {
+  "id": "lean-in",
+  "description": "a fast punch-in on one word"
+ },
+ {
+  "id": "backdrop-word",
+  "description": "a giant word drops in behind you"
+ },
+ {
+  "id": "spotlight",
+  "description": "kill the lights, keep you lit"
+ },
+ {
+  "id": "the-bill",
+  "description": "prints every instruction like a ticket, into the wall above your head"
+ },
+ {
+  "id": "moody",
+  "description": "a moody colour grade: darker, softer, teal shadows"
+ },
+ {
+  "id": "swipe",
+  "description": "a before and after slider that sweeps across you"
+ },
+ {
+  "id": "todo",
+  "description": "a checklist card beside your head that ticks off as you talk"
+ },
+ {
+  "id": "tap",
+  "description": "a Follow button pops up and flips to Following"
+ },
+ {
+  "id": "pause-point",
+  "description": "freeze the frame and point at something with a hand-drawn arrow"
+ },
+ {
+  "id": "uninstall",
+  "description": "a glitchy uninstall bar that breaks the frame apart"
+ },
+ {
+  "id": "reel-frame",
+  "description": "your video shrinks into an Instagram reel card"
+ },
+ {
+  "id": "shortcut-rain",
+  "description": "keyboard keys rain down behind you"
+ },
+ {
+  "id": "reject-stamp",
+  "description": "a big red stamp slams onto the screen"
+ },
+ {
+  "id": "countdown-flip",
+  "description": "a 3, 2, 1 flip clock above your head"
+ },
+ {
+  "id": "rabbit-hole",
+  "description": "the frame tunnels into itself, spinning"
+ },
+ {
+  "id": "cover-star",
+  "description": "you become a magazine cover, with the title behind your head"
+ },
+ {
+  "id": "scribble",
+  "description": "marker doodles draw themselves around you"
+ },
+ {
+  "id": "red-collage",
+  "description": "black and white you, a giant purple word behind, kinetic type stacked beside you"
+ },
+ {
+  "id": "split-headline",
+  "description": "a clean headline card slides down and pushes you into the bottom of the frame"
+ },
+ {
+  "id": "pastel-word",
+  "description": "a soft lavender backdrop, a giant word behind you and a profile card that gets followed"
+ },
+ {
+  "id": "check-pills",
+  "description": "grid-paper room, your reels pinned behind you and blue pills that get clicked"
+ },
+ {
+  "id": "headline-box",
+  "description": "a punch-in with a clean two-line headline, the second line in a white box"
+ },
+ {
+  "id": "profile-wall",
+  "description": "your profile grid fills the wall behind you while a counter ticks up"
+ },
+ {
+  "id": "tier-list",
+  "description": "a tier list drops in front of you and Claude flies into S tier"
+ },
+ {
+  "id": "broll-split",
+  "description": "split screen: b-roll on top with a price-tag sticker, you on the bottom"
+ },
+ {
+  "id": "phone-fan",
+  "description": "your reels fan out like a hand of phones in front of you, under a two-line headline"
+ },
+ {
+  "id": "dot-reveal",
+  "description": "your shot builds itself out of glowing dots, then snaps into the full picture"
+ },
+ {
+  "id": "headline-wall",
+  "description": "a wall of your own reel headlines piles up behind your head, then your total views pop in front"
+ },
+ {
+  "id": "checklist",
+  "description": "a Claude task list builds under your chin: each step spins, then ticks green"
+ },
+ {
+  "id": "glass-widgets",
+  "description": "frosted glass phone widgets and mini artifacts float around your head, with an Edited by Claude pill"
+ },
+ {
+  "id": "timeline",
+  "description": "a dark purple cinematic grade with an editing timeline, a REC timecode and a glowing playhead"
+ },
+ {
+  "id": "comment-box",
+  "description": "an Instagram comments sheet above your head types your word, posts it, gets a heart and your reply"
+ },
+ {
+  "id": "liquid-glass-graph",
+  "description": "a liquid glass card floats under your chin while a graph climbs and the number counts up"
+ },
+ {
+  "id": "carousel-spin",
+  "description": "your reels spin around you in a 3D carousel, then slow to a stop"
+ },
+ {
+  "id": "match-cut",
+  "description": "news pages cut on one word, locked in place behind your head"
+ },
+ {
+  "id": "apple-toggles",
+  "description": "an iPhone settings card under your chin flips its switches on, one line at a time"
+ },
+ {
+  "id": "led-sign",
+  "description": "the lights drop and a glowing LED sign types itself out behind you"
+ },
+ {
+  "id": "slow-push",
+  "description": "a slow cinematic push-in from the wide shot to your face, the room melting out of focus"
+ },
+ {
+  "id": "over-the-shoulder-zoom",
+  "description": "the camera pushes into one top corner, a liquid glass graph pops beside your head, then the other corner with a second graph"
+ },
+ {
+  "id": "messages",
+  "description": "iMessage notifications pop in one after another, creamy glass with a soft glow, stacking up above the bottom of the frame"
+ },
+ {
+  "id": "place-in-grid",
+  "description": "you shrink into the centre tile of your 3x3 profile grid on frosted glass, then 8 of your reels pop in around you, one per frame, view counts on every tile"
+ },
+ {
+  "id": "tape-label",
+  "description": "a strip of purple tape with your line lands on your chest"
+ },
+ {
+  "id": "select-resize",
+  "description": "a purple selection box grabs your number and a cursor drags it bigger"
+ },
+ {
+  "id": "wave-trim",
+  "description": "the silent parts of your voice are trimmed away on screen until only your words are left"
+ },
+ {
+  "id": "huge-strike",
+  "description": "one huge serif word fills the wall behind you, then a red line crosses it out"
+ },
+ {
+  "id": "crayon-write",
+  "description": "a purple crayon writes your word behind your head, then underlines it"
+ },
+ {
+  "id": "fan-build",
+  "description": "your reel covers deal into a fan behind your head, one card at a time"
+ }
+]

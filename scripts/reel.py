@@ -388,6 +388,7 @@ def plan_cut(words, duration, manual, gap, pad, remove_fillers=True):
 
 def cmd_cut(a):
     job = job_dir(a.job)
+    (job / "public" / "cut-raw.mp4").unlink(missing_ok=True)  # a new cut makes the pre-effects copy stale
     t = rj(job / "transcript.json")
     words = t["words"]
     manual = rj(job / "cuts.json") if (job / "cuts.json").exists() else []
@@ -726,6 +727,26 @@ def cmd_template_render(a):
     print(json.dumps({"src": f"assets/tpl-{a.name}.mov"}))
 
 
+FX = ROOT / "effects"
+
+
+def cmd_effects(a):
+    """Apply <job>/effects.json (face-tracked effects from effects/) to the cut. Re-runs start from public/cut-raw.mp4."""
+    job = job_dir(a.job)
+    plan, cut, raw = job / "effects.json", job / "public" / "cut.mp4", job / "public" / "cut-raw.mp4"
+    if not plan.is_file():
+        die("no effects.json in the job", 'Write {"effects": [{"fx": "orbit", "start": 3.2, "end": 6.0}]} with cut seconds (ids in effects/effects.json).')
+    py = FX / ".venv" / "bin" / "python"
+    if not py.exists():
+        run("bash", FX / "scripts" / "setup.sh")
+    if not raw.exists():
+        shutil.copy2(cut, raw)
+    c = rj(job / "style.json")["canvas"]
+    out = [job / "effects-check.png", "--still", a.still] if a.still else [cut]
+    run(py, FX / "scripts" / "fx.py", "--plan", plan, raw, *out, "--width", min(c["width"], c["height"]))
+    print(json.dumps({"out": str(out[0])}))
+
+
 GSAP_CDN = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
 
 
@@ -928,6 +949,7 @@ def main():
     x = sp.add_parser("graphics"); x.add_argument("style"); x.add_argument("out"); x.add_argument("--aspect", choices=["9:16", "16:9"], default="9:16"); x.set_defaults(f=cmd_graphics)
     x = sp.add_parser("template"); x.add_argument("job"); x.add_argument("template"); x.add_argument("name"); x.add_argument("start", type=float); x.add_argument("end", type=float); x.set_defaults(f=cmd_template)
     x = sp.add_parser("template-render"); x.add_argument("job"); x.add_argument("name"); x.set_defaults(f=cmd_template_render)
+    x = sp.add_parser("effects"); x.add_argument("job"); x.add_argument("--still"); x.set_defaults(f=cmd_effects)
     x = sp.add_parser("hf-import"); x.add_argument("source", nargs="?", default=str(ROOT.parent / "Hyperframes")); x.set_defaults(f=cmd_hf_import)
     x = sp.add_parser("verify"); x.add_argument("job"); x.add_argument("--file", default="final.mp4"); x.add_argument("--every", type=float, default=1.5); x.set_defaults(f=cmd_verify)
     x = sp.add_parser("search"); x.add_argument("query"); x.add_argument("--count", type=int, default=8); x.set_defaults(f=cmd_search)

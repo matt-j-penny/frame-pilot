@@ -88,6 +88,15 @@ Pre-built HTML motion graphics in `hyperframes/` (index: `hyperframes/templates/
 
 Check the beat in the verify sheets like any other: wrong copy or clipped text means editing `index.html` and re-rendering.
 
+## Video effects
+
+51 face-tracked effects in `effects/` (index: `effects/effects.json`; options per effect in the table in `effects/EFFECTS.md`). They work on the footage itself, so they can sit behind the speaker's head (orbit, backdrop-word, spotlight, lean-in, checklist...). Use one when a transcript instruction names an `effect` id, or when one clearly lifts a beat better than a graphic. Short windows look best (1.5-4s).
+
+1. After the cut and before any `reel.py template`, write `effects.json` in the job with cut seconds: `{"effects": [{"fx": "backdrop-word", "start": 14.0, "end": 16.3, "text": "CLAUDE"}]}`. Options go as extra keys (see EFFECTS.md). Camera effects (`locked-on`, `lean-in`, `spotlight`) first when they overlap others.
+2. `reel.py effects <job> --still 4.5,15.2` (middle of each effect) writes check PNGs next to `effects-check.png`. Read them: never text over the face, nothing clipped. Fix and repeat.
+3. `reel.py effects <job>` bakes them into `public/cut.mp4` (always from the pre-effects copy, so re-running is safe).
+4. Keep those windows free of `fullscreen` beats; captions and overlays may sit on top.
+
 ## Preview mode (only when the job asks for it)
 
 The user reviews static stills of every beat before anything is rendered. Run Stages 1-5 as normal, then:
