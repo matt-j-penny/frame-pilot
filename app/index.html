@@ -1268,21 +1268,21 @@ function renderTranscript(error = '') {
   };
   const canAdd = () => { $("#addTranscriptEdit").disabled = !draft.selection || !($("#transcriptInstruction").value.trim() || draft.pendingTemplate); };
   const showChip = () => {
-    $("#templateChip").innerHTML = draft.pendingTemplate ? `<span class="tpl-chip">${esc(draft.pendingTemplate.name.replace(/^MG: /, ""))}<button class="x" id="clearTemplate" aria-label="Remove template">×</button></span>` : "";
+    $("#templateChip").innerHTML = draft.pendingTemplate ? `<span class="tpl-chip">${KIND[draft.pendingTemplate.kind || "template"]}: ${esc(draft.pendingTemplate.name.replace(/^MG: /, ""))}<button class="x" id="clearTemplate" aria-label="Remove template">×</button></span>` : "";
     if ($("#clearTemplate")) $("#clearTemplate").onclick = () => { draft.pendingTemplate = null; showChip(); };
-    $("#pickTranscriptTemplate").textContent = draft.pendingTemplate ? "Change template" : "Use a template";
+    $("#pickTranscriptTemplate").textContent = draft.pendingTemplate ? "Change" : "Use a template, effect or graphic";
     canAdd(); updateGo();
   };
   $("#pickTranscriptTemplate").onclick = async () => { const t = await pickTemplate(draft.aspectRatio); if (t) { draft.pendingTemplate = t; showChip(); } };
   $("#transcriptInstruction").oninput = () => { canAdd(); updateGo(); };
   const renderEdits = () => {
-    $("#transcriptEdits").innerHTML = draft.transcriptEdits.map((edit,i) => `<div class="transcript-edit"><blockquote>${esc(words.slice(edit.from, edit.to+1).map(w=>w.word).join(' '))}</blockquote>${edit.template ? `<span class="tpl-chip" style="padding-right:10px">Template: ${esc(edit.templateName || edit.template)}</span> ` : ''}<span>${esc(edit.instruction)}</span> <button class="btn small" data-delete-edit="${i}" aria-label="Remove instruction">Remove</button></div>`).join('');
+    $("#transcriptEdits").innerHTML = draft.transcriptEdits.map((edit,i) => `<div class="transcript-edit"><blockquote>${esc(words.slice(edit.from, edit.to+1).map(w=>w.word).join(' '))}</blockquote>${(edit.template || edit.effect || edit.graphic) ? `<span class="tpl-chip" style="padding-right:10px">${edit.template ? "Template" : edit.effect ? "Effect" : "Graphic"}: ${esc(edit.templateName || edit.template || edit.effect || edit.graphic)}</span> ` : ''}<span>${esc(edit.instruction)}</span> <button class="btn small" data-delete-edit="${i}" aria-label="Remove instruction">Remove</button></div>`).join('');
     document.querySelectorAll('[data-delete-edit]').forEach(b => b.onclick = () => { draft.transcriptEdits.splice(Number(b.dataset.deleteEdit),1); renderEdits(); });
   };
   $("#addTranscriptEdit").onclick = () => {
     const t = draft.pendingTemplate;
     if (!draft.selection || !($("#transcriptInstruction").value.trim() || t)) return;
-    draft.transcriptEdits.push({ ...draft.selection, instruction: $("#transcriptInstruction").value.trim(), ...(t ? { template: t.id, templateName: t.name.replace(/^MG: /, ""), aspect: t.aspect } : {}) });
+    draft.transcriptEdits.push({ ...draft.selection, instruction: $("#transcriptInstruction").value.trim(), ...(t ? { [t.kind || "template"]: t.id, templateName: t.name.replace(/^MG: /, ""), aspect: t.aspect } : {}) });
     $("#transcriptInstruction").value = ''; draft.pendingTemplate = null; showChip(); renderEdits(); updateGo();
   };
   renderEdits();
@@ -2174,18 +2174,37 @@ function newTemplate() {
   };
   d.showModal();
 }
+const KIND = { template: "Template", effect: "Effect", graphic: "Graphic" };
 function pickTemplate(aspect) {
+  // Pick a template, an effect or a built-in graphic for a transcript passage. Resolves {kind, id, name, aspect} or null.
   return new Promise(async (resolve) => {
-    const d = $("#tplDlg"), list = (await loadHf()).filter((t) => t.aspect === aspect);
-    d.innerHTML = `<div class="body tpl-pick"><div class="tpl-pick-head"><h3>Choose a template</h3><input id="tplSearch" type="search" placeholder="Search ${list.length} ${aspect} templates" aria-label="Search templates"><button class="btn" id="tplCancel">Cancel</button></div>
-      <div class="gl-grid ${aspect === "16:9" ? "wide" : ""}" id="tplGrid">${list.map((t) => hfCard(t, `<button class="btn small primary" data-pick="${esc(t.id)}" style="margin-top:8px">Use this</button>`)).join("")}</div></div>`;
-    const done = (t) => { hfObserver?.disconnect(); d.close(); resolve(t); };
-    d.onclose = () => resolve(null);
-    $("#tplCancel").onclick = () => done(null);
-    d.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => done(list.find((t) => t.id === b.dataset.pick))));
-    $("#tplSearch").oninput = (e) => { const q = e.target.value.toLowerCase(); d.querySelectorAll("[data-tpl]").forEach((c) => (c.hidden = !c.textContent.toLowerCase().includes(q))); };
+    const d = $("#tplDlg"), wide = aspect === "16:9", dir = wide ? "16x9" : "9x16";
+    const [hf, fx, gl] = await Promise.all([loadHf(), (fxList ??= api("/api/effects").catch(() => [])), api(`/api/graphics?style=${encodeURIComponent(draft.style || glStyle || styles.find((s) => !isBusy(s) && !isFailed(s))?.name || "")}&aspect=${aspect}`).then((r) => r.items).catch(() => [])]);
+    const tabs = {
+      template: { label: "Templates", items: hf.filter((t) => t.aspect === aspect), card: (t) => hfCard(t, `<button class="btn small primary" data-pick="template:${esc(t.id)}" style="margin-top:8px">Use this</button>`) },
+      effect: { label: "Effects", items: fx, card: (f) => `<div class="gl-card gl-fx" data-tpl="${esc(f.id)}"><div class="gl-still"><video muted loop playsinline preload="none" poster="/fx/${dir}/${f.id}.jpg" src="/fx/${dir}/${f.id}.mp4" style="width:100%;height:100%;object-fit:cover"></video></div><div class="gl-meta"><b>${esc(f.id)}</b><p>${esc(f.description)}</p><button class="btn small primary" data-pick="effect:${esc(f.id)}" style="margin-top:8px">Use this</button></div></div>` },
+      graphic: { label: "Graphics", items: gl, card: (g) => `<div class="gl-card" data-tpl="${esc(g.type)}"><div class="gl-still">${g.still ? `<img src="${g.still}" alt="" loading="lazy">` : "No preview yet"}</div><div class="gl-meta"><b>${esc(g.name)}</b><code>${esc(g.type)}</code><p>${esc(g.about)}</p><button class="btn small primary" data-pick="graphic:${esc(g.type)}" style="margin-top:8px">Use this</button></div></div>` },
+    };
+    let tab = "template";
+    const draw = () => {
+      const t = tabs[tab];
+      d.innerHTML = `<div class="body tpl-pick"><div class="tpl-pick-head"><h3>Choose</h3><div class="tabs">${Object.entries(tabs).map(([k, v]) => `<button data-tab="${k}" class="${k === tab ? "on" : ""}">${v.label} ${v.items.length}</button>`).join("")}</div><input id="tplSearch" type="search" placeholder="Search ${t.items.length} ${t.label.toLowerCase()}" aria-label="Search"><button class="btn" id="tplCancel">Cancel</button></div>
+        <div class="gl-grid ${wide ? "wide" : ""}" id="tplGrid">${t.items.map(t.card).join("")}</div></div>`;
+      $("#tplCancel").onclick = () => done(null);
+      d.querySelectorAll("[data-tab]").forEach((b) => (b.onclick = () => { tab = b.dataset.tab; draw(); }));
+      d.querySelectorAll("[data-pick]").forEach((b) => (b.onclick = () => {
+        const [kind, id] = b.dataset.pick.split(/:(.*)/);
+        const it = kind === "template" ? hf.find((x) => x.id === id) : kind === "effect" ? fx.find((x) => x.id === id) : gl.find((x) => x.type === id);
+        done({ kind, id, aspect, name: kind === "template" ? it.name.replace(/^MG: /, "") : kind === "effect" ? it.id : it.name });
+      }));
+      d.querySelectorAll(".gl-fx").forEach((c) => { const v = c.querySelector("video"); c.onmouseenter = () => v.play().catch(() => {}); c.onmouseleave = () => { v.pause(); v.currentTime = 0; }; });
+      $("#tplSearch").oninput = (e) => { const q = e.target.value.toLowerCase(); d.querySelectorAll("[data-tpl]").forEach((c) => (c.hidden = !c.textContent.toLowerCase().includes(q))); };
+      if (tab === "template") hfPreviews(d, wide); else hfObserver?.disconnect();
+    };
+    const done = (t) => { hfObserver?.disconnect(); d.oncancel = null; resolve(t); d.close(); };
+    d.onclose = null; d.oncancel = () => done(null);  // Escape; the close event can arrive late from the previous picker, so it isn't used
+    draw();
     d.showModal();
-    hfPreviews(d, aspect === "16:9");
   });
 }
 const runRows = (runs) => runs.filter((r) => r.status !== "done").map((r) => `<div class="group" style="display:flex;gap:12px;align-items:center;margin:12px 0"><span class="dot ${r.status === "error" ? "" : "running"}"></span><div style="flex:1;min-width:0"><b>${esc(r.name)}</b> <span class="muted">${r.aspect} · ${r.status === "error" ? "failed" : r.status === "queued" ? "queued" : "building…"}</span><div class="muted" style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.status === "error" ? r.summary : r.log?.filter((l) => l.text).at(-1)?.text || "Starting…")}</div></div>${r.status === "error" ? `<button class="btn small" data-del-tpl="${esc(r.id)}">Dismiss</button>` : ""}</div>`).join("");

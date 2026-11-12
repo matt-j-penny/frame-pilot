@@ -18,10 +18,16 @@ export function creationSettings(body) {
   if (previewIdeas && !features.motionGraphics) throw new Error('Turn on Motion graphics to preview them.');
   return { editor, aspectRatio, features, previewIdeas, inspiration: body.inspiration || null, references: body.references ?? [], transcriptionId: body.transcriptionId || null,
     transcriptEdits: (body.transcriptEdits ?? []).map(edit => {
-      const template = edit.template ?? null;
-      if (template !== null && (typeof template !== 'string' || !/^[\w.-]+$/.test(template))) throw new Error('Invalid template.');
-      if (!Number.isInteger(edit.from) || !Number.isInteger(edit.to) || edit.from < 0 || edit.to < edit.from || typeof (edit.instruction ?? '') !== 'string' || (!template && !edit.instruction?.trim())) throw new Error('Select words and describe the change.');
-      return { from: edit.from, to: edit.to, instruction: (edit.instruction ?? '').trim(), ...(template ? { template } : {}) };
+      const picks = {};
+      for (const k of ['template', 'effect', 'graphic']) {
+        const v = edit[k] ?? null;
+        if (v === null) continue;
+        if (typeof v !== 'string' || !/^[\w.-]+$/.test(v)) throw new Error(`Invalid ${k}.`);
+        picks[k] = v;
+      }
+      const picked = Object.keys(picks).length > 0;
+      if (!Number.isInteger(edit.from) || !Number.isInteger(edit.to) || edit.from < 0 || edit.to < edit.from || typeof (edit.instruction ?? '') !== 'string' || (!picked && !edit.instruction?.trim())) throw new Error('Select words and describe the change.');
+      return { from: edit.from, to: edit.to, instruction: (edit.instruction ?? '').trim(), ...picks };
     }) };
 }
 export function settingsPrompt(job) {
@@ -34,6 +40,8 @@ Disabled features must not be added. When motion graphics is OFF use talking_hea
 Inspiration video (study pacing and visual treatment; do not use as source footage): ${s.inspiration || 'none'}
 Reference images/videos (inspect and use where relevant): ${JSON.stringify(s.references)}
 Transcript instructions use ORIGINAL source word indices and source times, before rough cuts. Read transcript-edits.json and transcript.json, apply all instructions, and map surviving words through edl.json onto the cut timeline. Do not reinterpret indices as cut-word indices.${s.transcriptEdits.some(e => e.template) ? `
-Instructions with a "template" must use that HyperFrames template for exactly that passage (even if motion graphics is OFF): see "HyperFrames templates" in references/edit.md. Fill its copy from the instruction, or from the spoken words when the instruction is empty.` : ''}
+Instructions with a "template" must use that HyperFrames template for exactly that passage (even if motion graphics is OFF): see "HyperFrames templates" in references/edit.md. Fill its copy from the instruction, or from the spoken words when the instruction is empty.` : ''}${s.transcriptEdits.some(e => e.effect) ? `
+Instructions with an "effect" must apply that video effect over exactly that passage (even if motion graphics is OFF): see "Video effects" in references/edit.md. Take any text it shows from the instruction, or from the spoken words when the instruction is empty.` : ''}${s.transcriptEdits.some(e => e.graphic) ? `
+Instructions with a "graphic" must use that built-in graphic type on a beat covering exactly that passage (even if motion graphics is OFF): see references/style-schema.md. Fill it from the instruction, or from the spoken words when the instruction is empty.` : ''}
 ${JSON.stringify(s.transcriptEdits)}`;
 }
