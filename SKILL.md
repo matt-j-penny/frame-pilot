@@ -38,7 +38,7 @@ references/   create-style.md, edit.md, style-schema.md (style + beat-plan forma
 presets/      clean-minimal, bold-energy, tech-explainer   (shipped, read-only unless asked)
 styles/       user styles (same format as presets)
 music/ sfx/   audio files + dictionary.json each
-effects/      51 face-tracked video effects (effects.json index, EFFECTS.md options, MIT, by Vibha Ramprakash)
+effects/      90 face-tracked video effects (effects.json index, EFFECTS.md options; 51 MIT by Vibha Ramprakash, 39 added)
 remotion/     the Remotion project (components read everything from the style)
 scripts/      reel.py (every pipeline step)
 jobs/<id>/    one folder per edit; every stage writes here

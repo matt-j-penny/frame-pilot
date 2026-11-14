@@ -1,9 +1,9 @@
 ---
 name: effects
-description: Add any of 51 video effects to a talking-head video (orbit, spotlight, glass widgets, timeline, checklist, headline wall, comment box, phone fan, liquid glass graph, match-cut, iPhone toggles, LED sign, over-the-shoulder zoom, iMessage pop-ups, place-in-grid and more). Effects track the speaker's face and can sit behind their head. Use when the user types /effects, names one of the effects, or asks to add an effect, zoom, grade, sticker or animation to their video.
+description: Add any of 90 video effects to a talking-head video (orbit, spotlight, glass widgets, timeline, checklist, headline wall, comment box, phone fan, liquid glass graph, match-cut, iPhone toggles, LED sign, over-the-shoulder zoom, iMessage pop-ups, place-in-grid and more). Effects track the speaker's face and can sit behind their head. Use when the user types /effects, names one of the effects, or asks to add an effect, zoom, grade, sticker or animation to their video.
 ---
 
-# Effects: 51 starter video effects (by @vibha.in.progress)
+# Effects: 90 video effects (51 by @vibha.in.progress, 39 added for Applied AI Mastermind)
 
 The user is usually not technical. Keep replies short and friendly, do the work for them, and never ask them to run commands themselves.
 
@@ -38,7 +38,7 @@ Run `bash scripts/setup.sh`. It prints `READY` when done (the first time takes 1
 
 A single effect needs no plan: `.venv/bin/python scripts/fx.py orbit <video> <out.mp4> --start 3 --end 6 --text "..." --opt key=value`.
 
-## The 51 effects
+## The 90 effects
 | # | `fx` name | What it does | Options (all optional) |
 |---|---|---|---|
 | 1 | `noise` | Reels pile up behind your head, one every quarter second | `images` (folder of screenshots or clips), `size` |
@@ -92,6 +92,45 @@ A single effect needs no plan: `.venv/bin/python scripts/fx.py orbit <video> <ou
 | 49 | `huge-strike` | One huge serif word wipes in behind your head, then a red line crosses it out | `text`, `at` (seconds into the effect when the strike lands, default 0.6) |
 | 50 | `crayon-write` | A red crayon writes your word behind your head, then underlines it and flies off | `text` |
 | 51 | `fan-build` | Your reel covers deal into a fan behind your head, one card at a time | `images` (folder of your covers), `count` (default 13) |
+| 52 | `outline-glow` | A glowing purple outline draws itself around you and pulses | `color` |
+| 53 | `lower-third` | Your name and title wipe in at the bottom corner | `text` (name), `role`, `y` (0 to 1) |
+| 54 | `big-stat` | A huge number counts up with a label and a hand-drawn underline | `to` (the number, e.g. `3.2M`), `text` (label) |
+| 55 | `step-tracker` | A step card: "Step 2 of 4", the step title and a progress bar that fills | `step`, `of`, `text` (title) |
+| 56 | `search-type` | A search bar types your question, then the cursor clicks it | `text` (the query) |
+| 57 | `quote-card` | A pull-quote card: big quote mark, your line typed word by word, your name | `text` (the quote), `by` |
+| 58 | `chapter-title` | A chapter card: a big purple number, a line that wipes in and the chapter title | `n` (number), `text` (title), `label` |
+| 59 | `versus` | Two cards face off either side of a VS badge, then the winner lights up | `text` (A\|B), `win` (1 or 2) |
+| 60 | `pros-cons` | A two-column card: green ticks for the pros, red crosses for the cons, one row at a time | `pros`, `cons` (items joined with `\|`) |
+| 61 | `roadmap` | A timeline of steps: the line fills left to right and each stop lights up with its label | `text` (stops joined with `\|`) |
+| 62 | `price-drop` | The old price gets struck out in red and the new price slams in | `from`, `to`, `text` (label) |
+| 63 | `bar-compare` | Two bars race: the long grey before against the short purple after | `text` (rows of `label::value::length`, joined with `\|`) |
+| 64 | `prompt-box` | An AI chat box types your prompt, then the send button fires | `text` (prompt), `model` |
+| 65 | `terminal` | A terminal window types your command and prints green ticks as each step finishes | `text` (command), `lines` (joined with `\|`), `title` |
+| 66 | `comment-cta` | A call to action: Comment the keyword and I'll send it, with a bouncing arrow | `text` (keyword), `pre`, `post` |
+| 67 | `myth-fact` | A MYTH card in red flips over to become the FACT in green | `myth`, `fact` |
+| 68 | `ticker` | 16:9 only. A news ticker slides up from the bottom and scrolls your headlines non-stop | `text` (headlines joined with `\|`), `tag` (default LIVE), `y` |
+| 69 | `reactions` | 9:16 only. Live-stream reactions: hearts and emojis bubble up the side of the frame, swaying as they rise | `emoji` (joined with `\|`), `count` (default 18) |
+| 70 | `stat-row` | Three numbers count up side by side on one card, each with its label | `text` (`value::label`, up to three, joined with `\|`) |
+| 71 | `chat-reply` | Your prompt goes up as a chat bubble, the AI thinks for a beat, then its answer streams in underneath | `text` (prompt), `reply`, `model` |
+| 72 | `numbered-list` | A titled list that reveals one numbered point at a time, the current one lit and the earlier ones dimmed | `title`, `text` (points joined with `\|`) |
+| 73 | `post-card` | A social post card with your face, name and handle: the post writes itself, then the likes count up | `text`, `likes`, `name`, `handle` |
+| 74 | `bar-chart` | A bar chart: your bars grow one after another, each with its value, the last one in purple | `title`, `text` (`label::value`, up to six, joined with `\|`) |
+| 75 | `do-dont` | Two stacked cards: the DON'T with a red cross, then the DO with a green tick, and the DON'T fades back | `dont`, `do`, `at` (seconds until the DO appears) |
+| 76 | `rating-stars` | A review card: five stars light up one after another as the score counts up, with the number of reviews underneath | `to` (score out of 5), `text` (label) |
+| 77 | `plan-card` | A pricing card: the plan name, the price, what is included ticking in line by line, and a button | `name`, `price`, `per`, `text` (features joined with `\|`), `cta` |
+| 78 | `zoom-stat` | The camera pushes in and moves you to one side, and a stat badge counts up in the space it opened | `to`, `text` (label) |
+| 79 | `zoom-bullets` | The camera pushes in and moves you aside, then a headline and three points appear one by one in the space | `title`, `text` (points joined with `\|`) |
+| 80 | `chest-number` | One giant number counts up across your chest in front of you, with a big label under it | `to`, `text` (label) |
+| 81 | `behind-icons-path` | Two thick 3D emoji tiles sit behind your shoulders and a dotted path draws over your head from one to the other | `emoji` (two, joined with `\|`), `text` (two labels) |
+| 82 | `behind-chart` | A tilted purple graph panel hangs in 3D behind your shoulder while a smooth curve draws upward and its value counts | `title`, `text` (`label::value`, joined with `\|`) |
+| 83 | `icon-cluster` | Seven different emoji tiles drift in behind you from one side at different sizes, with your line on a pill | `emoji` (up to seven, joined with `\|`), `text` |
+| 84 | `perspective-wall` | A wall of your keywords on tiles runs off into the distance behind you and slides slowly past | `text` (words joined with `\|`) |
+| 85 | `card-stack` | Your points on a stack of cards tilted in 3D: the top card slides away to show the next | `text` (points joined with `\|`) |
+| 86 | `cube-points` | A 3D block turns a quarter turn for each of your points, one face per point | `text` (points joined with `\|`) |
+| 87 | `carousel-cards` | Your keywords on cards circle your head in 3D: across your chest in front, behind your head at the back | `text` (words joined with `\|`) |
+| 88 | `tilt-screen` | A screen tilted in 3D shows your own dashboard: three numbers counting up over a row of rising bars | `title`, `text` (`label::value`, three, joined with `\|`) |
+| 89 | `three-pillars` | A dark full-screen hook: a glowing number, a headline, and three numbered pillars that rise and light up one by one | `to` (number), `text` (headline), `pillars` (joined with `\|`) |
+| 90 | `glass-notes-split` | You shrink into a rounded frame while a notes panel opens beside you and ticks off your points | `title`, `text` (points joined with `\|`) |
 
 **Named looks** (same effect, a fancier look; they don't add to the count):
 - `glitter-spotlight` = `spotlight` with `look=sparkle`: the room goes dark, golden rays burst from behind your head, a big gold word with a shine sweep, twinkling sparkles and a glow around you. `text` (the word), `color`, `push`.

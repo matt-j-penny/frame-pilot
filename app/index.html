@@ -2182,7 +2182,7 @@ function pickTemplate(aspect) {
     const [hf, fx, gl] = await Promise.all([loadHf(), (fxList ??= api("/api/effects").catch(() => [])), api(`/api/graphics?style=${encodeURIComponent(draft.style || glStyle || styles.find((s) => !isBusy(s) && !isFailed(s))?.name || "")}&aspect=${aspect}`).then((r) => r.items).catch(() => [])]);
     const tabs = {
       template: { label: "Templates", items: hf.filter((t) => t.aspect === aspect), card: (t) => hfCard(t, `<button class="btn small primary" data-pick="template:${esc(t.id)}" style="margin-top:8px">Use this</button>`) },
-      effect: { label: "Effects", items: fx, card: (f) => `<div class="gl-card gl-fx" data-tpl="${esc(f.id)}"><div class="gl-still"><video muted loop playsinline preload="none" poster="/fx/${dir}/${f.id}.jpg" src="/fx/${dir}/${f.id}.mp4" style="width:100%;height:100%;object-fit:cover"></video></div><div class="gl-meta"><b>${esc(f.id)}</b><p>${esc(f.description)}</p><button class="btn small primary" data-pick="effect:${esc(f.id)}" style="margin-top:8px">Use this</button></div></div>` },
+      effect: { label: "Effects", items: fx.filter((f) => !f.aspect || f.aspect === aspect), card: (f) => `<div class="gl-card gl-fx" data-tpl="${esc(f.id)}"><div class="gl-still"><video muted loop playsinline preload="none" poster="/fx/${dir}/${f.id}.jpg" src="/fx/${dir}/${f.id}.mp4" style="width:100%;height:100%;object-fit:cover"></video></div><div class="gl-meta"><b>${esc(f.id)}</b><p>${esc(f.description)}</p><button class="btn small primary" data-pick="effect:${esc(f.id)}" style="margin-top:8px">Use this</button></div></div>` },
       graphic: { label: "Graphics", items: gl, card: (g) => `<div class="gl-card" data-tpl="${esc(g.type)}"><div class="gl-still">${g.still ? `<img src="${g.still}" alt="" loading="lazy">` : "No preview yet"}</div><div class="gl-meta"><b>${esc(g.name)}</b><code>${esc(g.type)}</code><p>${esc(g.about)}</p><button class="btn small primary" data-pick="graphic:${esc(g.type)}" style="margin-top:8px">Use this</button></div></div>` },
     };
     let tab = "template";
@@ -2249,7 +2249,7 @@ async function viewGraphics(poll) {
     hfList = null;
   }
   const hf = (await loadHf()).filter((t) => t.aspect === glAspect);
-  const fx = await (fxList ??= api("/api/effects").catch(() => [])), fxDir = wide => (wide ? "16x9" : "9x16");
+  const fx = (await (fxList ??= api("/api/effects").catch(() => []))).filter((f) => !f.aspect || f.aspect === glAspect), fxDir = wide => (wide ? "16x9" : "9x16");
   const hfYou = hf.filter((t) => t.person), hfArt = hf.filter((t) => !t.person);
   const rendered = items.some((g) => g.still), wide = glAspect === "16:9";
   $("#view").dataset.building = building ? 1 : 0;

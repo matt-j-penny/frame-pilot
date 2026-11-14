@@ -202,5 +202,163 @@
  {
   "id": "fan-build",
   "description": "your reel covers deal into a fan behind your head, one card at a time"
+ },
+ {
+  "id": "outline-glow",
+  "description": "a glowing purple outline draws itself around you and pulses"
+ },
+ {
+  "id": "lower-third",
+  "description": "your name and title wipe in at the bottom corner"
+ },
+ {
+  "id": "big-stat",
+  "description": "a huge number counts up with a label and a hand-drawn underline"
+ },
+ {
+  "id": "step-tracker",
+  "description": "a step card: Step 2 of 4, the step title and a progress bar that fills"
+ },
+ {
+  "id": "search-type",
+  "description": "a search bar types your question, then the cursor clicks it"
+ },
+ {
+  "id": "quote-card",
+  "description": "a pull-quote card: a big purple quote mark, your line typed word by word, and your name"
+ },
+ {
+  "id": "chapter-title",
+  "description": "a chapter card: a big purple number, a line that wipes in and the chapter title"
+ },
+ {
+  "id": "versus",
+  "description": "two cards face off either side of a VS badge, then the winner lights up"
+ },
+ {
+  "id": "pros-cons",
+  "description": "a two-column card: green ticks for the pros, red crosses for the cons, one row at a time"
+ },
+ {
+  "id": "roadmap",
+  "description": "a timeline of steps: the line fills left to right and each stop lights up with its label"
+ },
+ {
+  "id": "price-drop",
+  "description": "the old price gets struck out in red and the new price slams in"
+ },
+ {
+  "id": "bar-compare",
+  "description": "two bars race: the long grey before against the short purple after"
+ },
+ {
+  "id": "prompt-box",
+  "description": "an AI chat box types your prompt, then the send button fires"
+ },
+ {
+  "id": "terminal",
+  "description": "a terminal window types your command and prints green ticks as each step finishes"
+ },
+ {
+  "id": "comment-cta",
+  "description": "a call to action: Comment the keyword and I'll send it, with a bouncing arrow"
+ },
+ {
+  "id": "myth-fact",
+  "description": "a MYTH card in red flips over to become the FACT in green"
+ },
+ {
+  "id": "ticker",
+  "description": "a news ticker slides up from the bottom and scrolls your headlines non-stop",
+  "aspect": "16:9"
+ },
+ {
+  "id": "reactions",
+  "description": "live-stream reactions: hearts and emojis bubble up the side of the frame, swaying as they rise",
+  "aspect": "9:16"
+ },
+ {
+  "id": "stat-row",
+  "description": "three numbers count up side by side on one card, each with its label"
+ },
+ {
+  "id": "chat-reply",
+  "description": "your prompt goes up as a chat bubble, the AI thinks for a beat, then its answer streams in underneath"
+ },
+ {
+  "id": "numbered-list",
+  "description": "a titled list that reveals one numbered point at a time, the current one lit and the earlier ones dimmed"
+ },
+ {
+  "id": "post-card",
+  "description": "a social post card with your face, name and handle: the post writes itself, then the likes count up"
+ },
+ {
+  "id": "bar-chart",
+  "description": "a bar chart: your bars grow one after another, each with its value, the last one in purple"
+ },
+ {
+  "id": "do-dont",
+  "description": "two stacked cards: the DON'T with a red cross, then the DO with a green tick, and the DON'T fades back"
+ },
+ {
+  "id": "rating-stars",
+  "description": "a review card: five stars light up one after another as the score counts up, with the number of reviews underneath"
+ },
+ {
+  "id": "plan-card",
+  "description": "a pricing card: the plan name, the price, what is included ticking in line by line, and a button"
+ },
+ {
+  "id": "zoom-stat",
+  "description": "the camera pushes in and moves you to one side, and a stat badge counts up in the space it opened"
+ },
+ {
+  "id": "zoom-bullets",
+  "description": "the camera pushes in and moves you aside, then a headline and three points appear one by one in the space"
+ },
+ {
+  "id": "chest-number",
+  "description": "one giant number counts up across your chest in front of you, with a big label under it"
+ },
+ {
+  "id": "behind-icons-path",
+  "description": "two thick 3D emoji tiles sit behind your shoulders and a dotted path draws over your head from one to the other"
+ },
+ {
+  "id": "behind-chart",
+  "description": "a tilted purple graph panel hangs in 3D behind your shoulder while a smooth curve draws upward and its value counts"
+ },
+ {
+  "id": "icon-cluster",
+  "description": "seven different emoji tiles drift in behind you from one side at different sizes, with your line on a pill"
+ },
+ {
+  "id": "perspective-wall",
+  "description": "a wall of your keywords on tiles runs off into the distance behind you and slides slowly past"
+ },
+ {
+  "id": "card-stack",
+  "description": "your points on a stack of cards tilted in 3D: the top card slides away to show the next"
+ },
+ {
+  "id": "cube-points",
+  "description": "a 3D block turns a quarter turn for each of your points, one face per point"
+ },
+ {
+  "id": "carousel-cards",
+  "description": "your keywords on cards circle your head in 3D: across your chest in front, behind your head at the back"
+ },
+ {
+  "id": "tilt-screen",
+  "description": "a screen tilted in 3D shows your own dashboard: three numbers counting up over a row of rising bars"
+ },
+ {
+  "id": "three-pillars",
+  "description": "a dark full-screen hook: a glowing number, a headline, and three numbered pillars that rise and light up one by one"
+ },
+ {
+  "id": "glass-notes-split",
+  "description": "you shrink into a rounded frame while a notes panel opens beside you and ticks off your points"
  }
 ]
